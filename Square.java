@@ -22,13 +22,16 @@ public class Square {
 	 *
 	 * @param temperature
 	 * The new temperature in degrees Celcius.
+	 * @post
+	 * The new temperature of this square is equal to the given temperature
+	 *   | new.getTemperature() == temperature
 	 * @throws IllegalArgumentException
 	 * This square can not have the given temperature.
-	 *   | !isValidTemperature(temperature)
+	 *   | !canHaveAsTemperature(temperature)
 	 */
 	public void setTemperature(double temperature)
 			throws IllegalArgumentException {
-		if (! isValidTemperature(temperature))
+		if (! canHaveAsTemperature(temperature))
 			throw new IllegalArgumentException();
 		this.temperature = temperature;
 	}
@@ -45,7 +48,7 @@ public class Square {
 	 *   | return == (getMinTemperature() &lt;= temperature)
 	 *   |			&amp;&amp; (temperature &lt;= getMaxTemperature());
 	 */
-	public boolean isValidTemperature(double temperature){
+	public boolean canHaveAsTemperature(double temperature){
 		return (getMinTemperature() <= temperature)
 				&& (temperature <= getMaxTemperature());
 	}

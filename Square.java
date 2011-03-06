@@ -13,6 +13,7 @@ public class Square {
 	 *
 	 * @return The temperature of this Square in degrees Celcius.
 	 */
+	@Basic @Raw
 	public double getTemperature() {
 		return temperature;
 	}
@@ -67,7 +68,7 @@ public class Square {
 	 * @param max
 	 * The upper temperature bound for this Square in degrees Celcius.
 	 * @throws IllegalArgumentException
-	 * The given temperature boundaries are illegal,
+	 * The given temperature boundaries are illegal for this square.
 	 *   | ! areValidTemperatureBoundaries(min, max)
 	 */
 	public void setTemperatureBoundaries(double min, double max)
@@ -93,8 +94,9 @@ public class Square {
 	/**
 	 * Returns the minimum temperature for this square.
 	 *
-	 * @return The minimum temperature in degrees Celcius..
+	 * @return The minimum temperature in degrees Celcius.
 	 */
+	@Basic @Raw
 	public double getMinTemperature() {
 		return minTemperature;
 	}
@@ -102,8 +104,9 @@ public class Square {
 	/**
 	 * Returns the maximum temperature for this square.
 	 *
-	 * @return The maximum temperature in degrees Celcius..
+	 * @return The maximum temperature in degrees Celcius.
 	 */
+	@Basic @Raw
 	public double getMaxTemperature() {
 		return maxTemperature;
 	}

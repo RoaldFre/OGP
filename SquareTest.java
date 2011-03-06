@@ -31,10 +31,20 @@ public class SquareTest {
 		assertEquals(200, squareTemp100.getTemperature(), 0);
 	}
 
-	@Test
-	public void setTemperature_TooHigh() {
-		squareTemp100.setTemperature(200);
-		assertEquals(200, squareTemp100.getTemperature(), 0);
+	@Test(expected=IllegalArgumentException.class)
+	public void setTemperature_TooHigh() throws Exception {
+		if (!squareTemp100.canHaveAsTemperature(Double.MAX_VALUE))
+			squareTemp100.setTemperature(Double.MAX_VALUE);
+		else
+			throw new IllegalArgumentException();
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void setTemperature_TooLow() throws Exception {
+		if (!squareTemp100.canHaveAsTemperature(Double.MIN_VALUE))
+			squareTemp100.setTemperature(Double.MIN_VALUE);
+		else
+			throw new IllegalArgumentException();
 	}
 }
 	

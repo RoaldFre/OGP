@@ -1,3 +1,5 @@
+import be.kuleuven.cs.som.annotate.*;
+
 /* 
  * Author     : Roald Frederickx
  * License    : GPL
@@ -9,6 +11,9 @@ public class Square {
 	/** 
 	 * Initialize this new square to a square with the given temperature, 
 	 * and temperature boundaries. 
+	 * 
+	 * XXX don't expose this one yet, as it isn't explicitly stated in 
+	 * assignment? -- make private?
 	 *
 	 * @param temperature
 	 * The temperature for this new square in degrees Celcius.
@@ -122,6 +127,8 @@ public class Square {
 			throws IllegalArgumentException {
 		if (! areValidTemperatureBoundaries(min, max))
 			throw new IllegalArgumentException();
+		minTemperature = min;
+		maxTemperature = max;
 	}
 
 	/** 

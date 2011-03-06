@@ -6,6 +6,52 @@
 
 public class Square {
 
+	/** 
+	 * Initialize this new square to a square with the given temperature, 
+	 * and temperature boundaries. 
+	 *
+	 * @param temperature
+	 * The temperature for this new square in degrees Celcius.
+	 * @effect
+	 * This new square is initialized with the given temperature as 
+	 * its temperature, minTemp as its minimum temperature and maxTemp as 
+	 * its maximum temperature.
+	 *   | setTemperatureBoundaries(minTemp, maxTemp);
+	 *   | setTemperature(temperature);
+	 *
+	 * XXX *constructor* ifv van effecten van meerdere *sequentiele* *mutators*(?)
+	 */
+	@Raw
+	public Square(double temperature, double minTemp, double maxTemp) 
+			throws IllegalArgumentException {
+		setTemperatureBoundaries(minTemp, maxTemp);
+		setTemperature(temperature);
+	}
+
+	/** 
+	 * Initialize this new square to a square with the given temperature, 
+	 * and temperature boundaries. 
+	 * The minimum temperature gets initialized to -200 and the maximum 
+	 * temperature to 5000.
+	 *
+	 * @param temperature
+	 * The temperature for this new square in degrees Celcius.
+	 * @param min
+	 * The lower temperature bound for this new square in degrees Celcius.
+	 * @param max
+	 * The upper temperature bound for this new square in degrees Celcius.
+	 * @effect
+	 * This new square is initialized with the given temperature as 
+	 * its temperature, -200 as its minimum temperature and 5000 as 
+	 * its maximum temperature.
+	 *   | this(temperature, -200, 5000)
+	 */
+	@Raw
+	public Square(double temperature) throws IllegalArgumentException {
+		this(temperature, -200, 5000);
+	}
+
+
 	//TODO: Farenheit?
 
 	/**
@@ -71,6 +117,7 @@ public class Square {
 	 * The given temperature boundaries are illegal for this square.
 	 *   | ! areValidTemperatureBoundaries(min, max)
 	 */
+	@Raw
 	public void setTemperatureBoundaries(double min, double max)
 			throws IllegalArgumentException {
 		if (! areValidTemperatureBoundaries(min, max))

@@ -122,5 +122,24 @@ public class Square {
 	 */
 	private double maxTemperature;
 
+
+	
+	/** 
+	 * Returns the cold damage associated with this square.
+	 * 
+	 * @return The damage points. One point for every 10 degrees the 
+	 * temperature of this square is below -5 degrees Celcius, rounded 
+	 * below.
+	 *   | if (getTemperature() &gt; -5)
+	 *   |     then return == 0
+	 *   | else
+	 *   |     return == (-5 - (int)getTemperature()) / 10
+	 *   XXX can use cast in formal comment?
+	 */
+	public int coldDamage() {
+		if (getTemperature() > -5)
+			return 0;
+		return (-5 - (int)getTemperature()) / 10;
+	}
 }
 

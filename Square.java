@@ -121,6 +121,11 @@ public class Square {
 	 * @throws IllegalArgumentException
 	 * The given temperature boundaries are illegal for this square.
 	 *   | ! areValidTemperatureBoundaries(min, max)
+	 *
+	 *   XXX current temperature can be out of bounds for the new boundaries!
+	 *   well, we're raw anyway, so not that much of a deal?
+	 *   or throw exception if boundaries not consistent with new 
+	 *   temperature...?
 	 */
 	@Raw
 	public void setTemperatureBoundaries(double min, double max)
@@ -141,7 +146,7 @@ public class Square {
 	 * True iff the lower bound is less or equal than the upper bound.
 	 *   | result == (min &lt;= max)
 	 */
-	public boolean areValidTemperatureBoundaries(double min, double max){
+	public static boolean areValidTemperatureBoundaries(double min, double max){
 		return min <= max;
 	}
 

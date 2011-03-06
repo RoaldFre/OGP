@@ -198,7 +198,7 @@ public class Square {
 	public int coldDamage() {
 		if (getTemperature() > -5)
 			return 0;
-		return (-5 - (int)getTemperature()) / 10;
+		return 1 + (-5 - (int)getTemperature()) / 10;
 	}
 }
 

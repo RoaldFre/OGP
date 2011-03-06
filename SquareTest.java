@@ -12,6 +12,11 @@ public class SquareTest {
 	 * change during individual tests.
 	 */
 	private Square squareTemp100;
+	private Square squareTempNeg5;
+	private Square squareTempNeg14p99;
+	private Square squareTempNeg15;
+	private Square squareTempNeg15p01;
+	private Square squareTempNeg100;
 
 	/**
 	 * Set up a mutable test fixture.
@@ -21,7 +26,12 @@ public class SquareTest {
 	 */
 	@Before
 	public void setUpMutableFixture() {
-		squareTemp100 = new Square(100);
+		squareTemp100      = new Square(100);
+		squareTempNeg5     = new Square(-5);
+		squareTempNeg14p99 = new Square(-14.99);
+		squareTempNeg15    = new Square(-15);
+		squareTempNeg15p01 = new Square(-15.01);
+		squareTempNeg100   = new Square(-100);
 	}
 
 
@@ -61,6 +71,18 @@ public class SquareTest {
 		else
 			throw new IllegalArgumentException();
 	}
+
+	@Test
+	//XXX can just bunch them in a single method with this name?
+	public void coldDamage(){
+		assertEquals(0, squareTemp100.coldDamage());
+		assertEquals(1, squareTempNeg5.coldDamage());
+		assertEquals(1, squareTempNeg14p99.coldDamage());
+		assertEquals(2, squareTempNeg15.coldDamage());
+		assertEquals(2, squareTempNeg15p01.coldDamage());
+		assertEquals(10,squareTempNeg100.coldDamage());
+	}
+	
 }
 	
 

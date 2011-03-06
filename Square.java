@@ -112,12 +112,12 @@ public class Square {
 	 * Variable registering the lower limit of the temperature of this 
 	 * square. 
 	 */
-	private double minTemperature = -200; //XXX not tidy to initialize here?
+	private double minTemperature;
 	/** 
 	 * Variable registering the upper limit of the temperature of this 
 	 * square. 
 	 */
-	private double maxTemperature = 5000; //XXX not tidy to initialize here?
+	private double maxTemperature;
 
 }
 

@@ -58,18 +58,35 @@ public class SquareTest {
 	}
 
 	@Test
-	public void setTemperatureBoundaries_LegalCase() {
-		squareTemp100.setTemperatureBoundaries(-1000, 1000);
-		assertEquals(-1000, squareTemp100.getMinTemperature(), 0);
+	public void setMaxTemperature_LegalCase() {
+		squareTemp100.setMaxTemperature(1000);
 		assertEquals( 1000, squareTemp100.getMaxTemperature(), 0);
 	}
 
+	@Test
+	public void setMinTemperature_LegalCase() {
+		squareTemp100.setMinTemperature(-1000);
+		assertEquals(-1000, squareTemp100.getMinTemperature(), 0);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
-	public void setTemperatureBoundaries_Invalid() {
-		if (!Square.areValidTemperatureBoundaries(1000, -1000))
-			squareTemp100.setTemperatureBoundaries(1000, -1000);
-		else
-			throw new IllegalArgumentException();
+	public void setMaxTemperature_BelowTemp() {
+		squareTemp100.setMaxTemperature(99);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setMinTemperature_AboveTemp() {
+		squareTemp100.setMinTemperature(101);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setMaxTemperature_BelowMin() {
+		squareTemp100.setMaxTemperature(squareTemp100.getMinTemperature() - 1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setMinTemperature_AboveMax() {
+		squareTemp100.setMinTemperature(squareTemp100.getMaxTemperature() + 1);
 	}
 
 	@Test

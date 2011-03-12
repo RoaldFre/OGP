@@ -5,8 +5,8 @@ import be.kuleuven.cs.som.annotate.*;
  * XXX more info needed?
  *
  * @invar
- * The temperature boundaries of each square are legal.
- *   | areValidTemperatureBoundaries(getMinTemperature(), 
+ * The temperature limits of each square are legal.
+ *   | areValidTemperatureLimits(getMinTemperature(), 
  *                                   getMaxTemperature())
  * @invar
  * The temperature of each square is legal for that square.
@@ -20,10 +20,10 @@ public class Square {
 
 	/** 
 	 * Initialize this new square to a square with the given temperature, 
-	 * and temperature boundaries. 
+	 * and temperature limits. 
 	 * 
 	 * XXX don't expose this one yet, as it isn't explicitly stated in 
-	 * assignment? -- make private?
+	 * assignment? -- make private? (can we do that?)
 	 *
 	 * @param temperature
 	 * The temperature for this new square in degrees Celcius.
@@ -31,7 +31,7 @@ public class Square {
 	 * This new square is initialized with the given temperature as 
 	 * its temperature, minTemp as its minimum temperature and maxTemp as 
 	 * its maximum temperature.
-	 *   | setTemperatureBoundaries(minTemp, maxTemp);
+	 *   | setTemperatureLimits(minTemp, maxTemp);
 	 *   | setTemperature(temperature);
 	 *
 	 * XXX *constructor* ifv van effecten van meerdere *sequentiele* 
@@ -40,22 +40,22 @@ public class Square {
 	@Raw
 	public Square(double temperature, double minTemp, double maxTemp) 
 			throws IllegalArgumentException {
-		setTemperatureBoundaries(minTemp, maxTemp);
+		setTemperatureLimits(minTemp, maxTemp);
 		setTemperature(temperature);
 	}
 
 	/** 
 	 * Initialize this new square to a square with the given temperature, 
-	 * and temperature boundaries. 
+	 * and temperature limits. 
 	 * The minimum temperature gets initialized to -200 and the maximum 
 	 * temperature to 5000.
 	 *
 	 * @param temperature
 	 * The temperature for this new square in degrees Celcius.
 	 * @param min
-	 * The lower temperature bound for this new square in degrees Celcius.
+	 * The lower temperature limit for this new square in degrees Celcius.
 	 * @param max
-	 * The upper temperature bound for this new square in degrees Celcius.
+	 * The upper temperature limit for this new square in degrees Celcius.
 	 * @effect
 	 * This new square is initialized with the given temperature as 
 	 * its temperature, -200 as its minimum temperature and 5000 as 
@@ -141,12 +141,12 @@ public class Square {
 	}
 
 	/** 
-	 * Set the temperature boundaries for this square. 
+	 * Set the temperature limits for this square. 
 	 * 
 	 * @param min
-	 * The lower temperature bound for this Square in degrees Celcius.
+	 * The lower temperature limit for this Square in degrees Celcius.
 	 * @param max
-	 * The upper temperature bound for this Square in degrees Celcius.
+	 * The upper temperature limit for this Square in degrees Celcius.
 	 * @post
 	 * The new maximum temperature for this Square is equal to the given 
 	 * maximum.
@@ -156,36 +156,37 @@ public class Square {
 	 * minimum.
 	 *   | new.getMinTemperature() == min
 	 * @throws IllegalArgumentException
-	 * The given temperature boundaries are illegal for this square.
-	 *   | ! areValidTemperatureBoundaries(min, max)
+	 * The given temperature limits are illegal for this square.
+	 *   | ! areValidTemperatureLimits(min, max)
 	 *
-	 *   XXX current temperature can be out of bounds for the new boundaries!
+	 *   XXX current temperature can be out of bounds for the new limits!
 	 *   well, we're raw anyway, so not that much of a deal?
-	 *   or throw exception if boundaries not consistent with new 
+	 *   or throw exception if limits not consistent with new 
 	 *   temperature...?
 	 */
 	@Raw
-	public void setTemperatureBoundaries(double min, double max)
+	public void setTemperatureLimits(double min, double max)
 			throws IllegalArgumentException {
-		if (! areValidTemperatureBoundaries(min, max))
+		if (! areValidTemperatureLimits(min, max))
 			throw new IllegalArgumentException();
 		minTemperature = min;
 		maxTemperature = max;
 	}
 
 	/** 
-	 * Check whether the given boundaries are valid temperature boundaries.
+	 * Check whether the given limits are valid temperature limits.
 	 * @param min
-	 * The lower temperature bound for this Square in degrees Celcius.
+	 * The lower temperature limit for this Square in degrees Celcius.
 	 * @param max
-	 * The upper temperature bound for this Square in degrees Celcius.
+	 * The upper temperature limit for this Square in degrees Celcius.
 	 * @return
-	 * True iff the lower bound is less or equal than the upper bound.
+	 * True iff the lower limit is less or equal than the upper limit.
 	 *   | result == (min &lt;= max)
 	 */
-	public static boolean areValidTemperatureBoundaries(double min, double max){
+	public static boolean areValidTemperatureLimits(double min, double max) {
 		return min <= max;
 	}
+
 
 	/** 
 	 * Variable registering the lower limit of the temperature of this 

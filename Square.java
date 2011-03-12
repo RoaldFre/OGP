@@ -1,10 +1,20 @@
 import be.kuleuven.cs.som.annotate.*;
 
-/* 
- * Author     : Roald Frederickx
- * License    : GPL
+/**
+ * A class of squares involving a temperature and a humidity.
+ * XXX more info needed?
+ *
+ * @invar
+ * The temperature boundaries of each square are legal.
+ *   | areValidTemperatureBoundaries(getMinTemperature(), 
+ *                                   getMaxTemperature())
+ * @invar
+ * The temperature of each square is legal for that square.
+ *   | canHaveAsTemperature(getTemperature())
+ *
+ *
+ * @author Roald Frederickx
  */
-
 
 public class Square {
 
@@ -24,7 +34,8 @@ public class Square {
 	 *   | setTemperatureBoundaries(minTemp, maxTemp);
 	 *   | setTemperature(temperature);
 	 *
-	 * XXX *constructor* ifv van effecten van meerdere *sequentiele* *mutators*(?)
+	 * XXX *constructor* ifv van effecten van meerdere *sequentiele* 
+	 * *mutators*(?)
 	 */
 	@Raw
 	public Square(double temperature, double minTemp, double maxTemp) 
@@ -54,15 +65,15 @@ public class Square {
 	@Raw
 	public Square(double temperature) throws IllegalArgumentException {
 		this(temperature, -200, 5000);
+			//XXX cfr coding advice 9 p 68: toch bij declaratie 
+			//initialiseren?
 	}
 
 
 	//TODO: Farenheit?
 
 	/**
-	 * Returns the temperature of this Square.
-	 *
-	 * @return The temperature of this Square in degrees Celcius.
+	 * Returns the temperature of this Square in degrees Celcius.
 	 */
 	@Basic @Raw
 	public double getTemperature() {
@@ -81,6 +92,7 @@ public class Square {
 	 * This square can not have the given temperature.
 	 *   | !canHaveAsTemperature(temperature)
 	 */
+	//XXX NOT @Raw -> OK?
 	public void setTemperature(double temperature)
 			throws IllegalArgumentException {
 		if (! canHaveAsTemperature(temperature))
@@ -94,11 +106,11 @@ public class Square {
 	 * @param temperature
 	 * The temperature of this square in degrees Celcius.
 	 * @return
-	 * True iff the given temperature is not strictly lower than the lower 
-	 * temperature bound, and not strictly higher than the upper 
-	 * temperature bound.
+	 * True iff the given temperature is not strictly lower than the 
+	 * minimum temperature for this square, and not strictly higher than 
+	 * the maxmumum temperature for this square. 
 	 *   | return == (getMinTemperature() &lt;= temperature)
-	 *   |			&amp;&amp; (temperature &lt;= getMaxTemperature());
+	 *   |          &amp;&amp; (temperature &lt;= getMaxTemperature());
 	 */
 	public boolean canHaveAsTemperature(double temperature){
 		return (getMinTemperature() <= temperature)
@@ -111,6 +123,23 @@ public class Square {
 	private double temperature;
 
 
+
+	/**
+	 * Returns the minimum temperature for this square in degrees Celcius.
+	 */
+	@Basic @Raw
+	public double getMinTemperature() {
+		return minTemperature;
+	}
+	
+	/**
+	 * Returns the maximum temperature for this square in degrees Celcius.
+	 */
+	@Basic @Raw
+	public double getMaxTemperature() {
+		return maxTemperature;
+	}
+
 	/** 
 	 * Set the temperature boundaries for this square. 
 	 * 
@@ -118,6 +147,14 @@ public class Square {
 	 * The lower temperature bound for this Square in degrees Celcius.
 	 * @param max
 	 * The upper temperature bound for this Square in degrees Celcius.
+	 * @post
+	 * The new maximum temperature for this Square is equal to the given 
+	 * maximum.
+	 *   | new.getMaxTemperature() == max
+	 * @post
+	 * The new minimum temperature for this Square is equal to the given 
+	 * minimum.
+	 *   | new.getMinTemperature() == min
 	 * @throws IllegalArgumentException
 	 * The given temperature boundaries are illegal for this square.
 	 *   | ! areValidTemperatureBoundaries(min, max)
@@ -148,26 +185,6 @@ public class Square {
 	 */
 	public static boolean areValidTemperatureBoundaries(double min, double max){
 		return min <= max;
-	}
-
-	/**
-	 * Returns the minimum temperature for this square.
-	 *
-	 * @return The minimum temperature in degrees Celcius.
-	 */
-	@Basic @Raw
-	public double getMinTemperature() {
-		return minTemperature;
-	}
-	
-	/**
-	 * Returns the maximum temperature for this square.
-	 *
-	 * @return The maximum temperature in degrees Celcius.
-	 */
-	@Basic @Raw
-	public double getMaxTemperature() {
-		return maxTemperature;
 	}
 
 	/** 

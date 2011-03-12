@@ -73,7 +73,7 @@ public class Square {
 	//TODO: Farenheit?
 
 	/**
-	 * Returns the temperature of this Square in degrees Celcius.
+	 * Returns the temperature of this square in degrees Celcius.
 	 */
 	@Basic @Raw
 	public double getTemperature() {
@@ -81,7 +81,7 @@ public class Square {
 	}
 
 	/**
-	 * Sets the temperature of this Square.
+	 * Sets the temperature of this square.
 	 *
 	 * @param temperature
 	 * The new temperature in degrees Celcius.
@@ -101,7 +101,7 @@ public class Square {
 	}
 
 	/** 
-	 * Checks whether the given temperature is valid for this Square. 
+	 * Checks whether the given temperature is valid for this square. 
 	 * 
 	 * @param temperature
 	 * The temperature of this square in degrees Celcius.
@@ -144,15 +144,15 @@ public class Square {
 	 * Set the temperature limits for this square. 
 	 * 
 	 * @param min
-	 * The lower temperature limit for this Square in degrees Celcius.
+	 * The lower temperature limit for this square in degrees Celcius.
 	 * @param max
-	 * The upper temperature limit for this Square in degrees Celcius.
+	 * The upper temperature limit for this square in degrees Celcius.
 	 * @post
-	 * The new maximum temperature for this Square is equal to the given 
+	 * The new maximum temperature for this square is equal to the given 
 	 * maximum.
 	 *   | new.getMaxTemperature() == max
 	 * @post
-	 * The new minimum temperature for this Square is equal to the given 
+	 * The new minimum temperature for this square is equal to the given 
 	 * minimum.
 	 *   | new.getMinTemperature() == min
 	 * @throws IllegalArgumentException
@@ -176,9 +176,9 @@ public class Square {
 	/** 
 	 * Check whether the given limits are valid temperature limits.
 	 * @param min
-	 * The lower temperature limit for this Square in degrees Celcius.
+	 * The lower temperature limit for this square in degrees Celcius.
 	 * @param max
-	 * The upper temperature limit for this Square in degrees Celcius.
+	 * The upper temperature limit for this square in degrees Celcius.
 	 * @return
 	 * True iff the lower limit is less or equal than the upper limit.
 	 *   | result == (min &lt;= max)

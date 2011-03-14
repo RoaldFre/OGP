@@ -9,7 +9,15 @@ import be.kuleuven.cs.som.annotate.*;
  * The combination of the temperature with the minimum and maximum 
  * temperature of each square is legal.
  *   | matchesMinTemperatureMax(getMinTemperature(), getTemperature(),
- *   | 									getMaxTemperature())
+ *   | 										getMaxTemperature())
+ * @invar
+ * Each square can have its heat damage threshold temperature as its heat 
+ * damage threshold temperature.
+ *   | canHaveAsHeatDamageThreshold(getHeatDamageThreshold()) 
+ * @invar
+ * Each square has a valid heat damage step as its heat damage step.
+ *   | isValidHeatDamageStep(getHeatDamageStep()) 
+ *
  * @author Roald Frederickx
  */
 
@@ -281,13 +289,146 @@ public class Square {
 	 *   | if (getTemperature() &gt; -5)
 	 *   |     then result == 0
 	 *   | else
-	 *   |     result == (-5 - (int)getTemperature()) / 10
+	 *   |     result == 1 + (int)((-5 - getTemperature()) / 10)
 	 *   XXX can use cast in formal comment?
 	 */
 	public int coldDamage() {
-//		if (getTemperature() > -5)
+		double temp = getTemperature().temperature();
+		if (temp > -5)
 			return 0;
-		//return 1 + (-5 - (int)getTemperature()) / 10;
+		return 1 + (int)((-5 - temp) / 10);
 	}
+
+
+	/** 
+	 * Returns the heat damage associated with this square.
+	 * 
+	 * @return The damage points. One point for every "heat damage step" 
+	 * degrees the temperature of this square is above the heat damage 
+	 * threshold, rounded below.
+	 *   XXX formal definition...
+	 */
+	public int heatDamage() {
+		if (getTemperature().compareTo(heatDamageThreshold) < 0)
+			return 0;
+		double temp = getTemperature().temperature();
+		double threshold = getHeatDamageThreshold().temperature();
+		return 1 + (int)((temp - threshold) / getHeatDamageStep());
+	}
+
+	/**
+	 * Return the heat damage threshold temperature for this square.
+	 */
+	@Basic @Raw
+	public Temperature getHeatDamageThreshold() {
+		return heatDamageThreshold;
+	}
+	
+	/**
+	 * Set the heat damage threshold temperature for this square to the 
+	 * given heat damage threshold temperature.
+	 *
+	 * @param heatDamageThreshold
+	 * The new heat damage threshold temperature for this square.
+	 * @post
+	 * The new heat damage threshold temperature for this square is equal 
+	 * to the given heat damage threshold temperature.
+	 *   | new.getHeatDamageThreshold() == heatDamageThreshold
+	 * @throws IllegalArgumentException
+	 * This square cannot have the given heat damage threshold temperature 
+	 * as its heat damage threshold temperature.
+	 *   | ! canHaveAsHeatDamageThreshold(heatDamageThreshold) 
+	 */
+	@Raw
+	public void setHeatDamageThreshold(Temperature heatDamageThreshold)
+										throws IllegalArgumentException {
+		if (!canHaveAsHeatDamageThreshold(heatDamageThreshold))
+			throw new IllegalArgumentException();
+		this.heatDamageThreshold = heatDamageThreshold;
+	}
+	
+	/**
+	 * Checks whether this square can have the given heat damage threshold 
+	 * temperature as its heat damage threshold temperature.
+	 *
+	 * @param heatDamageThreshold
+	 * The heat damage threshold temperature to check.
+	 * @return
+	 * True if and only if the given heat damage threshold temperature is 
+	 * effective.
+	 *   | result == (heatDamageThreshold != null)
+	 */
+	public boolean canHaveAsHeatDamageThreshold(Temperature 
+												heatDamageThreshold) {
+		return heatDamageThreshold != null; 
+	}
+	
+	/**
+	 * Variable registering the heat damage threshold temperature for this 
+	 * square.
+	 */
+	private Temperature heatDamageThreshold;
+
+
+
+
+
+
+
+
+
+	
+	/**
+	 * Return the heat damage step for this square.
+	 */
+	@Basic @Raw
+	public double getHeatDamageStep() {
+		return heatDamageStep;
+	}
+	
+	/**
+	 * Set the heat damage step for this square to the given heat damage step.
+	 *
+	 * @param heatDamageStep
+	 * The new heat damage step for this square.
+	 * @post
+	 * The new heat damage step for this square is equal to the given heat 
+	 * damage step.
+	 *   | new.getHeatDamageStep() == heatDamageStep
+	 * @throws IllegalArgumentException
+	 * This square cannot have the given heat damage step as its heat 
+	 * damage step.
+	 *   | ! isValidHeatDamageStep(heatDamageStep) 
+	 */
+	@Raw
+	public void setHeatDamageStep(double heatDamageStep) 
+						throws IllegalArgumentException {
+		if (!isValidHeatDamageStep(heatDamageStep))
+			throw new IllegalArgumentException();
+		this.heatDamageStep = heatDamageStep;
+	}
+	
+	/**
+	 * Checks whether the given heat damage step is a valid heat damage 
+	 * step for all squares.
+	 *
+	 * @param heatDamageStep
+	 * The heat damage step to check.
+	 * @return
+	 * True if and only if the given heat damage step is strictly positive.
+	 *   | result == (heatDamageStep &gt; 0)
+	 */
+	public static boolean isValidHeatDamageStep(double heatDamageStep) {
+		return heatDamageStep > 0;
+	}
+	
+	/**
+	 * Variable registering the heat damage step for this square, expressed 
+	 * in a scale that is compatible to the Celcius or Kelvin scale.
+	 * Note that this is not an actual <i>temperature</i>, but merely a 
+	 * temperature <i>difference</i>. Hence we use a double that is 
+	 * compatible with the Celcius scale, and not an actual Temperature.
+	 */
+	private double heatDamageStep;
 }
 

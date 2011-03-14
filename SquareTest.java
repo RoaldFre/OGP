@@ -17,21 +17,29 @@ public class SquareTest {
 	private Square squareTempNeg15;
 	private Square squareTempNeg15p01;
 	private Square squareTempNeg100;
+	private Square squareTemp35;
+	private Square squareTemp40;
+	private Square squareTemp49p99;
+	private Square squareTemp50;
 
 	/**
 	 * Set up a mutable test fixture.
-	 *
-	 * @post The variable squareTemp100 references a new square with a 
-	 * temperature of 100 degrees C.
 	 */
 	@Before
 	public void setUpMutableFixture() {
 		squareTemp100      = new Square(new Temperature(100));
+
 		squareTempNeg5     = new Square(new Temperature(-5));
 		squareTempNeg14p99 = new Square(new Temperature(-14.99));
 		squareTempNeg15    = new Square(new Temperature(-15));
 		squareTempNeg15p01 = new Square(new Temperature(-15.01));
 		squareTempNeg100   = new Square(new Temperature(-100));
+
+
+		squareTemp35    = new Square(new Temperature(35));
+		squareTemp40    = new Square(new Temperature(40));
+		squareTemp49p99 = new Square(new Temperature(49.99));
+		squareTemp50    = new Square(new Temperature(50));
 	}
 
 
@@ -102,6 +110,19 @@ public class SquareTest {
 		assertEquals(2, squareTempNeg15p01.coldDamage());
 		assertEquals(10,squareTempNeg100.coldDamage());
 	}
-	
+
+
+
+
+
+
+	@Test
+	public void heatDamage(){
+		assertEquals(0, squareTempNeg5.heatDamage());
+		assertEquals(1, squareTemp35.heatDamage());
+		assertEquals(1, squareTemp40.heatDamage());
+		assertEquals(1, squareTemp49p99.heatDamage());
+		assertEquals(2, squareTemp50.heatDamage());
+	}
 }
 

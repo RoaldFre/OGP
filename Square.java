@@ -15,7 +15,12 @@ import be.kuleuven.cs.som.annotate.*;
  * damage threshold temperature.
  *   | canHaveAsHeatDamageThreshold(getHeatDamageThreshold()) 
  * @invar
- * Each square has a valid heat damage step as its heat damage step.
+ * The heat damage threshold temperature that applies to all squares 
+ * must be a valid heat damage threshold temperature.
+ *   | isValidHeatDamageThreshold(getHeatDamageThreshold()) 
+ * @invar
+ * The heat damage temperature step that applies to all squares must be 
+ * a valid heat damage temperature step.
  *   | isValidHeatDamageStep(getHeatDamageStep()) 
  *
  * @author Roald Frederickx
@@ -34,9 +39,13 @@ public class Square {
 	 * @param temperature
 	 * The temperature for this new square.
 	 * @param minTemp 
-	 * The lower temperature limit for this new square.
+	 * The minimum temperature for this new square.
 	 * @param maxTemp 
-	 * The upper temperature limit for this new square.
+	 * The maximum temperature for this new square.
+	 * @param heatDamageThreshold
+	 * The heat damage threshold for this new square.
+	 * @param heatDamageStep
+	 * The heat damage step for this new square.
 	 * @post
 	 * The minimum temperature for this new square is equal to the 
 	 * given minimum temperature.
@@ -49,6 +58,14 @@ public class Square {
 	 * The temperature for this new square gets initialized to the given 
 	 * temperature (after having set the temperature limits).
 	 *   | setTemperature(temperature);
+	 * @effect
+	 * The heat damage threshold for this new square gets initialized to 
+	 * the given heat damage threshold.
+	 *   | setHeatDamageThreshold(heatDamageThreshold)
+	 * @effect
+	 * The heat damage step for this new square gets initialized to 
+	 * the given heat damage step.
+	 *   | setHeatDamageStep(heatDamageStep)
 	 * @throws IllegalArgumentException
 	 * One of the temperature limits is not effective.
 	 *   | minTemp == null || maxTemp == null
@@ -70,32 +87,37 @@ public class Square {
 	 *   | setTemperature(temperature);
 	 */
 	@Raw
-	public Square(Temperature temperature, Temperature minTemp,
-				Temperature maxTemp) throws IllegalArgumentException {
+	public Square(Temperature temperature,
+				Temperature minTemp, Temperature maxTemp,
+				Temperature heatDamageThreshold, double heatDamageStep)
+						throws IllegalArgumentException {
 		if (minTemp == null || maxTemp == null)
 			throw new IllegalArgumentException();
 		minTemperature = minTemp;
 		maxTemperature = maxTemp;
 		setTemperature(temperature);
+		setHeatDamageThreshold(heatDamageThreshold);
+		setHeatDamageStep(heatDamageStep);
 	}
 
 	/** 
 	 * Initialize this new square to a square with the given temperature, 
 	 * and temperature limits. 
-	 * The minimum temperature gets initialized to -200C and the maximum 
-	 * temperature to 5000C.
 	 *
 	 * @param temperature
 	 * The temperature for this new square.
 	 * @effect
 	 * This new square is initialized with the given temperature as 
 	 * its temperature, -200C as its minimum temperature and 5000C as 
-	 * its maximum temperature.
-	 *   | this(temperature, -200, 5000)
+	 * its maximum temperature. The heat damage threshold and step are 
+	 * 35C and 15C, respectively.
+	 *   | this(temperature, new Temperature(-200), new Temperature(5000),
+	 *   |		new Temperature(35), 15)
 	 */
 	@Raw
 	public Square(Temperature temperature) throws IllegalArgumentException {
-		this(temperature, new Temperature(-200), new Temperature(5000));
+		this(temperature, new Temperature(-200), new Temperature(5000),
+				new Temperature(35), 15);
 	}
 
 	/**
@@ -316,8 +338,11 @@ public class Square {
 		return 1 + (int)((temp - threshold) / getHeatDamageStep());
 	}
 
+
+
 	/**
-	 * Return the heat damage threshold temperature for this square.
+	 * Returns the heat damage threshold temperature that applies to all 
+	 * squares.
 	 */
 	@Basic @Raw
 	public Temperature getHeatDamageThreshold() {
@@ -325,31 +350,31 @@ public class Square {
 	}
 	
 	/**
-	 * Set the heat damage threshold temperature for this square to the 
-	 * given heat damage threshold temperature.
+	 * Set the heat damage threshold temperature that applies to all 
+	 * squares to the given heat damage threshold temperature.
 	 *
 	 * @param heatDamageThreshold
-	 * The new heat damage threshold temperature for this square.
+	 * The new heat damage threshold temperature for all squares. 
 	 * @post
-	 * The new heat damage threshold temperature for this square is equal 
+	 * The new heat damage threshold temperature for all squares is equal 
 	 * to the given heat damage threshold temperature.
 	 *   | new.getHeatDamageThreshold() == heatDamageThreshold
 	 * @throws IllegalArgumentException
-	 * This square cannot have the given heat damage threshold temperature 
-	 * as its heat damage threshold temperature.
-	 *   | ! canHaveAsHeatDamageThreshold(heatDamageThreshold) 
+	 * The given heat damage threshold temperature is not valid heat damage 
+	 * threshold temperature for a square
+	 *   | ! isValidHeatDamageThreshold(heatDamageThreshold) 
 	 */
 	@Raw
-	public void setHeatDamageThreshold(Temperature heatDamageThreshold)
+	public static void setHeatDamageThreshold(Temperature heatDamageThreshold) 
 										throws IllegalArgumentException {
-		if (!canHaveAsHeatDamageThreshold(heatDamageThreshold))
+		if (!isValidHeatDamageThreshold(heatDamageThreshold))
 			throw new IllegalArgumentException();
-		this.heatDamageThreshold = heatDamageThreshold;
+		Square.heatDamageThreshold = heatDamageThreshold;
 	}
 	
 	/**
-	 * Checks whether this square can have the given heat damage threshold 
-	 * temperature as its heat damage threshold temperature.
+	 * Checks whether the given heat damage threshold temperature is a 
+	 * valid heat damage threshold temperature for all squares.
 	 *
 	 * @param heatDamageThreshold
 	 * The heat damage threshold temperature to check.
@@ -358,16 +383,16 @@ public class Square {
 	 * effective.
 	 *   | result == (heatDamageThreshold != null)
 	 */
-	public boolean canHaveAsHeatDamageThreshold(Temperature 
+	public static boolean isValidHeatDamageThreshold(Temperature 
 												heatDamageThreshold) {
 		return heatDamageThreshold != null; 
 	}
 	
 	/**
-	 * Variable registering the heat damage threshold temperature for this 
-	 * square.
+	 * Variable registering the heat damage threshold temperature that 
+	 * applies to all squares.
 	 */
-	private Temperature heatDamageThreshold;
+	private static Temperature heatDamageThreshold;
 
 
 
@@ -375,45 +400,43 @@ public class Square {
 
 
 
-
-
-	
 	/**
-	 * Return the heat damage step for this square.
+	 * Returns the heat damage temperature step that applies to all squares.
 	 */
 	@Basic @Raw
-	public double getHeatDamageStep() {
+	public static double getHeatDamageStep() {
 		return heatDamageStep;
 	}
 	
 	/**
-	 * Set the heat damage step for this square to the given heat damage step.
+	 * Set the heat damage temperature step that applies to all squares to 
+	 * the given heat damage temperature step.
 	 *
 	 * @param heatDamageStep
-	 * The new heat damage step for this square.
+	 * The new heat damage temperature step for all squares. 
 	 * @post
-	 * The new heat damage step for this square is equal to the given heat 
-	 * damage step.
+	 * The new heat damage temperature step for all squares is equal to the 
+	 * given heat damage temperature step.
 	 *   | new.getHeatDamageStep() == heatDamageStep
 	 * @throws IllegalArgumentException
-	 * This square cannot have the given heat damage step as its heat 
-	 * damage step.
+	 * The given heat damage temperature step is not valid heat damage 
+	 * temperature step for a square
 	 *   | ! isValidHeatDamageStep(heatDamageStep) 
 	 */
 	@Raw
-	public void setHeatDamageStep(double heatDamageStep) 
-						throws IllegalArgumentException {
+	public static void setHeatDamageStep(double heatDamageStep) 
+				throws IllegalArgumentException {
 		if (!isValidHeatDamageStep(heatDamageStep))
 			throw new IllegalArgumentException();
-		this.heatDamageStep = heatDamageStep;
+		Square.heatDamageStep = heatDamageStep;
 	}
 	
 	/**
-	 * Checks whether the given heat damage step is a valid heat damage 
-	 * step for all squares.
+	 * Checks whether the given heat damage temperature step is a valid 
+	 * heat damage temperature step for all squares.
 	 *
 	 * @param heatDamageStep
-	 * The heat damage step to check.
+	 * The heat damage temperature step to check.
 	 * @return
 	 * True if and only if the given heat damage step is strictly positive.
 	 *   | result == (heatDamageStep &gt; 0)
@@ -423,12 +446,9 @@ public class Square {
 	}
 	
 	/**
-	 * Variable registering the heat damage step for this square, expressed 
-	 * in a scale that is compatible to the Celcius or Kelvin scale.
-	 * Note that this is not an actual <i>temperature</i>, but merely a 
-	 * temperature <i>difference</i>. Hence we use a double that is 
-	 * compatible with the Celcius scale, and not an actual Temperature.
+	 * Variable registering the heat damage temperature step that applies 
+	 * to all squares.
 	 */
-	private double heatDamageStep;
+	private static double heatDamageStep;
 }
 

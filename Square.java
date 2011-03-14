@@ -39,8 +39,11 @@ public class Square {
 	 *   | new.getMaxTemperature() == maxTemp
 	 * @effect
 	 * The temperature for this new square gets initialized to the given 
-	 * temperature.
+	 * temperature (after having set the temperature limits).
 	 *   | setTemperature(temperature);
+	 * @throws IllegalArgumentException
+	 * One of the temperature limits is not effective.
+	 *   | minTemp == null || maxTemp == null
 	 *
 	 * XXX eerst moeten de posts gebeuren alvorens je de effect tag kan/mag 
 	 * gebruiken (omdat die de min en max temp nodig heeft!)
@@ -61,6 +64,8 @@ public class Square {
 	@Raw
 	public Square(Temperature temperature, Temperature minTemp,
 				Temperature maxTemp) throws IllegalArgumentException {
+		if (minTemp == null || maxTemp == null)
+			throw new IllegalArgumentException();
 		minTemperature = minTemp;
 		maxTemperature = maxTemp;
 		setTemperature(temperature);
@@ -83,8 +88,6 @@ public class Square {
 	@Raw
 	public Square(Temperature temperature) throws IllegalArgumentException {
 		this(temperature, new Temperature(-200), new Temperature(5000));
-			//XXX cfr coding advice 9 p 68: toch bij declaratie 
-			//initialiseren?
 	}
 
 	/**
@@ -232,7 +235,7 @@ public class Square {
 
 	/**
 	 * Check whether the given temperature matches with the given 
-	 * temperature limits.
+	 * temperature limits and are effective.
 	 *
 	 * @param minTemperature 
 	 * The minimum temperature.
@@ -241,15 +244,21 @@ public class Square {
 	 * @param maxTemperature 
 	 * The maximum temperature.
 	 * @return 
-	 * True iff the given temperature lays between the given temperature 
-	 * limits.
-	 *   | result == (minTemperature &lt;= temperature)
-	 *   | 			&amp;&amp; (temperature &lt;= maxTemperature);
+	 * True iff all temperatures are effective and the given temperature 
+	 * lays between the given temperature limits.
+	 *   | result == minTemperature != null 
+	 *   |			&amp;&amp; temperature != null
+	 *   |			&amp;&amp; maxTemperature != null
+	 *   |			&amp;&amp; minTemperature.compareTo(temperature) &lt;= 0
+	 *   |			&amp;&amp; temperature.compareTo(maxTemperature) &lt;= 0;
 	 */
 	public static boolean matchesMinTemperatureMax(Temperature minTemperature,
-				Temperature temperature, Temperature maxTemperature) {
-		return (minTemperature.compareTo(temperature) <= 0)
-				&& (temperature.compareTo(maxTemperature) <= 0);
+					Temperature temperature, Temperature maxTemperature) {
+		return minTemperature != null 
+				&& temperature != null
+				&& maxTemperature != null
+				&& minTemperature.compareTo(temperature) <= 0
+				&& temperature.compareTo(maxTemperature) <= 0;
 	}
 
 	/** 
@@ -260,19 +269,21 @@ public class Square {
 	 * The upper temperature limit for this square.
 	 * @return
 	 * True iff the lower limit is less or equal than the upper limit.
-	 *   | result == (min &lt;= max)
+	 *   | result == (min != null
+	 *   |			&amp;&amp; max != null
+	 *   |			&amp;&amp; min.compareTo(max) &lt;= 0)
 	 */
-	public static boolean areValidTemperatureLimits(Temperature min, Temperature max) {
-		return min.compareTo(max) <= 0;
+	public static boolean areValidTemperatureLimits(Temperature min,
+													Temperature max) {
+		return min != null && max != null && min.compareTo(max) <= 0;
 	}
 
-
 	/** 
-	 * Variable registering the minimum temperature of this square. 
+	 * Variable referencing the minimum temperature of this square. 
 	 */
 	private Temperature minTemperature;
 	/** 
-	 * Variable registering the maximum temperature of this square. 
+	 * Variable referencing the maximum temperature of this square. 
 	 */
 	private Temperature maxTemperature;
 

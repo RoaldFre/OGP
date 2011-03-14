@@ -6,7 +6,7 @@ import be.kuleuven.cs.som.annotate.*;
  * XXX more info needed?
  *
  * @invar
- * The combination of the temperature witch the minimum and maximum 
+ * The combination of the temperature with the minimum and maximum 
  * temperature of each square is legal.
  *   | matchesMinTemperatureMax(getMinTemperature(), getTemperature(),
  *   | 									getMaxTemperature())

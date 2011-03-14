@@ -18,13 +18,13 @@ public class Temperature {
 	 *
 	 * @param temperature 
 	 * The value for this new temperature in degrees Celcius.
-	 * @post
+	 * @effect
 	 * The temperature value for this temperature gets Initialized to the 
-	 * given temperature.
-	 *   | new.temperature() == temperature
+	 * given temperature value interpreted as degrees Celcius.
+	 *   | this(temperature, Scale.CELCIUS);
 	 */
 	public Temperature(double temperature) {
-		this.temperature = temperature;
+		this(temperature, Scale.CELCIUS);
 	}
 
 	/**

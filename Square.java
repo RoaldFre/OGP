@@ -1,5 +1,6 @@
 import be.kuleuven.cs.som.annotate.*;
 
+
 /**
  * A class of squares involving a temperature and a humidity.
  * XXX more info needed?
@@ -28,15 +29,16 @@ public class Square {
 	 * @param maxTemp 
 	 * The upper temperature limit for this new square in degrees Celcius.
 	 * @post
-	 * The new minimum temperature for this new square is equal to the 
+	 * The minimum temperature for this new square is equal to the 
 	 * given minimum temperature.
 	 *   | new.getMinTemperature() == minTemp
 	 * @post
-	 * The new maximum temperature for this new square is equal to the 
+	 * The maximum temperature for this new square is equal to the 
 	 * given maximum temperature.
 	 *   | new.getMaxTemperature() == maxTemp
 	 * @effect
-	 * The temperature for tis new square gets initialized to the given temperature.
+	 * The temperature for this new square gets initialized to the given 
+	 * temperature.
 	 *   | setTemperature(temperature);
 	 *
 	 * XXX eerst moeten de posts gebeuren alvorens je de effect tag kan/mag 
@@ -86,6 +88,7 @@ public class Square {
 
 
 	//TODO: Farenheit?
+	//enum
 
 	/**
 	 * Returns the temperature of this square in degrees Celcius.
@@ -268,13 +271,11 @@ public class Square {
 
 
 	/** 
-	 * Variable registering the lower limit of the temperature of this 
-	 * square. 
+	 * Variable registering the minimum temperature of this square. 
 	 */
 	private double minTemperature;
 	/** 
-	 * Variable registering the upper limit of the temperature of this 
-	 * square. 
+	 * Variable registering the maximum temperature of this square. 
 	 */
 	private double maxTemperature;
 

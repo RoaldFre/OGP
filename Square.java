@@ -14,6 +14,7 @@ import be.kuleuven.cs.som.annotate.*;
  */
 
 public class Square {
+	//TODO: check op null zijn van temperatures
 
 	/** 
 	 * Initialize this new square to a square with the given temperature, 
@@ -23,11 +24,11 @@ public class Square {
 	 * assignment? -- make private? (can we do that?)
 	 *
 	 * @param temperature
-	 * The temperature for this new square in degrees Celcius.
+	 * The temperature for this new square.
 	 * @param minTemp 
-	 * The lower temperature limit for this new square in degrees Celcius.
+	 * The lower temperature limit for this new square.
 	 * @param maxTemp 
-	 * The upper temperature limit for this new square in degrees Celcius.
+	 * The upper temperature limit for this new square.
 	 * @post
 	 * The minimum temperature for this new square is equal to the 
 	 * given minimum temperature.
@@ -58,8 +59,8 @@ public class Square {
 	 *   | setTemperature(temperature);
 	 */
 	@Raw
-	public Square(double temperature, double minTemp, double maxTemp) 
-			throws IllegalArgumentException {
+	public Square(Temperature temperature, Temperature minTemp,
+				Temperature maxTemp) throws IllegalArgumentException {
 		minTemperature = minTemp;
 		maxTemperature = maxTemp;
 		setTemperature(temperature);
@@ -68,33 +69,29 @@ public class Square {
 	/** 
 	 * Initialize this new square to a square with the given temperature, 
 	 * and temperature limits. 
-	 * The minimum temperature gets initialized to -200 and the maximum 
-	 * temperature to 5000.
+	 * The minimum temperature gets initialized to -200C and the maximum 
+	 * temperature to 5000C.
 	 *
 	 * @param temperature
-	 * The temperature for this new square in degrees Celcius.
+	 * The temperature for this new square.
 	 * @effect
 	 * This new square is initialized with the given temperature as 
-	 * its temperature, -200 as its minimum temperature and 5000 as 
+	 * its temperature, -200C as its minimum temperature and 5000C as 
 	 * its maximum temperature.
 	 *   | this(temperature, -200, 5000)
 	 */
 	@Raw
-	public Square(double temperature) throws IllegalArgumentException {
-		this(temperature, -200, 5000);
+	public Square(Temperature temperature) throws IllegalArgumentException {
+		this(temperature, new Temperature(-200), new Temperature(5000));
 			//XXX cfr coding advice 9 p 68: toch bij declaratie 
 			//initialiseren?
 	}
 
-
-	//TODO: Farenheit?
-	//enum
-
 	/**
-	 * Returns the temperature of this square in degrees Celcius.
+	 * Returns the temperature of this square.
 	 */
 	@Basic @Raw
-	public double getTemperature() {
+	public Temperature getTemperature() {
 		return temperature;
 	}
 
@@ -102,7 +99,7 @@ public class Square {
 	 * Sets the temperature of this square.
 	 *
 	 * @param temperature
-	 * The new temperature in degrees Celcius.
+	 * The new temperature.
 	 * @post
 	 * The new temperature of this square is equal to the given temperature
 	 *   | new.getTemperature() == temperature
@@ -111,7 +108,7 @@ public class Square {
 	 *   | !canHaveAsTemperature(temperature)
 	 */
 	@Raw
-	public void setTemperature(double temperature)
+	public void setTemperature(Temperature temperature)
 			throws IllegalArgumentException {
 		if (! canHaveAsTemperature(temperature))
 			throw new IllegalArgumentException();
@@ -122,7 +119,7 @@ public class Square {
 	 * Checks whether the given temperature is valid for this square. 
 	 * 
 	 * @param temperature
-	 * The temperature of this square in degrees Celcius.
+	 * The temperature of this square.
 	 * @return
 	 * True iff the given temperature is not strictly lower than the 
 	 * minimum temperature for this square, and not strictly higher than 
@@ -130,7 +127,7 @@ public class Square {
 	 *   | result == matchesMinTemperatureMax(getMinTemperature(), 
 	 *   | 								temperature, getMaxTemperature());
 	 */
-	public boolean canHaveAsTemperature(double temperature){
+	public boolean canHaveAsTemperature(Temperature temperature){
 		return matchesMinTemperatureMax(getMinTemperature(), temperature,
 										getMaxTemperature());
 	}
@@ -138,23 +135,23 @@ public class Square {
 	/** 
 	 * Variable registering the current temperature of this square.
 	 */
-	private double temperature;
+	private Temperature temperature;
 
 
 
 	/**
-	 * Returns the minimum temperature for this square in degrees Celcius.
+	 * Returns the minimum temperature for this square.
 	 */
 	@Basic @Raw
-	public double getMinTemperature() {
+	public Temperature getMinTemperature() {
 		return minTemperature;
 	}
 	
 	/**
-	 * Returns the maximum temperature for this square in degrees Celcius.
+	 * Returns the maximum temperature for this square.
 	 */
 	@Basic @Raw
-	public double getMaxTemperature() {
+	public Temperature getMaxTemperature() {
 		return maxTemperature;
 	}
 
@@ -162,7 +159,7 @@ public class Square {
 	 * Set the minimum temperature for this square. 
 	 * 
 	 * @param min
-	 * The minimum temperature for this square in degrees Celcius.
+	 * The minimum temperature for this square.
 	 * @post
 	 * The new minimum temperature for this square is equal to the given 
 	 * minimum.
@@ -172,7 +169,7 @@ public class Square {
 	 *   | ! canHaveAsMinTemperature(min)
 	 */
 	@Raw
-	public void setMinTemperature(double min)
+	public void setMinTemperature(Temperature min)
 			throws IllegalArgumentException {
 		if (! canHaveAsMinTemperature(min))
 			throw new IllegalArgumentException();
@@ -183,7 +180,7 @@ public class Square {
 	 * Set the maximum temperature for this square. 
 	 * 
 	 * @param max
-	 * The maximum temperature for this square in degrees Celcius.
+	 * The maximum temperature for this square.
 	 * @post
 	 * The new maximum temperature for this square is equal to the given 
 	 * maximum.
@@ -193,7 +190,7 @@ public class Square {
 	 *   | ! canHaveAsMaxTemperature(max)
 	 */
 	@Raw
-	public void setMaxTemperature(double max)
+	public void setMaxTemperature(Temperature max)
 			throws IllegalArgumentException {
 		if (! canHaveAsMaxTemperature(max))
 			throw new IllegalArgumentException();
@@ -205,14 +202,14 @@ public class Square {
 	 * Checks whether this square can have the given minimum temperature as 
 	 * its minimum temperature.
 	 * @param min
-	 * The minimum temperature in degrees Celcius.
+	 * The minimum temperature.
 	 * @return 
 	 * True iff the given minimum temperature is consistent with the 
 	 * current temperature and the current maximum temperature.
 	 *   | result == matchesMinTemperatureMax(min, getTemperature(), 
 	 *   | 								getMaxTemperature())
 	 */
-	public boolean canHaveAsMinTemperature(double min) {
+	public boolean canHaveAsMinTemperature(Temperature min) {
 		return matchesMinTemperatureMax(min, getTemperature(),
 											getMaxTemperature());
 	}
@@ -221,14 +218,14 @@ public class Square {
 	 * Checks whether this square can have the given maximum temperature as 
 	 * its maximum temperature.
 	 * @param max
-	 * The maximum temperature in degrees Celcius.
+	 * The maximum temperature.
 	 * @return 
 	 * True iff the given maximum temperature is consistent with the 
 	 * current temperature and the current maximum temperature.
 	 *   | result == matchesMinTemperatureMax(getMinTemperature(),
 	 *   | 								getTemperature(), min)
 	 */
-	public boolean canHaveAsMaxTemperature(double max) {
+	public boolean canHaveAsMaxTemperature(Temperature max) {
 		return matchesMinTemperatureMax(getMinTemperature(),
 										getTemperature(), max);
 	}
@@ -238,46 +235,46 @@ public class Square {
 	 * temperature limits.
 	 *
 	 * @param minTemperature 
-	 * The minimum temperature limit in degrees Celcius.
+	 * The minimum temperature.
 	 * @param temperature 
-	 * The acutual temperature in degrees Celcius.
+	 * The acutual temperature.
 	 * @param maxTemperature 
-	 * The maximum temperature limit in degrees Celcius.
+	 * The maximum temperature.
 	 * @return 
 	 * True iff the given temperature lays between the given temperature 
 	 * limits.
 	 *   | result == (minTemperature &lt;= temperature)
 	 *   | 			&amp;&amp; (temperature &lt;= maxTemperature);
 	 */
-	public static boolean matchesMinTemperatureMax(double minTemperature,
-				double temperature, double maxTemperature) {
-		return (minTemperature <= temperature)
-				&& (temperature <= maxTemperature);
+	public static boolean matchesMinTemperatureMax(Temperature minTemperature,
+				Temperature temperature, Temperature maxTemperature) {
+		return (minTemperature.compareTo(temperature) <= 0)
+				&& (temperature.compareTo(maxTemperature) <= 0);
 	}
 
 	/** 
 	 * Check whether the given limits are valid temperature limits.
 	 * @param min
-	 * The lower temperature limit for this square in degrees Celcius.
+	 * The lower temperature limit for this square.
 	 * @param max
-	 * The upper temperature limit for this square in degrees Celcius.
+	 * The upper temperature limit for this square.
 	 * @return
 	 * True iff the lower limit is less or equal than the upper limit.
 	 *   | result == (min &lt;= max)
 	 */
-	public static boolean areValidTemperatureLimits(double min, double max) {
-		return min <= max;
+	public static boolean areValidTemperatureLimits(Temperature min, Temperature max) {
+		return min.compareTo(max) <= 0;
 	}
 
 
 	/** 
 	 * Variable registering the minimum temperature of this square. 
 	 */
-	private double minTemperature;
+	private Temperature minTemperature;
 	/** 
 	 * Variable registering the maximum temperature of this square. 
 	 */
-	private double maxTemperature;
+	private Temperature maxTemperature;
 
 
 	
@@ -294,9 +291,9 @@ public class Square {
 	 *   XXX can use cast in formal comment?
 	 */
 	public int coldDamage() {
-		if (getTemperature() > -5)
+//		if (getTemperature() > -5)
 			return 0;
-		return 1 + (-5 - (int)getTemperature()) / 10;
+		//return 1 + (-5 - (int)getTemperature()) / 10;
 	}
 }
 

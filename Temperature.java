@@ -1,0 +1,119 @@
+import be.kuleuven.cs.som.annotate.*;
+
+/** 
+ * A class representing a temperature in a variety of temperature scales.
+ */
+public class Temperature {
+
+	/**
+	 * Enumeration of all the supported scales for all temperatures.
+	 */
+	public static enum Scale {
+		CELCIUS, FAHRENHEIT, KELVIN
+	};
+
+	/**
+	 * Initialize this new temperature to a temperature with the given 
+	 * temperature value (in degrees Celcius).
+	 *
+	 * @param temperature 
+	 * The value for this new temperature in degrees Celcius.
+	 * @post
+	 * The temperature value for this temperature gets Initialized to the 
+	 * given temperature.
+	 *   | new.temperature() == temperature
+	 */
+	public Temperature(double temperature) {
+		this.temperature = temperature;
+	}
+
+	/**
+	 * Initialize this new temperature to a temperature with the given 
+	 * temperature value, in the given temperature scale.
+	 *
+	 * @param temperature 
+	 * The value for this new temperature.
+	 * @param scale 
+	 * The temperature scale of the given temperature value.
+	 * @post
+	 * The temperature value for this temperature gets Initialized to the 
+	 * given temperature.
+	 *   | new.temperature(scale) == temperature
+	 * @throws IllegalArgumentException
+	 * The given temperature scale is invalid or unknown.
+	 */
+	public Temperature(double temperature, Scale scale) {
+		switch (scale) {
+			case CELCIUS:
+				this.temperature = temperature;
+				break;
+			case KELVIN:
+				this.temperature = temperature - 273.15;
+				break;
+			case FAHRENHEIT:
+				this.temperature = (temperature - 32) * 5/9;
+				break;
+			default:
+				throw new IllegalArgumentException();
+		}
+	}
+
+	/**
+	 * Return the temperature value in degrees Celcius for this temperature.
+	 */
+	@Basic @Raw
+	public double temperature() {
+		return temperature;
+	}
+
+	/**
+	 * Return the temperature value for this temperature in 
+	 * the given scale.
+	 * @param scale
+	 * The temperature scale in which to return the temperature value.
+	 * @throws IllegalArgumentException
+	 * The given temperature scale is invalid or unknown.
+	 */
+	@Basic @Raw
+	public double temperature(Scale scale) throws IllegalArgumentException {
+		switch (scale) {
+			case CELCIUS:
+				return temperature;
+			case KELVIN:
+				return temperature + 273.15;
+			case FAHRENHEIT:
+				return temperature * 9/5 + 32;
+			default:
+				throw new IllegalArgumentException();
+		}
+	}
+	
+	/**
+	 * Variable registering the temperature (in degrees Celcius) for this 
+	 * temperature.
+	 */
+	private double temperature;	
+
+
+	/** 
+	 * Compare two temperatures.
+	 * 
+	 * @param other
+	 * The temperature to compare this temperature to.
+	 * @return
+	 * -1 if the other temperature is strictly larger (on the Celcius 
+	 *  scale), 0 if they are equal and 1 otherwise.
+	 *    | if (temperature() &lt; other.temperature())
+	 *    |     result == -1
+	 *    | else if (temperature() &gt; other.temperature())
+	 *    |     result == 1
+	 *    | else result == 0
+	 */
+	public int compareTo(Temperature other) {
+		if (temperature() < other.temperature())
+			return -1;
+		if (temperature() > other.temperature())
+			return 1;
+		return 0;
+	}
+}

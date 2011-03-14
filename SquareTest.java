@@ -26,71 +26,74 @@ public class SquareTest {
 	 */
 	@Before
 	public void setUpMutableFixture() {
-		squareTemp100      = new Square(100);
-		squareTempNeg5     = new Square(-5);
-		squareTempNeg14p99 = new Square(-14.99);
-		squareTempNeg15    = new Square(-15);
-		squareTempNeg15p01 = new Square(-15.01);
-		squareTempNeg100   = new Square(-100);
+		squareTemp100      = new Square(new Temperature(100));
+		squareTempNeg5     = new Square(new Temperature(-5));
+		squareTempNeg14p99 = new Square(new Temperature(-14.99));
+		squareTempNeg15    = new Square(new Temperature(-15));
+		squareTempNeg15p01 = new Square(new Temperature(-15.01));
+		squareTempNeg100   = new Square(new Temperature(-100));
 	}
 
 
 	@Test
 	public void setTemperature_LegalCase() {
-		squareTemp100.setTemperature(200);
-		assertEquals(200, squareTemp100.getTemperature(), 0);
+		squareTemp100.setTemperature(new Temperature(200));
+		assertEquals(200, squareTemp100.getTemperature().temperature(), 0);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setTemperature_TooHigh() throws Exception {
-		if (!squareTemp100.canHaveAsTemperature(Double.MAX_VALUE))
-			squareTemp100.setTemperature(Double.MAX_VALUE);
+		if (!squareTemp100.canHaveAsTemperature(new Temperature(Double.MAX_VALUE)))
+			squareTemp100.setTemperature(new Temperature(Double.MAX_VALUE));
 		else
 			throw new IllegalArgumentException();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setTemperature_TooLow() throws Exception {
-		if (!squareTemp100.canHaveAsTemperature(Double.MIN_VALUE))
-			squareTemp100.setTemperature(Double.MIN_VALUE);
+		if (!squareTemp100.canHaveAsTemperature(new Temperature(Double.MIN_VALUE)))
+			squareTemp100.setTemperature(new Temperature(Double.MIN_VALUE));
 		else
 			throw new IllegalArgumentException();
 	}
 
 	@Test
 	public void setMaxTemperature_LegalCase() {
-		squareTemp100.setMaxTemperature(1000);
-		assertEquals( 1000, squareTemp100.getMaxTemperature(), 0);
+		squareTemp100.setMaxTemperature(new Temperature(1000));
+		assertEquals( 1000, squareTemp100.getMaxTemperature().temperature(), 0);
 	}
 
 	@Test
 	public void setMinTemperature_LegalCase() {
-		squareTemp100.setMinTemperature(-1000);
-		assertEquals(-1000, squareTemp100.getMinTemperature(), 0);
+		squareTemp100.setMinTemperature(new Temperature(-1000));
+		assertEquals(-1000, squareTemp100.getMinTemperature().temperature(), 0);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setMaxTemperature_BelowTemp() {
-		squareTemp100.setMaxTemperature(99);
+		squareTemp100.setMaxTemperature(new Temperature(99));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setMinTemperature_AboveTemp() {
-		squareTemp100.setMinTemperature(101);
+		squareTemp100.setMinTemperature(new Temperature(101));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setMaxTemperature_BelowMin() {
-		squareTemp100.setMaxTemperature(squareTemp100.getMinTemperature() - 1);
+		Temperature lower = new Temperature(
+				squareTemp100.getMinTemperature().temperature() - 1);
+		squareTemp100.setMaxTemperature(lower);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setMinTemperature_AboveMax() {
-		squareTemp100.setMinTemperature(squareTemp100.getMaxTemperature() + 1);
+		Temperature higher = new Temperature(
+				squareTemp100.getMaxTemperature().temperature() + 1);
+		squareTemp100.setMinTemperature(higher);
 	}
 
 	@Test
-	//XXX can just bunch them in a single method with this name?
 	public void coldDamage(){
 		assertEquals(0, squareTemp100.coldDamage());
 		assertEquals(1, squareTempNeg5.coldDamage());

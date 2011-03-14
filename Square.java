@@ -262,23 +262,6 @@ public class Square {
 	}
 
 	/** 
-	 * Check whether the given limits are valid temperature limits.
-	 * @param min
-	 * The lower temperature limit for this square.
-	 * @param max
-	 * The upper temperature limit for this square.
-	 * @return
-	 * True iff the lower limit is less or equal than the upper limit.
-	 *   | result == (min != null
-	 *   |			&amp;&amp; max != null
-	 *   |			&amp;&amp; min.compareTo(max) &lt;= 0)
-	 */
-	public static boolean areValidTemperatureLimits(Temperature min,
-													Temperature max) {
-		return min != null && max != null && min.compareTo(max) <= 0;
-	}
-
-	/** 
 	 * Variable referencing the minimum temperature of this square. 
 	 */
 	private Temperature minTemperature;

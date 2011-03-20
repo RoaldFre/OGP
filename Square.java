@@ -656,8 +656,19 @@ public class Square {
 	/** 
 	 * Merge this square with the given square in the given direction. 
 	 * 
-	 * @param other 
-	 * @param direction 
+	 * @param other
+	 * The square to merge with this one.
+	 * @param direction
+	 * The direction in which to merge the squares.
+	 * @effect
+	 * The borgers get merged
+	 *   | mergeBorders(others, direction)
+	 * @effect
+	 * The humidities get merges
+	 *   | mergeHumidities(other)
+	 * @effect
+	 * The temperature get merged
+	 *   | mergeTemperatures(other)
 	 */
 	public void mergeWith(Square other, int direction)
 							throws IllegalArgumentException {

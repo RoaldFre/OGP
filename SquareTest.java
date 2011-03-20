@@ -27,19 +27,19 @@ public class SquareTest {
 	 */
 	@Before
 	public void setUpMutableFixture() {
-		squareTemp100      = new Square(new Temperature(100));
+		squareTemp100      = new Square(new Temperature(100), 5000);
 
-		squareTempNeg5     = new Square(new Temperature(-5));
-		squareTempNeg14p99 = new Square(new Temperature(-14.99));
-		squareTempNeg15    = new Square(new Temperature(-15));
-		squareTempNeg15p01 = new Square(new Temperature(-15.01));
-		squareTempNeg100   = new Square(new Temperature(-100));
+		squareTempNeg5     = new Square(new Temperature(-5), 5000);
+		squareTempNeg14p99 = new Square(new Temperature(-14.99), 5000);
+		squareTempNeg15    = new Square(new Temperature(-15), 5000);
+		squareTempNeg15p01 = new Square(new Temperature(-15.01), 5000);
+		squareTempNeg100   = new Square(new Temperature(-100), 5000);
 
 
-		squareTemp35    = new Square(new Temperature(35));
-		squareTemp40    = new Square(new Temperature(40));
-		squareTemp49p99 = new Square(new Temperature(49.99));
-		squareTemp50    = new Square(new Temperature(50));
+		squareTemp35    = new Square(new Temperature(35), 5000);
+		squareTemp40    = new Square(new Temperature(40), 5000);
+		squareTemp49p99 = new Square(new Temperature(49.99), 5000);
+		squareTemp50    = new Square(new Temperature(50), 5000);
 	}
 
 	//TODO: test constructor?

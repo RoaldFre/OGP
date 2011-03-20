@@ -2,7 +2,8 @@ import be.kuleuven.cs.som.annotate.*;
 
 
 /**
- * A class of squares involving a temperature and a humidity.
+ * A class of squares involving a temperature, a humidity and a set of 
+ * borders.
  * XXX more info needed?
  *
  * @invar
@@ -11,10 +12,6 @@ import be.kuleuven.cs.som.annotate.*;
  *   | matchesMinTemperatureMax(getMinTemperature(), getTemperature(),
  *   | 										getMaxTemperature())
  * @invar
- * Each square can have its heat damage threshold temperature as its heat 
- * damage threshold temperature.
- *   | canHaveAsHeatDamageThreshold(getHeatDamageThreshold()) 
- * @invar
  * The heat damage threshold temperature that applies to all squares 
  * must be a valid heat damage threshold temperature.
  *   | isValidHeatDamageThreshold(getHeatDamageThreshold()) 
@@ -22,20 +19,23 @@ import be.kuleuven.cs.som.annotate.*;
  * The heat damage temperature step that applies to all squares must be 
  * a valid heat damage temperature step.
  *   | isValidHeatDamageStep(getHeatDamageStep()) 
+ * @invar
+ * Each square has a valid humidity.
+ *   | isValidHumidity(getHumidity()) 
+ * @invar
+ * The weight constant for merging temperatures that applies to all 
+ * squares must be a valid weight constant for merging temperatures.
+ *   | isValidMergeTemperatureWeight(getMergeTemperatureWeight()) 
  *
  * @author Roald Frederickx
  */
 
 public class Square {
-	//TODO: check op null zijn van temperatures
-
 	/** 
-	 * Initialize this new square to a square with the given temperature, 
-	 * and temperature limits. 
+	 * Initialize this new square to a square with the given temperature,
+	 * temperature limits, heat damage parameters, humidity and 
+	 * slipperyness of the floor. 
 	 * 
-	 * XXX don't expose this one yet, as it isn't explicitly stated in 
-	 * assignment? -- make private? (can we do that?)
-	 *
 	 * @param temperature
 	 * The temperature for this new square.
 	 * @param minTemp 
@@ -46,6 +46,10 @@ public class Square {
 	 * The heat damage threshold for this new square.
 	 * @param heatDamageStep
 	 * The heat damage step for this new square.
+	 * @param humidity
+	 * The humidity for this new square.
+	 * @param hasSlipperyFloor
+	 * Whether or not this new square has a slippery floor.
 	 * @post
 	 * The minimum temperature for this new square is equal to the 
 	 * given minimum temperature.
@@ -58,6 +62,10 @@ public class Square {
 	 * The maximum temperature for this new square is equal to the 
 	 * given maximum temperature.
 	 *   | new.getMaxTemperature() == maxTemp
+	 * @post
+	 * The new square is bordered in all directions.
+	 *   | for each direction in 1..6
+	 *   | 		hasBorderAt(direction)
 	 * @effect
 	 * The heat damage threshold for this new square gets initialized to 
 	 * the given heat damage threshold.
@@ -66,6 +74,14 @@ public class Square {
 	 * The heat damage step for this new square gets initialized to 
 	 * the given heat damage step.
 	 *   | setHeatDamageStep(heatDamageStep)
+	 * @effect
+	 * The humidity for this new square gets initialized to the given 
+	 * humidity.
+	 *   | setHumidity(humidity)
+	 * @effect
+	 * The slipperyness of the floor for this new square gets initialized 
+	 * to the given slipperyness.
+	 *   | setHasSlipperyFloor(hasSlipperyFloor)
 	 * @throws IllegalArgumentException
 	 * Some of the given temperatures values are not effective, or the 
 	 * given temperature does not match with the given temperature limits.
@@ -74,7 +90,8 @@ public class Square {
 	@Raw
 	public Square(Temperature temperature,
 				Temperature minTemp, Temperature maxTemp,
-				Temperature heatDamageThreshold, double heatDamageStep)
+				Temperature heatDamageThreshold, double heatDamageStep,
+				int humidity, boolean hasSlipperyFloor)
 						throws IllegalArgumentException {
 		if (minTemp == null || maxTemp == null)
 			throw new IllegalArgumentException();
@@ -83,26 +100,33 @@ public class Square {
 		setTemperature(temperature);
 		setHeatDamageThreshold(heatDamageThreshold);
 		setHeatDamageStep(heatDamageStep);
+		setHumidity(humidity);
+		setHasSlipperyFloor(hasSlipperyFloor);
+		initializeBorders();
 	}
 
 	/** 
 	 * Initialize this new square to a square with the given temperature, 
-	 * and temperature limits. 
+	 * and humidity. 
 	 *
 	 * @param temperature
 	 * The temperature for this new square.
+	 * @param humidity
+	 * The humidity for this new square.
 	 * @effect
 	 * This new square is initialized with the given temperature as 
-	 * its temperature, -200C as its minimum temperature and 5000C as 
-	 * its maximum temperature. The heat damage threshold and step are 
-	 * 35C and 15C, respectively.
+	 * its temperature, the given humidity as its humidity,  -200C as its 
+	 * minimum temperature and 5000C as its maximum temperature. The heat 
+	 * damage threshold and step are 35C and 15C, respectively. The floor 
+	 * is not slippery.
 	 *   | this(temperature, new Temperature(-200), new Temperature(5000),
-	 *   |		new Temperature(35), 15)
+	 *   |		new Temperature(35), 15.0, humidity, false)
 	 */
 	@Raw
-	public Square(Temperature temperature) throws IllegalArgumentException {
+	public Square(Temperature temperature, int humidity) 
+							throws IllegalArgumentException {
 		this(temperature, new Temperature(-200), new Temperature(5000),
-				new Temperature(35), 15);
+				new Temperature(35), 15.0, humidity, false);
 	}
 
 	/**
@@ -442,5 +466,344 @@ public class Square {
 	//analogous to Temperature to work with different temperature scales, 
 	//but that seems to be overkill for this assignment.
 	private static double heatDamageStep;
+
+
+
+
+
+	/**
+	 * Return the humidity for this square.
+	 */
+	@Basic @Raw
+	public int getHumidity() {
+		return humidity;
+	}
+	
+	/**
+	 * Set the humidity for this square to the given humidity.
+	 *
+	 * @param humidity
+	 * The new humidity for this square.
+	 * @pre
+	 * The given humidity must be a valid humidity for this square.
+	 *   | isValidHumidity(humidity) 
+	 * @post
+	 * The new humidity for this square is equal to the given humidity.
+	 *   | new.getHumidity() == humidity
+	 */
+	@Raw
+	public void setHumidity(int humidity) throws IllegalArgumentException {
+		this.humidity = humidity;
+	}
+	
+	/**
+	 * Checks whether the given humidity is a valid humidity for a square.
+	 *
+	 * @param humidity
+	 * The humidity to check.
+	 * @return
+	 * True if and only if the given value is not strictly less than 0 and not 
+	 * strictly larger than 10000.
+	 *   | result == (0 &lt;= humidity) &amp;&amp; (humidity &lt;= 10000);
+	 */
+	public static boolean isValidHumidity(int humidity) {
+		return (0 <= humidity) && (humidity <= 10000);
+	}
+	
+	/**
+	 * Variable registering the humidity for this square, expressed in 
+	 * hundredths of percent.
+	 * Zero denotes 0% humidity, 10000 denotes 100% humidity.
+	 */
+	private int humidity;
+
+
+	/** 
+	 * Returns the rust damage associated with this square.
+	 * 
+	 * @return
+	 * The rust damage associated with this square.
+	 *   | if (getHumidity() &lt; 3000
+	 *   |		then result == 0
+	 *   |		else result == (getHumidity() - 3000) / 700
+	 */
+	public int rustDamage() {
+		if (getHumidity() < 3000)
+			return 0;
+		return (getHumidity() - 3000) / 700;
+	}
+
+	/**
+	 * Returns whether or not this square is slippery at the moment.
+	 * 
+	 * @return
+	 * Whether or not this square is slippery at the moment.
+	 */
+	public boolean isSlippery() {
+		if (hasSlipperyFloor())
+			return true;
+		if (getHumidity() == 10000 && getTemperature().temperature() > 0)
+			return true;
+		return (getTemperature().temperature() < 0 && getHumidity() > 1000);
+	}
+
+	/**
+	 * Return the slipperyness of the floor for this square.
+	 */
+	@Basic @Raw
+	public boolean hasSlipperyFloor() {
+		return hasSlipperyFloor;
+	}
+	
+	/**
+	 * Set the slipperyness of the floor for this square.
+	 *
+	 * @param hasSlipperyFloor
+	 * The new slipperyness of the floor for this square.
+	 * @post
+	 * The new slipperyness of the floor for this square is equal to the 
+	 * given slipperyness of the floor.
+	 *   | new.hasSlipperyFloor() == hasSlipperyFloor
+	 */
+	@Raw
+	public void setHasSlipperyFloor(boolean hasSlipperyFloor) {
+		this.hasSlipperyFloor = hasSlipperyFloor;
+	}
+	
+	/**
+	 * Variable registering the slipperyness of the floor for this square.
+	 */
+	private boolean hasSlipperyFloor;
+
+
+
+
+	/** 
+	 * Return the inhabitability associated with this square. 
+	 * 
+	 * @return
+	 * The inhabitability associated with this square.
+	 */
+	public double inhabitability() {
+		double heatDam = heatDamage();
+		double heatDamCubed = heatDam * heatDam * heatDam;
+		double coldDam = coldDamage();
+		double humidityPercent = getHumidity();
+
+		return -1 * Math.sqrt(heatDamCubed / (101 - humidityPercent))
+					-Math.sqrt(coldDam);
+	}
+
+
+
+
+	
+	/** 
+	 * Return whether or not this square is borderd in the given direction.
+	 * 
+	 * @param direction 
+	 * The direction to check for a border.
+	 */
+	@Basic
+	public boolean hasBorderAt(int direction) {
+		if (!isValidDirection(direction))
+			return false;
+		return borders[direction - 1];
+	}
+
+	/** 
+	 * Set the border of this square for the given direction to the given 
+	 * 'boundedness'.
+	 * 
+	 * @param direction 
+	 * The direction of the border.
+	 * @param border 
+	 * The new 'boundedness' of the border.
+	 */
+	public void setBorderAt(int direction, boolean border) {
+		if (!isValidDirection(direction))
+			return;
+		borders[direction - 1] = border;
+	}
+
+	/** 
+	 * Checks whether the given direction is a valid direction for a 
+	 * border. 
+	 * 
+	 * @param direction
+	 * The direction of the border.
+	 * @return 
+	 * True iff the given value is not strictly less that 1 and not 
+	 * strictly larger than 6.
+	 *   | result == (1 &lt;= direction &amp;&amp; direction &lt;= 6)
+	 */
+	public static boolean isValidDirection(int direction) {
+		return 1 <= direction && direction <= 6;
+	}
+
+	/** 
+	 * Initialize the square to have borders in every direction. 
+	 */
+	private void initializeBorders() {
+		for (int i = 1; i <= 6; i++)
+			setBorderAt(i, true);
+	}
+
+	private boolean[] borders = new boolean[6];
+
+
+
+	/** 
+	 * Merge this square with the given square in the given direction. 
+	 * 
+	 * @param other 
+	 * @param direction 
+	 */
+	public void mergeWith(Square other, int direction)
+							throws IllegalArgumentException {
+		if (other == null)
+			throw new IllegalArgumentException();
+
+		mergeBorders(other, direction);
+		mergeHumidities(other);
+		mergeTemperatures(other);
+
+	}
+
+	/** 
+	 * Merge the borders of this square with the given square. 
+	 *
+	 * @pre
+	 * The other square is effective
+	 *   | other != null
+	 * @post
+	 * Both new squares are not bordererd in the given direction.
+	 *   | !this.hasBorderAt(direction)
+	 *   | 		&amp;&amp; !other.hasBorderAt(direction)
+	 * @throws IllegalArgumentException
+	 * The given direction is not a valid one
+	 *   | !isValidDirection(direction)
+	 */
+	public void mergeBorders(Square other, int direction)
+									throws IllegalArgumentException {
+		if (!isValidDirection(direction))
+			throw new IllegalArgumentException();
+		this.setBorderAt(direction, false);
+		other.setBorderAt(direction, false);
+	}
+	
+	/** 
+	 * Merge the humidities of this square with the given square. 
+	 *
+	 * @pre
+	 * The other square is effective
+	 *   | other != null
+	 * @post
+	 * New humidity of both squares is average of humidity of the old
+	 * squares.
+	 *   | (new this).getHumidity() == 
+	 *   |		((old this).getHumidity() + (old other).getHumidity() + 1) / 2
+	 *   | &amp;&amp;
+	 *   | (new other).getHumidity() == 
+	 *   |		((old this).getHumidity() + (old other).getHumidity() + 1) / 2
+	 */
+	public void mergeHumidities(Square other) {
+		int newHumididty = (this.getHumidity() + other.getHumidity() + 1) / 2;
+													//+1 to round correctly
+		this.setHumidity(newHumididty);
+		other.setHumidity(newHumididty);
+	}
+	
+	/** 
+	 * Merge the temperatures of this square with the given square.
+	 * 
+	 * @pre
+	 * The other square is effective
+	 *   | other != null
+	 * @post
+	 * New temperature of both squares is a weighted average of the old 
+	 * temperatures. Weight consists of a constant factor 
+	 * 'getMinTemperature()' and an additional weight (proportional to the 
+	 * humidity of the squares) to reach a total average weight of unity.
+	 */
+	public void mergeTemperatures(Square other) {
+		double thisTemp = this.getTemperature().temperature();
+		double otherTemp = other.getTemperature().temperature();
+		double averageTemp = (thisTemp + otherTemp) / 2;
+
+		double baseWeight = 1 - getMergeTemperatureWeight();
+		double thisWeight = baseWeight * thisTemp / averageTemp;
+		double otherWeight = 2 * baseWeight - thisWeight;
+
+		double weightOffset = getMergeTemperatureWeight();
+		double newTempValue = (weightOffset + thisWeight) * thisTemp
+							+ (weightOffset + otherWeight) * otherTemp;
+		Temperature newTemp = new Temperature(newTempValue);
+
+		this.setTemperature(newTemp);
+		other.setTemperature(newTemp);
+	}
+
+
+
+	
+
+	/**
+	 * Returns the weight constant for merging temperatures that applies to 
+	 * all squares.
+	 */
+	@Basic @Raw
+	public static double getMergeTemperatureWeight() {
+		return mergeTemperatureWeight;
+	}
+	
+	/**
+	 * Set the weight constant for merging temperatures that applies to all 
+	 * squares to the given weight constant for merging temperatures.
+	 *
+	 * @param mergeTemperatureWeight
+	 * The new weight constant for merging temperatures for all squares. 
+	 * @post
+	 * The new weight constant for merging temperatures for all squares is 
+	 * equal to the given weight constant for merging temperatures.
+	 *   | new.getMergeTemperatureWeight() == mergeTemperatureWeight
+	 * @throws IllegalArgumentException
+	 * The given weight constant for merging temperatures is not valid 
+	 * weight constant for merging temperatures for a square
+	 *   | ! isValidMergeTemperatureWeight(mergeTemperatureWeight) 
+	 */
+	@Raw
+	public static void setMergeTemperatureWeight(double mergeTemperatureWeight)
+										throws IllegalArgumentException {
+		if (!isValidMergeTemperatureWeight(mergeTemperatureWeight))
+			throw new IllegalArgumentException();
+		Square.mergeTemperatureWeight = mergeTemperatureWeight;
+	}
+	
+	/**
+	 * Checks whether the given weight constant for merging temperatures is 
+	 * a valid weight constant for merging temperatures for all squares.
+	 *
+	 * @param mergeTemperatureWeight
+	 * The weight constant for merging temperatures to check.
+	 * @return
+	 * True if and only if the given value is not strictly smaller than 0.1 
+	 * and not strictly larger than 0.4.
+	 *   | result == (0.1 &lt;= mergeTemperatureWeight
+	 *   |				&amp;&amp; mergeTemperatureWeight &lt;= 0.4)
+	 */
+	public static boolean isValidMergeTemperatureWeight(
+										double mergeTemperatureWeight) {
+		return (0.1 <= mergeTemperatureWeight
+					&& mergeTemperatureWeight <= 0.4);
+	}
+	
+	/**
+	 * Variable registering the weight constant for merging temperatures 
+	 * that applies to all squares.
+	 * This value sets a baseline weight when calculating the weighted 
+	 * average of the temperatures of two squares that will be merged.
+	 */
+	private static double mergeTemperatureWeight;
 }
 

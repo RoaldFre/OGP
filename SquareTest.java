@@ -124,7 +124,6 @@ public class SquareTest {
 	}
 
 
-	//TODO: test all static heatDamage stuff
 	public void setHeatDamageThreshold_LegalCase() {
 		Square.setHeatDamageThreshold(new Temperature(100));
 		assertEquals(100, Square.getHeatDamageThreshold().temperature(), 0);

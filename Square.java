@@ -51,13 +51,13 @@ public class Square {
 	 * given minimum temperature.
 	 *   | new.getMinTemperature() == minTemp
 	 * @post
+	 * The temperature for this new square is equal to the given 
+	 * temperature.
+	 *   | new.getTemperature() == temperature
+	 * @post
 	 * The maximum temperature for this new square is equal to the 
 	 * given maximum temperature.
 	 *   | new.getMaxTemperature() == maxTemp
-	 * @effect
-	 * The temperature for this new square gets initialized to the given 
-	 * temperature (after having set the temperature limits).
-	 *   | setTemperature(temperature);
 	 * @effect
 	 * The heat damage threshold for this new square gets initialized to 
 	 * the given heat damage threshold.
@@ -67,24 +67,9 @@ public class Square {
 	 * the given heat damage step.
 	 *   | setHeatDamageStep(heatDamageStep)
 	 * @throws IllegalArgumentException
-	 * One of the temperature limits is not effective.
-	 *   | minTemp == null || maxTemp == null
-	 *
-	 * XXX eerst moeten de posts gebeuren alvorens je de effect tag kan/mag 
-	 * gebruiken (omdat die de min en max temp nodig heeft!)
-	 * effect kan ook worden uitgeschreven ifv een post en een throws 
-	 * (indien !matchesMinTemperatureMax(...)), maar da's duplicatie van 
-	 * specificaties...
-	 *
-	 *
-	 *
-	 * anderzijds:
-	 * XXX *constructor* ifv van effecten van meerdere *sequentiele* 
-	 * *mutators*(?)
-	 * vb:
-	 * @effect
-	 *   | setTemperatureLimits(minTemp, maxTemp);
-	 *   | setTemperature(temperature);
+	 * Some of the given temperatures values are not effective, or the 
+	 * given temperature does not match with the given temperature limits.
+	 *   | ! matchesMinTemperatureMax(minTemp, temperature, maxTemp)
 	 */
 	@Raw
 	public Square(Temperature temperature,
@@ -154,9 +139,9 @@ public class Square {
 	 * @param temperature
 	 * The temperature of this square.
 	 * @return
-	 * True iff the given temperature is not strictly lower than the 
-	 * minimum temperature for this square, and not strictly higher than 
-	 * the maxmumum temperature for this square. 
+	 * True iff the given temperature is effective, not strictly lower than 
+	 * the minimum temperature for this square, and not strictly higher 
+	 * than the maxmumum temperature for this square.
 	 *   | result == matchesMinTemperatureMax(getMinTemperature(), 
 	 *   | 								temperature, getMaxTemperature());
 	 */
@@ -265,7 +250,7 @@ public class Square {
 
 	/**
 	 * Check whether the given temperature matches with the given 
-	 * temperature limits and are effective.
+	 * temperature limits and all given values are effective.
 	 *
 	 * @param minTemperature 
 	 * The minimum temperature.
@@ -345,7 +330,7 @@ public class Square {
 	 * squares.
 	 */
 	@Basic @Raw
-	public Temperature getHeatDamageThreshold() {
+	public static Temperature getHeatDamageThreshold() {
 		return heatDamageThreshold;
 	}
 	
@@ -446,9 +431,16 @@ public class Square {
 	}
 	
 	/**
-	 * Variable registering the heat damage temperature step that applies 
-	 * to all squares.
+	 * Variable registering the heat damage temperature step for this 
+	 * square, expressed in a scale that is compatible to the Celcius or 
+	 * Kelvin scale.
+	 * Note that this is not an actual <i>temperature</i>, but merely a 
+	 * temperature <i>difference</i>. Hence we use a double that is 
+	 * compatible with the Celcius scale, and not an actual Temperature.
 	 */
+	//We could abstract this further by defining a TemperatureDifference 
+	//analogous to Temperature to work with different temperature scales, 
+	//but that seems to be overkill for this assignment.
 	private static double heatDamageStep;
 }
 

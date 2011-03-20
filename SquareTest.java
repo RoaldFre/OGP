@@ -42,6 +42,8 @@ public class SquareTest {
 		squareTemp50    = new Square(new Temperature(50));
 	}
 
+	//TODO: test constructor?
+
 
 	@Test
 	public void setTemperature_LegalCase() {
@@ -112,10 +114,6 @@ public class SquareTest {
 	}
 
 
-
-
-
-
 	@Test
 	public void heatDamage(){
 		assertEquals(0, squareTempNeg5.heatDamage());
@@ -123,6 +121,33 @@ public class SquareTest {
 		assertEquals(1, squareTemp40.heatDamage());
 		assertEquals(1, squareTemp49p99.heatDamage());
 		assertEquals(2, squareTemp50.heatDamage());
+	}
+
+
+	//TODO: test all static heatDamage stuff
+	public void setHeatDamageThreshold_LegalCase() {
+		Square.setHeatDamageThreshold(new Temperature(100));
+		assertEquals(100, Square.getHeatDamageThreshold().temperature(), 0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setHeatDamageThreshold_Null() {
+		Square.setHeatDamageThreshold(null);
+	}
+
+	public void setHeatDamageStep_LegalCase() {
+		Square.setHeatDamageThreshold(new Temperature(100));
+		assertEquals(100, Square.getHeatDamageStep(), 0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setHeatDamageStep_Zero() {
+		Square.setHeatDamageStep(0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setHeatDamageStep_Negative() {
+		Square.setHeatDamageStep(-1);
 	}
 }
 

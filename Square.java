@@ -129,6 +129,19 @@ public class Square {
 							new Temperature(35), 15.0, humidity, false);
 	}
 
+	/** 
+	 * Initialize this new square to a default square. 
+	 *
+	 * @effect
+	 * This new square is initialized as a square with a temperature of 20C 
+	 * and a humidity of 50%.
+	 *   | this(new Temperature(20), 5000);
+	 */
+	@Raw
+	public Square() {
+		this(new Temperature(20), 5000);
+	}
+
 	/**
 	 * Returns the temperature of this square.
 	 */

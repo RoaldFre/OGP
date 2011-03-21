@@ -4,7 +4,8 @@ import be.kuleuven.cs.som.annotate.*;
 /**
  * A class of squares involving a temperature, a humidity and a set of 
  * borders.
- * XXX more info needed?
+ * Each square also has as assocated cold damage, heat damage, rust damage, 
+ * slipperiness and inhabitability.
  *
  * @invar
  * The combination of the temperature with the minimum and maximum 
@@ -34,7 +35,7 @@ public class Square {
 	/** 
 	 * Initialize this new square to a square with the given temperature,
 	 * temperature limits, heat damage parameters, humidity and 
-	 * slipperyness of the floor. 
+	 * slipperiness of the floor. 
 	 * 
 	 * @param temperature
 	 * The temperature for this new square.
@@ -62,10 +63,6 @@ public class Square {
 	 * The maximum temperature for this new square is equal to the 
 	 * given maximum temperature.
 	 *   | new.getMaxTemperature() == maxTemp
-	 * @post
-	 * The new square is bordered in all directions.
-	 *   | for each direction in 1..6
-	 *   | 		hasBorderAt(direction)
 	 * @effect
 	 * The heat damage threshold for this new square gets initialized to 
 	 * the given heat damage threshold.
@@ -79,9 +76,12 @@ public class Square {
 	 * humidity.
 	 *   | setHumidity(humidity)
 	 * @effect
-	 * The slipperyness of the floor for this new square gets initialized 
-	 * to the given slipperyness.
+	 * The slipperiness of the floor for this new square gets initialized 
+	 * to the given slipperiness.
 	 *   | setHasSlipperyFloor(hasSlipperyFloor)
+	 * @effect
+	 * The new square is bordered in all directions.
+	 *   | initializeBorders();
 	 * @throws IllegalArgumentException
 	 * Some of the given temperatures values are not effective, or the 
 	 * given temperature does not match with the given temperature limits.
@@ -89,10 +89,10 @@ public class Square {
 	 */
 	@Raw
 	public Square(Temperature temperature,
-				Temperature minTemp, Temperature maxTemp,
-				Temperature heatDamageThreshold, double heatDamageStep,
-				int humidity, boolean hasSlipperyFloor)
-						throws IllegalArgumentException {
+					Temperature minTemp, Temperature maxTemp,
+					Temperature heatDamageThreshold, double heatDamageStep,
+					int humidity, boolean hasSlipperyFloor)
+											throws IllegalArgumentException {
 		if (minTemp == null || maxTemp == null)
 			throw new IllegalArgumentException();
 		minTemperature = minTemp;
@@ -124,9 +124,9 @@ public class Square {
 	 */
 	@Raw
 	public Square(Temperature temperature, int humidity) 
-							throws IllegalArgumentException {
+									throws IllegalArgumentException {
 		this(temperature, new Temperature(-200), new Temperature(5000),
-				new Temperature(35), 15.0, humidity, false);
+							new Temperature(35), 15.0, humidity, false);
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class Square {
 	 */
 	@Raw
 	public void setTemperature(Temperature temperature)
-			throws IllegalArgumentException {
+		throws IllegalArgumentException {
 		if (! canHaveAsTemperature(temperature))
 			throw new IllegalArgumentException();
 		this.temperature = temperature;
@@ -171,9 +171,9 @@ public class Square {
 	 */
 	public boolean canHaveAsTemperature(Temperature temperature){
 		return matchesMinTemperatureMax(getMinTemperature(), temperature,
-										getMaxTemperature());
+				getMaxTemperature());
 	}
-	
+
 	/** 
 	 * Variable registering the current temperature of this square.
 	 */
@@ -188,7 +188,7 @@ public class Square {
 	public Temperature getMinTemperature() {
 		return minTemperature;
 	}
-	
+
 	/**
 	 * Returns the maximum temperature for this square.
 	 */
@@ -212,7 +212,7 @@ public class Square {
 	 */
 	@Raw
 	public void setMinTemperature(Temperature min)
-			throws IllegalArgumentException {
+		throws IllegalArgumentException {
 		if (! canHaveAsMinTemperature(min))
 			throw new IllegalArgumentException();
 		minTemperature = min;
@@ -233,7 +233,7 @@ public class Square {
 	 */
 	@Raw
 	public void setMaxTemperature(Temperature max)
-			throws IllegalArgumentException {
+		throws IllegalArgumentException {
 		if (! canHaveAsMaxTemperature(max))
 			throw new IllegalArgumentException();
 		maxTemperature = max;
@@ -253,7 +253,7 @@ public class Square {
 	 */
 	public boolean canHaveAsMinTemperature(Temperature min) {
 		return matchesMinTemperatureMax(min, getTemperature(),
-											getMaxTemperature());
+				getMaxTemperature());
 	}
 
 	/**
@@ -269,7 +269,7 @@ public class Square {
 	 */
 	public boolean canHaveAsMaxTemperature(Temperature max) {
 		return matchesMinTemperatureMax(getMinTemperature(),
-										getTemperature(), max);
+				getTemperature(), max);
 	}
 
 	/**
@@ -292,12 +292,12 @@ public class Square {
 	 *   |			&amp;&amp; temperature.compareTo(maxTemperature) &lt;= 0;
 	 */
 	public static boolean matchesMinTemperatureMax(Temperature minTemperature,
-					Temperature temperature, Temperature maxTemperature) {
+			Temperature temperature, Temperature maxTemperature) {
 		return minTemperature != null 
-				&& temperature != null
-				&& maxTemperature != null
-				&& minTemperature.compareTo(temperature) <= 0
-				&& temperature.compareTo(maxTemperature) <= 0;
+			&& temperature != null
+			&& maxTemperature != null
+			&& minTemperature.compareTo(temperature) <= 0
+			&& temperature.compareTo(maxTemperature) <= 0;
 	}
 
 	/** 
@@ -310,18 +310,18 @@ public class Square {
 	private Temperature maxTemperature;
 
 
-	
+
 	/** 
 	 * Returns the cold damage associated with this square.
 	 * 
-	 * @return The damage points. One point for every 10 degrees the 
+	 * @return
+	 * The damage points. One point for every 10 degrees the 
 	 * temperature of this square is below -5 degrees Celcius, rounded 
 	 * below.
 	 *   | if (getTemperature() &gt; -5)
 	 *   |     then result == 0
 	 *   | else
-	 *   |     result == 1 + (int)((-5 - getTemperature()) / 10)
-	 *   XXX can use cast in formal comment?
+	 *   |     result == 1 + (int)((-5 - getTemperature().temperature()) / 10)
 	 */
 	public int coldDamage() {
 		double temp = getTemperature().temperature();
@@ -334,10 +334,13 @@ public class Square {
 	/** 
 	 * Returns the heat damage associated with this square.
 	 * 
-	 * @return The damage points. One point for every "heat damage step" 
+	 * @return
+	 * The damage points. One point for every "heat damage step" 
 	 * degrees the temperature of this square is above the heat damage 
 	 * threshold, rounded below.
-	 *   XXX formal definition...
+	 *   | result == 1 + (int)((getTemperature().temperature()
+	 *   |					- getHeatDamageThreshold().temperature())
+	 *   |									/ getHeatDamageStep())
 	 */
 	public int heatDamage() {
 		if (getTemperature().compareTo(heatDamageThreshold) < 0)
@@ -357,7 +360,7 @@ public class Square {
 	public static Temperature getHeatDamageThreshold() {
 		return heatDamageThreshold;
 	}
-	
+
 	/**
 	 * Set the heat damage threshold temperature that applies to all 
 	 * squares to the given heat damage threshold temperature.
@@ -375,12 +378,12 @@ public class Square {
 	 */
 	@Raw
 	public static void setHeatDamageThreshold(Temperature heatDamageThreshold) 
-										throws IllegalArgumentException {
+											throws IllegalArgumentException {
 		if (!isValidHeatDamageThreshold(heatDamageThreshold))
 			throw new IllegalArgumentException();
 		Square.heatDamageThreshold = heatDamageThreshold;
 	}
-	
+
 	/**
 	 * Checks whether the given heat damage threshold temperature is a 
 	 * valid heat damage threshold temperature for all squares.
@@ -393,16 +396,15 @@ public class Square {
 	 *   | result == (heatDamageThreshold != null)
 	 */
 	public static boolean isValidHeatDamageThreshold(Temperature 
-												heatDamageThreshold) {
+													heatDamageThreshold) {
 		return heatDamageThreshold != null; 
 	}
-	
+
 	/**
 	 * Variable registering the heat damage threshold temperature that 
 	 * applies to all squares.
 	 */
 	private static Temperature heatDamageThreshold;
-
 
 
 
@@ -416,7 +418,7 @@ public class Square {
 	public static double getHeatDamageStep() {
 		return heatDamageStep;
 	}
-	
+
 	/**
 	 * Set the heat damage temperature step that applies to all squares to 
 	 * the given heat damage temperature step.
@@ -434,12 +436,12 @@ public class Square {
 	 */
 	@Raw
 	public static void setHeatDamageStep(double heatDamageStep) 
-				throws IllegalArgumentException {
+										throws IllegalArgumentException {
 		if (!isValidHeatDamageStep(heatDamageStep))
 			throw new IllegalArgumentException();
 		Square.heatDamageStep = heatDamageStep;
 	}
-	
+
 	/**
 	 * Checks whether the given heat damage temperature step is a valid 
 	 * heat damage temperature step for all squares.
@@ -453,7 +455,7 @@ public class Square {
 	public static boolean isValidHeatDamageStep(double heatDamageStep) {
 		return heatDamageStep > 0;
 	}
-	
+
 	/**
 	 * Variable registering the heat damage temperature step for this 
 	 * square, expressed in a scale that is compatible to the Celcius or 
@@ -478,7 +480,7 @@ public class Square {
 	public int getHumidity() {
 		return humidity;
 	}
-	
+
 	/**
 	 * Set the humidity for this square to the given humidity.
 	 *
@@ -578,7 +580,7 @@ public class Square {
 	}
 
 	/**
-	 * Return the slipperyness of the floor for this square.
+	 * Return the slipperiness of the floor for this square.
 	 */
 	@Basic @Raw
 	public boolean hasSlipperyFloor() {
@@ -586,13 +588,13 @@ public class Square {
 	}
 	
 	/**
-	 * Set the slipperyness of the floor for this square.
+	 * Set the slipperiness of the floor for this square.
 	 *
 	 * @param hasSlipperyFloor
-	 * The new slipperyness of the floor for this square.
+	 * The new slipperiness of the floor for this square.
 	 * @post
-	 * The new slipperyness of the floor for this square is equal to the 
-	 * given slipperyness of the floor.
+	 * The new slipperiness of the floor for this square is equal to the 
+	 * given slipperiness of the floor.
 	 *   | new.hasSlipperyFloor() == hasSlipperyFloor
 	 */
 	@Raw
@@ -601,7 +603,7 @@ public class Square {
 	}
 	
 	/**
-	 * Variable registering the slipperyness of the floor for this square.
+	 * Variable registering the slipperiness of the floor for this square.
 	 */
 	private boolean hasSlipperyFloor;
 
@@ -613,15 +615,19 @@ public class Square {
 	 * 
 	 * @return
 	 * The inhabitability associated with this square.
+	 *   | result == -1 * Math.sqrt(
+	 *   |				heatDamage() * heatDamage() * heatDamage()
+	 *   |								/ (101 - getHumidity()/100.0))
+	 *   |			- Math.sqrt(coldDamage())
 	 */
 	public double inhabitability() {
 		double heatDam = heatDamage();
 		double heatDamCubed = heatDam * heatDam * heatDam;
 		double coldDam = coldDamage();
-		double humidityPercent = getHumidity();
+		double humidityPercent = getHumidity() / 100.0;
 
 		return -1 * Math.sqrt(heatDamCubed / (101 - humidityPercent))
-					-Math.sqrt(coldDam);
+					- Math.sqrt(coldDam);
 	}
 
 
@@ -647,13 +653,13 @@ public class Square {
 	 * 
 	 * @param direction 
 	 * The direction of the border.
-	 * @param border 
+	 * @param bordered
 	 * The new 'boundedness' of the border.
 	 */
-	public void setBorderAt(int direction, boolean border) {
+	public void setBorderAt(int direction, boolean bordered) {
 		if (!isValidDirection(direction))
 			return;
-		borders[direction - 1] = border;
+		borders[direction - 1] = bordered;
 	}
 
 	/** 
@@ -673,12 +679,20 @@ public class Square {
 
 	/** 
 	 * Initialize the square to have borders in every direction. 
+	 *
+	 * @post
+	 * The new square is bordered in all directions.
+	 *   | for each direction in 1..6
+	 *   | 		hasBorderAt(direction)
 	 */
 	private void initializeBorders() {
 		for (int i = 1; i <= 6; i++)
 			setBorderAt(i, true);
 	}
 
+	/** 
+	 * Variable referencing an array of borders of this square.
+	 */
 	private boolean[] borders = new boolean[6];
 
 
@@ -699,6 +713,9 @@ public class Square {
 	 * @effect
 	 * The temperature get merged
 	 *   | mergeTemperatures(other)
+	 * @throws IllegalArgumentException
+	 * The given other square is not effective.
+	 *   | other == null
 	 */
 	public void mergeWith(Square other, int direction)
 							throws IllegalArgumentException {
@@ -763,9 +780,10 @@ public class Square {
 	 *   | other != null
 	 * @post
 	 * New temperature of both squares is a weighted average of the old 
-	 * temperatures. Weight consists of a constant factor 
-	 * 'getMinTemperature()' and an additional weight (proportional to the 
-	 * humidity of the squares) to reach a total average weight of unity.
+	 * temperatures. The weights consist of a constant factor 
+	 * 'getMinTemperature()' and an additional weight, proportional to the 
+	 * humidity of the squares, to reach a total average weight of unity.
+	 *   | See implementation.
 	 */
 	public void mergeTemperatures(Square other) {
 		double thisTemp = this.getTemperature().temperature();

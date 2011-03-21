@@ -537,14 +537,44 @@ public class Square {
 	 * Returns whether or not this square is slippery at the moment.
 	 * 
 	 * @return
-	 * Whether or not this square is slippery at the moment.
+	 * True iff this square has as slippery floor, is slippery because of 
+	 * its humidity of is slippery because of its temperature.
+	 *   | result == (hasSlipperyFloor()
+	 *   |				|| isSlipperyBecauseOfTemperature()
+	 *   |				|| isSlipperyBecauseOfHumidity()
 	 */
 	public boolean isSlippery() {
-		if (hasSlipperyFloor())
-			return true;
-		if (getHumidity() == 10000 && getTemperature().temperature() > 0)
-			return true;
-		return (getTemperature().temperature() < 0 && getHumidity() > 1000);
+		return hasSlipperyFloor()
+				|| isSlipperyBecauseOfTemperature()
+				|| isSlipperyBecauseOfHumidity();
+	}
+
+	/** 
+	 * Returns whether or not this square is slippery at the moment because 
+	 * of humidity.
+	 * 
+	 * @return 
+	 * True iff the humidity is 100% and the temperature is positive (in 
+	 * degrees Celcius).
+	 *   | result == (getHumidity() == 10000
+	 *   |				&amp;&amp; getTemperature().temperature() &gt; 0)
+	 */
+	public boolean isSlipperyBecauseOfHumidity() {
+		return getHumidity() == 10000 && getTemperature().temperature() > 0;
+	}
+
+	/** 
+	 * Returns whether or not this square is slippery at the moment because 
+	 * of temperature.
+	 * 
+	 * @return
+	 * True iff the temperature is below 0 (in degrees Celcius) and the 
+	 * humidity is higher than 10%.
+	 *   | result == (getTemperature().temperature() &lt; 0 
+	 *   |				&amp;&amp; getHumidity() &gt; 1000);
+	 */
+	public boolean isSlipperyBecauseOfTemperature() {
+		return getTemperature().temperature() < 0 && getHumidity() > 1000;
 	}
 
 	/**

@@ -138,4 +138,8 @@ public class Temperature {
 	}
 
 	public static final double EQUALS_EPSILON = 1e-6;
+
+	public String toString() {
+		return temperature() + "C";
+	}
 }

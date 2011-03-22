@@ -482,6 +482,17 @@ public class Square {
 	}
 
 	/**
+	 * Return the humidity for this square, in string form.
+	 *
+	 * @return
+	 * A string representing the humidity percentage
+	 *   | result == (getHumidity() / 100 + "." + getHumidity() % 100 + "%")
+	 */
+	private String getHumidityString() {
+		return getHumidity() / 100 + "." + getHumidity() % 100 + "%";
+	}
+
+	/**
 	 * Set the humidity for this square to the given humidity.
 	 *
 	 * @param humidity
@@ -670,11 +681,12 @@ public class Square {
 	 * The direction of the border.
 	 * @return 
 	 * True iff the given value is not strictly less that 1 and not 
-	 * strictly larger than 6.
-	 *   | result == (1 &lt;= direction &amp;&amp; direction &lt;= 6)
+	 * strictly larger than NUM_BORDERS.
+	 *   | result == (1 &lt;= direction 
+	 *   |					&amp;&amp; direction &lt;= NUM_BORDERS)
 	 */
 	public static boolean isValidDirection(int direction) {
-		return 1 <= direction && direction <= 6;
+		return 1 <= direction && direction <= NUM_BORDERS;
 	}
 
 	/** 
@@ -682,18 +694,32 @@ public class Square {
 	 *
 	 * @post
 	 * The new square is bordered in all directions.
-	 *   | for each direction in 1..6
+	 *   | for each direction in 1..NUM_BORDERS
 	 *   | 		hasBorderAt(direction)
 	 */
 	private void initializeBorders() {
-		for (int i = 1; i <= 6; i++)
+		for (int i = 1; i <= NUM_BORDERS; i++)
 			setBorderAt(i, true);
 	}
 
 	/** 
+	 * Returns a string representation of the borders.
+	 */
+	private String bordersString() {
+		String result = "";
+		for (int i = 1; i <= NUM_BORDERS; i++)
+			result = result + (hasBorderAt(i) ? i : " ");
+		return result;
+	}
+
+	/** 
+	 * Variable registering the number of borders for all squares. 
+	 */
+	public static final int NUM_BORDERS = 6;
+	/** 
 	 * Variable referencing an array of borders of this square.
 	 */
-	private boolean[] borders = new boolean[6];
+	private boolean[] borders = new boolean[NUM_BORDERS];
 
 
 
@@ -866,5 +892,18 @@ public class Square {
 	 * The default value is 0.2.
 	 */
 	private static double mergeTemperatureWeight = 0.2;
+
+
+	public String toString() {
+		return  "Temperature:    " + getTemperature()
+			+ "\nHumidity:       " + getHumidityString()
+			+ "\nFloor:          " + (hasSlipperyFloor()?"":"not ")+"slippery"
+			+ "\nSlippery:       " + isSlippery()
+			+ "\nCold damage:    " + coldDamage()
+			+ "\nHeat damage:    " + heatDamage()
+			+ "\nRust damage:    " + rustDamage()
+			+ "\nInhabitability: " + inhabitability()
+			+ "\nBorders:        " + bordersString();
+	}
 }
 

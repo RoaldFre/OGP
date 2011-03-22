@@ -2,6 +2,8 @@ import be.kuleuven.cs.som.annotate.*;
 
 /** 
  * A class representing a temperature in a variety of temperature scales.
+ *
+ * @author Roald Frederickx
  */
 public class Temperature {
 

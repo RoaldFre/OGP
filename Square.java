@@ -1,6 +1,5 @@
 import be.kuleuven.cs.som.annotate.*;
 
-
 /**
  * A class of squares involving a temperature, a humidity and a set of 
  * borders.

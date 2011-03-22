@@ -34,8 +34,7 @@ import be.kuleuven.cs.som.annotate.*;
 public class Square {
 	/** 
 	 * Initialize this new square to a square with the given temperature,
-	 * temperature limits, heat damage parameters, humidity and 
-	 * slipperiness of the floor. 
+	 * temperature limits, humidity and slipperiness of the floor. 
 	 * 
 	 * @param temperature
 	 * The temperature for this new square.
@@ -43,10 +42,6 @@ public class Square {
 	 * The minimum temperature for this new square.
 	 * @param maxTemp 
 	 * The maximum temperature for this new square.
-	 * @param heatDamageThreshold
-	 * The heat damage threshold for this new square.
-	 * @param heatDamageStep
-	 * The heat damage step for this new square.
 	 * @param humidity
 	 * The humidity for this new square.
 	 * @param hasSlipperyFloor
@@ -63,14 +58,6 @@ public class Square {
 	 * The maximum temperature for this new square is equal to the 
 	 * given maximum temperature.
 	 *   | new.getMaxTemperature() == maxTemp
-	 * @effect
-	 * The heat damage threshold for this new square gets initialized to 
-	 * the given heat damage threshold.
-	 *   | setHeatDamageThreshold(heatDamageThreshold)
-	 * @effect
-	 * The heat damage step for this new square gets initialized to 
-	 * the given heat damage step.
-	 *   | setHeatDamageStep(heatDamageStep)
 	 * @effect
 	 * The humidity for this new square gets initialized to the given 
 	 * humidity.
@@ -90,7 +77,6 @@ public class Square {
 	@Raw
 	public Square(Temperature temperature,
 					Temperature minTemp, Temperature maxTemp,
-					Temperature heatDamageThreshold, double heatDamageStep,
 					int humidity, boolean hasSlipperyFloor)
 											throws IllegalArgumentException {
 		if (minTemp == null || maxTemp == null)
@@ -98,8 +84,6 @@ public class Square {
 		minTemperature = minTemp;
 		maxTemperature = maxTemp;
 		setTemperature(temperature);
-		setHeatDamageThreshold(heatDamageThreshold);
-		setHeatDamageStep(heatDamageStep);
 		setHumidity(humidity);
 		setHasSlipperyFloor(hasSlipperyFloor);
 		initializeBorders();
@@ -126,7 +110,7 @@ public class Square {
 	public Square(Temperature temperature, int humidity) 
 									throws IllegalArgumentException {
 		this(temperature, new Temperature(-200), new Temperature(5000),
-							new Temperature(35), 15.0, humidity, false);
+														humidity, false);
 	}
 
 	/** 
@@ -141,6 +125,7 @@ public class Square {
 	public Square() {
 		this(new Temperature(20), 5000);
 	}
+
 
 	/**
 	 * Returns the temperature of this square.
@@ -417,7 +402,7 @@ public class Square {
 	 * Variable registering the heat damage threshold temperature that 
 	 * applies to all squares.
 	 */
-	private static Temperature heatDamageThreshold;
+	private static Temperature heatDamageThreshold = new Temperature(35);
 
 
 
@@ -480,7 +465,7 @@ public class Square {
 	//We could abstract this further by defining a TemperatureDifference 
 	//analogous to Temperature to work with different temperature scales, 
 	//but that seems to be overkill for this assignment.
-	private static double heatDamageStep;
+	private static double heatDamageStep = 15;
 
 
 

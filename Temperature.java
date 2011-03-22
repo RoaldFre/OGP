@@ -98,7 +98,7 @@ public class Temperature {
 
 
 	/** 
-	 * Compare two temperatures.
+	 * Compare this temperature with a given temperatures.
 	 * 
 	 * @param other
 	 * The temperature to compare this temperature to.
@@ -118,4 +118,24 @@ public class Temperature {
 			return 1;
 		return 0;
 	}
+
+	/** 
+	 * Check for equality between this temperature and a given temperatures.
+	 * Note: this allows a relative error of 1e-8 in order to compensate 
+	 * for rounding errors when comparing different initial temperature scales.
+	 * 
+	 * @param other
+	 * The temperature to compare this temperature to.
+	 * @return
+	 * True iff this temperature is equal to (up to a relative error of 
+	 * EQUALS_EPSILON) to the given temperature.
+	 *   | result == (Math.abs(Temperature() - other.temperature())
+	 *   |				&lt;= temperature() * EQUALS_EPSILON)
+	 */
+	public boolean equals(Temperature other) {
+		double allowedError = temperature() * EQUALS_EPSILON;
+		return Math.abs(temperature() - other.temperature()) <= allowedError;
+	}
+
+	public static final double EQUALS_EPSILON = 1e-6;
 }

@@ -80,16 +80,18 @@ public class SquareTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setTemperature_TooHigh() throws Exception {
-		if (!square_T100_H50.canHaveAsTemperature(new Temperature(Double.MAX_VALUE)))
-			square_T100_H50.setTemperature(new Temperature(Double.MAX_VALUE));
+		double T = Double.MAX_VALUE;
+		if (!square_T100_H50.canHaveAsTemperature(new Temperature(T)))
+			square_T100_H50.setTemperature(new Temperature(T));
 		else
 			throw new IllegalArgumentException();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setTemperature_TooLow() throws Exception {
-		if (!square_T100_H50.canHaveAsTemperature(new Temperature(Double.MIN_VALUE)))
-			square_T100_H50.setTemperature(new Temperature(Double.MIN_VALUE));
+		double T = Double.MIN_VALUE;
+		if (!square_T100_H50.canHaveAsTemperature(new Temperature(T)))
+			square_T100_H50.setTemperature(new Temperature(T));
 		else
 			throw new IllegalArgumentException();
 	}
@@ -140,7 +142,6 @@ public class SquareTest {
 		assertEquals(10,square_Tneg100_H80.coldDamage());
 	}
 
-
 	@Test
 	public void heatDamage(){
 		assertEquals(0, square_Tneg5_H20.heatDamage());
@@ -149,7 +150,6 @@ public class SquareTest {
 		assertEquals(1, squareTemp49p99.heatDamage());
 		assertEquals(2, squareTemp50.heatDamage());
 	}
-
 
 	public void setHeatDamageThreshold_LegalCase() {
 		Square.setHeatDamageThreshold(new Temperature(100));
@@ -212,5 +212,33 @@ public class SquareTest {
 	public void setBorderAt() {
 		squareDefault.setBorderAt(1, true);
 		assertTrue(squareDefault.hasBorderAt(1));
+	}
+
+	@Test
+	public void mergeWith() {
+		square_T100_H50.mergeWith(square_T40_H100, 2);
+
+		assertFalse(square_T100_H50.hasBorderAt(2));
+		assertFalse(square_T40_H100.hasBorderAt(2));
+
+		assertEquals(7500, square_T100_H50.getHumidity());
+		assertEquals(7500, square_T40_H100.getHumidity());
+
+		double weightOffset = Square.getMergeTemperatureWeight();
+		Temperature newTemp = new Temperature(
+				((weightOffset + (1 - weightOffset) * 50/75) * 100
+				 + (weightOffset + (1 - weightOffset) * 100/75) * 40) / 2.0);
+		assertTrue(newTemp.equals(square_T100_H50.getTemperature()));
+		assertTrue(newTemp.equals(square_T40_H100.getTemperature()));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void mergeWith_Segfault() {
+		square_T100_H50.mergeWith(null, 1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void mergeWith_InvalidDirection() {
+		square_T100_H50.mergeWith(square_T40_H100, 0);
 	}
 }

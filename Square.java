@@ -315,7 +315,7 @@ public class Square {
 	 * The damage points. One point for every 10 degrees the 
 	 * temperature of this square is below -5 degrees Celcius, rounded 
 	 * below.
-	 *   | if (getTemperature() &gt; -5)
+	 *   | if (getTemperature().temperature() &gt; -5)
 	 *   |     then result == 0
 	 *   | else
 	 *   |     result == 1 + (int)((-5 - getTemperature().temperature()) / 10)
@@ -335,12 +335,15 @@ public class Square {
 	 * The damage points. One point for every "heat damage step" 
 	 * degrees the temperature of this square is above the heat damage 
 	 * threshold, rounded below.
-	 *   | result == 1 + (int)((getTemperature().temperature()
+	 *   | if getTemperature().compareTo(getHeatDamageThreshold()) &lt; 0
+	 *   | 		then result == 0
+	 *   | else
+	 *   | 		result == 1 + (int)((getTemperature().temperature()
 	 *   |					- getHeatDamageThreshold().temperature())
 	 *   |									/ getHeatDamageStep())
 	 */
 	public int heatDamage() {
-		if (getTemperature().compareTo(heatDamageThreshold) < 0)
+		if (getTemperature().compareTo(getHeatDamageThreshold()) < 0)
 			return 0;
 		double temp = getTemperature().temperature();
 		double threshold = getHeatDamageThreshold().temperature();
@@ -720,9 +723,9 @@ public class Square {
 			throw new IllegalArgumentException();
 
 		mergeBorders(other, direction);
-		mergeHumidities(other);
 		mergeTemperatures(other);
-
+		/* temperatures must be merged before humidities! */
+		mergeHumidities(other);
 	}
 
 	/** 
@@ -785,21 +788,22 @@ public class Square {
 	public void mergeTemperatures(Square other) {
 		double thisTemp = this.getTemperature().temperature();
 		double otherTemp = other.getTemperature().temperature();
-		double averageTemp = (thisTemp + otherTemp) / 2;
 
-		double baseWeight = 1 - getMergeTemperatureWeight();
-		double thisWeight = baseWeight * thisTemp / averageTemp;
-		double otherWeight = 2 * baseWeight - thisWeight;
+		double averageHumidity = (getHumidity() + other.getHumidity()) / 2.0;
 
 		double weightOffset = getMergeTemperatureWeight();
-		double newTempValue = (weightOffset + thisWeight) * thisTemp
-							+ (weightOffset + otherWeight) * otherTemp;
+		double baseWeight = 1 - weightOffset;
+		double thisWeight = weightOffset 
+							+ baseWeight * getHumidity() / averageHumidity;
+		double otherWeight = 2 - thisWeight;
+
+		double newTempValue = ((thisWeight) * thisTemp
+								+ (otherWeight) * otherTemp) / 2.0;
 		Temperature newTemp = new Temperature(newTempValue);
 
 		this.setTemperature(newTemp);
 		other.setTemperature(newTemp);
 	}
-
 
 
 	
@@ -859,7 +863,8 @@ public class Square {
 	 * that applies to all squares.
 	 * This value sets a baseline weight when calculating the weighted 
 	 * average of the temperatures of two squares that will be merged.
+	 * The default value is 0.2.
 	 */
-	private static double mergeTemperatureWeight;
+	private static double mergeTemperatureWeight = 0.2;
 }
 

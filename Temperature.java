@@ -44,7 +44,10 @@ public class Temperature {
 	 * @throws IllegalArgumentException
 	 * The given temperature scale is invalid or unknown.
 	 */
-	public Temperature(double temperature, Scale scale) {
+	public Temperature(double temperature, Scale scale) 
+											throws IllegalArgumentException {
+		if (scale == null)
+			throw new IllegalArgumentException();
 		switch (scale) {
 			case CELCIUS:
 				this.temperature = temperature;
@@ -56,7 +59,7 @@ public class Temperature {
 				this.temperature = (temperature - 32) * 5.0/9.0;
 				break;
 			default:
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Unknown scale");
 		}
 	}
 
@@ -78,6 +81,8 @@ public class Temperature {
 	 */
 	@Basic @Raw
 	public double temperature(Scale scale) throws IllegalArgumentException {
+		if (scale == null)
+			throw new IllegalArgumentException();
 		switch (scale) {
 			case CELCIUS:
 				return temperature;
@@ -86,7 +91,7 @@ public class Temperature {
 			case FAHRENHEIT:
 				return temperature * 9.0/5.0 + 32;
 			default:
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Unknown scale");
 		}
 	}
 	

@@ -133,6 +133,23 @@ public class Square {
 		return temperature;
 	}
 
+	/** 
+	 * Checks whether the given temperature is valid for this square. 
+	 * 
+	 * @param temperature
+	 * The temperature of this square.
+	 * @return
+	 * True iff the given temperature is effective, not strictly lower than 
+	 * the minimum temperature for this square, and not strictly higher 
+	 * than the maximum temperature for this square.
+	 *   | result == matchesMinTemperatureMax(getMinTemperature(), 
+	 *   | 								temperature, getMaxTemperature());
+	 */
+	public boolean canHaveAsTemperature(Temperature temperature){
+		return matchesMinTemperatureMax(getMinTemperature(), temperature,
+				getMaxTemperature());
+	}
+
 	/**
 	 * Sets the temperature of this square.
 	 *
@@ -154,23 +171,6 @@ public class Square {
 	}
 
 	/** 
-	 * Checks whether the given temperature is valid for this square. 
-	 * 
-	 * @param temperature
-	 * The temperature of this square.
-	 * @return
-	 * True iff the given temperature is effective, not strictly lower than 
-	 * the minimum temperature for this square, and not strictly higher 
-	 * than the maximum temperature for this square.
-	 *   | result == matchesMinTemperatureMax(getMinTemperature(), 
-	 *   | 								temperature, getMaxTemperature());
-	 */
-	public boolean canHaveAsTemperature(Temperature temperature){
-		return matchesMinTemperatureMax(getMinTemperature(), temperature,
-				getMaxTemperature());
-	}
-
-	/** 
 	 * Variable registering the current temperature of this square.
 	 */
 	private Temperature temperature;
@@ -186,11 +186,19 @@ public class Square {
 	}
 
 	/**
-	 * Returns the maximum temperature for this square.
+	 * Checks whether this square can have the given minimum temperature as 
+	 * its minimum temperature.
+	 * @param min
+	 * The minimum temperature.
+	 * @return 
+	 * True iff the given minimum temperature is consistent with the 
+	 * current temperature and the current maximum temperature.
+	 *   | result == matchesMinTemperatureMax(min, getTemperature(), 
+	 *   | 								getMaxTemperature())
 	 */
-	@Basic @Raw
-	public Temperature getMaxTemperature() {
-		return maxTemperature;
+	public boolean canHaveAsMinTemperature(Temperature min) {
+		return matchesMinTemperatureMax(min, getTemperature(),
+				getMaxTemperature());
 	}
 
 	/** 
@@ -215,6 +223,37 @@ public class Square {
 	}
 
 	/** 
+	 * Variable referencing the minimum temperature of this square. 
+	 */
+	private Temperature minTemperature;
+
+
+
+	/**
+	 * Returns the maximum temperature for this square.
+	 */
+	@Basic @Raw
+	public Temperature getMaxTemperature() {
+		return maxTemperature;
+	}
+
+	/**
+	 * Checks whether this square can have the given maximum temperature as 
+	 * its maximum temperature.
+	 * @param max
+	 * The maximum temperature.
+	 * @return 
+	 * True iff the given maximum temperature is consistent with the 
+	 * current temperature and the current maximum temperature.
+	 *   | result == matchesMinTemperatureMax(getMinTemperature(),
+	 *   | 								getTemperature(), min)
+	 */
+	public boolean canHaveAsMaxTemperature(Temperature max) {
+		return matchesMinTemperatureMax(getMinTemperature(),
+				getTemperature(), max);
+	}
+
+	/** 
 	 * Set the maximum temperature for this square. 
 	 * 
 	 * @param max
@@ -235,38 +274,11 @@ public class Square {
 		maxTemperature = max;
 	}
 
-
-	/**
-	 * Checks whether this square can have the given minimum temperature as 
-	 * its minimum temperature.
-	 * @param min
-	 * The minimum temperature.
-	 * @return 
-	 * True iff the given minimum temperature is consistent with the 
-	 * current temperature and the current maximum temperature.
-	 *   | result == matchesMinTemperatureMax(min, getTemperature(), 
-	 *   | 								getMaxTemperature())
+	/** 
+	 * Variable referencing the maximum temperature of this square. 
 	 */
-	public boolean canHaveAsMinTemperature(Temperature min) {
-		return matchesMinTemperatureMax(min, getTemperature(),
-				getMaxTemperature());
-	}
+	private Temperature maxTemperature;
 
-	/**
-	 * Checks whether this square can have the given maximum temperature as 
-	 * its maximum temperature.
-	 * @param max
-	 * The maximum temperature.
-	 * @return 
-	 * True iff the given maximum temperature is consistent with the 
-	 * current temperature and the current maximum temperature.
-	 *   | result == matchesMinTemperatureMax(getMinTemperature(),
-	 *   | 								getTemperature(), min)
-	 */
-	public boolean canHaveAsMaxTemperature(Temperature max) {
-		return matchesMinTemperatureMax(getMinTemperature(),
-				getTemperature(), max);
-	}
 
 	/**
 	 * Check whether the given temperature matches with the given 
@@ -295,16 +307,6 @@ public class Square {
 			&& minTemperature.compareTo(temperature) <= 0
 			&& temperature.compareTo(maxTemperature) <= 0;
 	}
-
-	/** 
-	 * Variable referencing the minimum temperature of this square. 
-	 */
-	private Temperature minTemperature;
-	/** 
-	 * Variable referencing the maximum temperature of this square. 
-	 */
-	private Temperature maxTemperature;
-
 
 
 	/** 
@@ -371,6 +373,22 @@ public class Square {
 	}
 
 	/**
+	 * Checks whether the given heat damage threshold temperature is a 
+	 * valid heat damage threshold temperature for all squares.
+	 *
+	 * @param heatDamageThreshold
+	 * The heat damage threshold temperature to check.
+	 * @return
+	 * True if and only if the given heat damage threshold temperature is 
+	 * effective.
+	 *   | result == (heatDamageThreshold != null)
+	 */
+	public static boolean isValidHeatDamageThreshold(Temperature 
+													heatDamageThreshold) {
+		return heatDamageThreshold != null; 
+	}
+
+	/**
 	 * Set the heat damage threshold temperature that applies to all 
 	 * squares to the given heat damage threshold temperature.
 	 *
@@ -394,29 +412,10 @@ public class Square {
 	}
 
 	/**
-	 * Checks whether the given heat damage threshold temperature is a 
-	 * valid heat damage threshold temperature for all squares.
-	 *
-	 * @param heatDamageThreshold
-	 * The heat damage threshold temperature to check.
-	 * @return
-	 * True if and only if the given heat damage threshold temperature is 
-	 * effective.
-	 *   | result == (heatDamageThreshold != null)
-	 */
-	public static boolean isValidHeatDamageThreshold(Temperature 
-													heatDamageThreshold) {
-		return heatDamageThreshold != null; 
-	}
-
-	/**
 	 * Variable registering the heat damage threshold temperature that 
 	 * applies to all squares.
 	 */
 	private static Temperature heatDamageThreshold = new Temperature(35);
-
-
-
 
 
 
@@ -426,6 +425,20 @@ public class Square {
 	@Basic @Raw
 	public static double getHeatDamageStep() {
 		return heatDamageStep;
+	}
+
+	/**
+	 * Checks whether the given heat damage temperature step is a valid 
+	 * heat damage temperature step for all squares.
+	 *
+	 * @param heatDamageStep
+	 * The heat damage temperature step to check.
+	 * @return
+	 * True if and only if the given heat damage step is strictly positive.
+	 *   | result == (heatDamageStep &gt; 0)
+	 */
+	public static boolean isValidHeatDamageStep(double heatDamageStep) {
+		return heatDamageStep > 0;
 	}
 
 	/**
@@ -452,20 +465,6 @@ public class Square {
 	}
 
 	/**
-	 * Checks whether the given heat damage temperature step is a valid 
-	 * heat damage temperature step for all squares.
-	 *
-	 * @param heatDamageStep
-	 * The heat damage temperature step to check.
-	 * @return
-	 * True if and only if the given heat damage step is strictly positive.
-	 *   | result == (heatDamageStep &gt; 0)
-	 */
-	public static boolean isValidHeatDamageStep(double heatDamageStep) {
-		return heatDamageStep > 0;
-	}
-
-	/**
 	 * Variable registering the heat damage temperature step for this 
 	 * square, expressed in a scale that is compatible to the Celcius or 
 	 * Kelvin scale.
@@ -473,12 +472,10 @@ public class Square {
 	 * temperature <i>difference</i>. Hence we use a double that is 
 	 * compatible with the Celcius scale, and not an actual Temperature.
 	 */
-	//We could abstract this further by defining a TemperatureDifference 
-	//analogous to Temperature to work with different temperature scales, 
-	//but that seems to be overkill for this assignment.
+	/* We could abstract this further by defining a TemperatureDifference 
+	 * analogous to Temperature to work with different temperature scales, 
+	 * but that seems to be overkill for this assignment. */
 	private static double heatDamageStep = 15;
-
-
 
 
 
@@ -502,6 +499,20 @@ public class Square {
 	}
 
 	/**
+	 * Checks whether the given humidity is a valid humidity for a square.
+	 *
+	 * @param humidity
+	 * The humidity to check.
+	 * @return
+	 * True if and only if the given value is not strictly less than 0 and not 
+	 * strictly larger than 10000.
+	 *   | result == (0 &lt;= humidity) &amp;&amp; (humidity &lt;= 10000);
+	 */
+	public static boolean isValidHumidity(int humidity) {
+		return (0 <= humidity) && (humidity <= 10000);
+	}
+	
+	/**
 	 * Set the humidity for this square to the given humidity.
 	 *
 	 * @param humidity
@@ -520,25 +531,12 @@ public class Square {
 	}
 	
 	/**
-	 * Checks whether the given humidity is a valid humidity for a square.
-	 *
-	 * @param humidity
-	 * The humidity to check.
-	 * @return
-	 * True if and only if the given value is not strictly less than 0 and not 
-	 * strictly larger than 10000.
-	 *   | result == (0 &lt;= humidity) &amp;&amp; (humidity &lt;= 10000);
-	 */
-	public static boolean isValidHumidity(int humidity) {
-		return (0 <= humidity) && (humidity <= 10000);
-	}
-	
-	/**
 	 * Variable registering the humidity for this square, expressed in 
 	 * hundredths of percent.
 	 * Zero denotes 0% humidity, 10000 denotes 100% humidity.
 	 */
 	private int humidity;
+
 
 
 	/** 
@@ -566,6 +564,38 @@ public class Square {
 	 * Variable registering the humidity step for rust damage.
 	 */
 	public static final int RUST_DAMAGE_STEP = 700;
+
+
+
+	/**
+	 * Return the slipperiness of the floor for this square.
+	 */
+	@Basic @Raw
+	public boolean hasSlipperyFloor() {
+		return hasSlipperyFloor;
+	}
+	
+	/**
+	 * Set the slipperiness of the floor for this square.
+	 *
+	 * @param hasSlipperyFloor
+	 * The new slipperiness of the floor for this square.
+	 * @post
+	 * The new slipperiness of the floor for this square is equal to the 
+	 * given slipperiness of the floor.
+	 *   | new.hasSlipperyFloor() == hasSlipperyFloor
+	 */
+	@Raw
+	public void setHasSlipperyFloor(boolean hasSlipperyFloor) {
+		this.hasSlipperyFloor = hasSlipperyFloor;
+	}
+	
+	/**
+	 * Variable registering the slipperiness of the floor for this square.
+	 */
+	private boolean hasSlipperyFloor;
+
+
 
 	/**
 	 * Returns whether or not this square is slippery at the moment.
@@ -602,43 +632,14 @@ public class Square {
 	 * of temperature.
 	 * 
 	 * @return
-	 * True iff the temperature is below 0 (in degrees Celcius) and the 
-	 * humidity is greater than 10%.
+	 * True iff the temperature is below 0C and the humidity is greater 
+	 * than 10%.
 	 *   | result == (getTemperature().temperature() &lt; 0 
 	 *   |				&amp;&amp; getHumidity() &gt; 1000);
 	 */
 	public boolean isSlipperyBecauseOfTemperature() {
 		return getTemperature().temperature() < 0 && getHumidity() > 1000;
 	}
-
-	/**
-	 * Return the slipperiness of the floor for this square.
-	 */
-	@Basic @Raw
-	public boolean hasSlipperyFloor() {
-		return hasSlipperyFloor;
-	}
-	
-	/**
-	 * Set the slipperiness of the floor for this square.
-	 *
-	 * @param hasSlipperyFloor
-	 * The new slipperiness of the floor for this square.
-	 * @post
-	 * The new slipperiness of the floor for this square is equal to the 
-	 * given slipperiness of the floor.
-	 *   | new.hasSlipperyFloor() == hasSlipperyFloor
-	 */
-	@Raw
-	public void setHasSlipperyFloor(boolean hasSlipperyFloor) {
-		this.hasSlipperyFloor = hasSlipperyFloor;
-	}
-	
-	/**
-	 * Variable registering the slipperiness of the floor for this square.
-	 */
-	private boolean hasSlipperyFloor;
-
 
 
 
@@ -664,8 +665,6 @@ public class Square {
 
 
 
-
-	
 	/** 
 	 * Return whether or not this square is borderd in the given direction.
 	 * 
@@ -677,21 +676,6 @@ public class Square {
 		if (!isValidDirection(direction))
 			return false;
 		return borders[direction - 1];
-	}
-
-	/** 
-	 * Set the border of this square for the given direction to the given 
-	 * 'boundedness'.
-	 * 
-	 * @param direction 
-	 * The direction of the border.
-	 * @param bordered
-	 * The new 'boundedness' of the border.
-	 */
-	public void setBorderAt(int direction, boolean bordered) {
-		if (!isValidDirection(direction))
-			return;
-		borders[direction - 1] = bordered;
 	}
 
 	/** 
@@ -708,6 +692,21 @@ public class Square {
 	 */
 	public static boolean isValidDirection(int direction) {
 		return 1 <= direction && direction <= NUM_BORDERS;
+	}
+
+	/** 
+	 * Set the border of this square for the given direction to the given 
+	 * 'boundedness'.
+	 * 
+	 * @param direction 
+	 * The direction of the border.
+	 * @param bordered
+	 * The new 'boundedness' of the border.
+	 */
+	public void setBorderAt(int direction, boolean bordered) {
+		if (!isValidDirection(direction))
+			return;
+		borders[direction - 1] = bordered;
 	}
 
 	/** 
@@ -857,7 +856,6 @@ public class Square {
 
 
 	
-
 	/**
 	 * Returns the weight constant for merging temperatures that applies to 
 	 * all squares.
@@ -865,6 +863,26 @@ public class Square {
 	@Basic @Raw
 	public static double getMergeTemperatureWeight() {
 		return mergeTemperatureWeight;
+	}
+	
+	/**
+	 * Checks whether the given weight constant for merging temperatures is 
+	 * a valid weight constant for merging temperatures for all squares.
+	 *
+	 * @param mergeTemperatureWeight
+	 * The weight constant for merging temperatures to check.
+	 * @return
+	 * True if and only if the given value is not strictly smaller than 
+	 * MIN_MERGE_TEMPERATURE_WEIGHT and not strictly larger than 
+	 * MAX_MERGE_TEMPERATURE_WEIGHT.
+	 *   | result == (MIN_MERGE_TEMPERATURE_WEIGHT &lt;= mergeTemperatureWeight
+	 *   |			&amp;&amp; 
+	 *   |			mergeTemperatureWeight &lt;= MAX_MERGE_TEMPERATURE_WEIGHT)
+	 */
+	public static boolean isValidMergeTemperatureWeight(
+										double mergeTemperatureWeight) {
+		return (MIN_MERGE_TEMPERATURE_WEIGHT <= mergeTemperatureWeight
+					&& mergeTemperatureWeight <= MAX_MERGE_TEMPERATURE_WEIGHT);
 	}
 	
 	/**
@@ -890,35 +908,6 @@ public class Square {
 		Square.mergeTemperatureWeight = mergeTemperatureWeight;
 	}
 	
-	/**
-	 * Checks whether the given weight constant for merging temperatures is 
-	 * a valid weight constant for merging temperatures for all squares.
-	 *
-	 * @param mergeTemperatureWeight
-	 * The weight constant for merging temperatures to check.
-	 * @return
-	 * True if and only if the given value is not strictly smaller than 
-	 * MIN_MERGE_TEMPERATURE_WEIGHT and not strictly larger than 
-	 * MAX_MERGE_TEMPERATURE_WEIGHT.
-	 *   | result == (MIN_MERGE_TEMPERATURE_WEIGHT &lt;= mergeTemperatureWeight
-	 *   |			&amp;&amp; 
-	 *   |			mergeTemperatureWeight &lt;= MAX_MERGE_TEMPERATURE_WEIGHT)
-	 */
-	public static boolean isValidMergeTemperatureWeight(
-										double mergeTemperatureWeight) {
-		return (MIN_MERGE_TEMPERATURE_WEIGHT <= mergeTemperatureWeight
-					&& mergeTemperatureWeight <= MAX_MERGE_TEMPERATURE_WEIGHT);
-	}
-	
-	/**
-	 * Variable registering the weight constant for merging temperatures 
-	 * that applies to all squares.
-	 * This value sets a baseline weight when calculating the weighted 
-	 * average of the temperatures of two squares that will be merged.
-	 * The default value is 0.2.
-	 */
-	private static double mergeTemperatureWeight = 0.2;
-
 	/** 
 	 * Variable registering the minimum weight constant for merging 
 	 * temperatures.
@@ -930,6 +919,16 @@ public class Square {
 	 * temperatures.
 	 */
 	public static final double MAX_MERGE_TEMPERATURE_WEIGHT = 0.4;
+
+	/**
+	 * Variable registering the weight constant for merging temperatures 
+	 * that applies to all squares.
+	 * This value sets a baseline weight when calculating the weighted 
+	 * average of the temperatures of two squares that will be merged.
+	 * The default value is 0.2.
+	 */
+	private static double mergeTemperatureWeight = 0.2;
+
 
 
 	public String toString() {

@@ -53,7 +53,7 @@ public class Temperature {
 				this.temperature = temperature - 273.15;
 				break;
 			case FAHRENHEIT:
-				this.temperature = (temperature - 32) * 5/9;
+				this.temperature = (temperature - 32) * 5.0/9.0;
 				break;
 			default:
 				throw new IllegalArgumentException();
@@ -84,7 +84,7 @@ public class Temperature {
 			case KELVIN:
 				return temperature + 273.15;
 			case FAHRENHEIT:
-				return temperature * 9/5 + 32;
+				return temperature * 9.0/5.0 + 32;
 			default:
 				throw new IllegalArgumentException();
 		}
@@ -130,15 +130,27 @@ public class Temperature {
 	 * True iff this temperature is equal to (up to a relative error of 
 	 * EQUALS_EPSILON) to the given temperature.
 	 *   | result == (Math.abs(Temperature() - other.temperature())
-	 *   |				&lt;= temperature() * EQUALS_EPSILON)
+	 *   |				&lt;= Math.abs(temperature() * EQUALS_EPSILON))
 	 */
 	public boolean equals(Temperature other) {
-		double allowedError = temperature() * EQUALS_EPSILON;
+		double allowedError = Math.abs(temperature() * EQUALS_EPSILON);
 		return Math.abs(temperature() - other.temperature()) <= allowedError;
 	}
 
+	/** 
+	 * Variable registering the maximum relative error between two 
+	 * temperatures in order to still consider them equal.
+	 */
 	public static final double EQUALS_EPSILON = 1e-6;
 
+	/** 
+	 * Returns a string representation of the temperature, in the Celcius 
+	 * scale.
+	 *
+	 * @return
+	 * A string representation of the temperature, in the Celcius scale.
+	 *   | result == (temperature() + "C")
+	 */
 	public String toString() {
 		return temperature() + "C";
 	}

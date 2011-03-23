@@ -4,6 +4,10 @@
  * @author Roald Frederickx
  */
 public class Demo {
+	
+	/** 
+	 * Demo method for the Square class.
+	 */
 	public static void main(String args[]) {
 		Square square1 = new Square(new Temperature(150), 5901);
 		square1.setHasSlipperyFloor(true);

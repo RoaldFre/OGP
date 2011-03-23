@@ -506,6 +506,7 @@ public class Square {
 	 */
 	@Raw
 	public void setHumidity(int humidity) throws IllegalArgumentException {
+		assert isValidHumidity(humidity);
 		this.humidity = humidity;
 	}
 	
@@ -770,6 +771,7 @@ public class Square {
 	 */
 	public void mergeBorders(Square other, int direction)
 									throws IllegalArgumentException {
+		assert other != null;
 		if (!isValidDirection(direction))
 			throw new IllegalArgumentException();
 		this.setBorderAt(direction, false);
@@ -792,6 +794,7 @@ public class Square {
 	 *   |		((old this).getHumidity() + (old other).getHumidity() + 1) / 2
 	 */
 	public void mergeHumidities(Square other) {
+		assert other != null;
 		int newHumididty = (this.getHumidity() + other.getHumidity() + 1) / 2;
 													//+1 to round correctly
 		this.setHumidity(newHumididty);
@@ -812,6 +815,7 @@ public class Square {
 	 *   | See implementation.
 	 */
 	public void mergeTemperatures(Square other) {
+		assert other != null;
 		double thisTemp = this.getTemperature().temperature();
 		double otherTemp = other.getTemperature().temperature();
 

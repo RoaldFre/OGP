@@ -1,3 +1,8 @@
+/**
+ * A class demonstrating the Square class.
+ *
+ * @author Roald Frederickx
+ */
 public class Demo {
 	public static void main(String args[]) {
 		Square square1 = new Square(new Temperature(150), 5901);

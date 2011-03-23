@@ -99,11 +99,10 @@ public class Square {
 	 * @effect
 	 * This new square is initialized with the given temperature as 
 	 * its temperature, the given humidity as its humidity,  -200C as its 
-	 * minimum temperature and 5000C as its maximum temperature. The heat 
-	 * damage threshold and step are 35C and 15C, respectively. The floor 
+	 * minimum temperature and 5000C as its maximum temperature. The floor 
 	 * is not slippery.
 	 *   | this(temperature, new Temperature(-200), new Temperature(5000),
-	 *   |		new Temperature(35), 15.0, humidity, false)
+	 *   |													humidity, false)
 	 */
 	@Raw
 	public Square(Temperature temperature, int humidity) 
@@ -141,7 +140,7 @@ public class Square {
 	 * The new temperature.
 	 * @post
 	 * The new temperature of this square is equal to the given temperature
-	 *   | new.getTemperature() == temperature
+	 *   | new.getTemperature().equal(temperature)
 	 * @throws IllegalArgumentException
 	 * This square can not have the given temperature.
 	 *   | !canHaveAsTemperature(temperature)
@@ -162,7 +161,7 @@ public class Square {
 	 * @return
 	 * True iff the given temperature is effective, not strictly lower than 
 	 * the minimum temperature for this square, and not strictly higher 
-	 * than the maxmumum temperature for this square.
+	 * than the maximum temperature for this square.
 	 *   | result == matchesMinTemperatureMax(getMinTemperature(), 
 	 *   | 								temperature, getMaxTemperature());
 	 */
@@ -201,8 +200,8 @@ public class Square {
 	 * The minimum temperature for this square.
 	 * @post
 	 * The new minimum temperature for this square is equal to the given 
-	 * minimum.
-	 *   | new.getMinTemperature() == min
+	 * minimum temperature.
+	 *   | new.getMinTemperature().equals(min)
 	 * @throws IllegalArgumentException
 	 * The given minimum temperature is illegal for this square.
 	 *   | ! canHaveAsMinTemperature(min)
@@ -222,8 +221,8 @@ public class Square {
 	 * The maximum temperature for this square.
 	 * @post
 	 * The new maximum temperature for this square is equal to the given 
-	 * maximum.
-	 *   | new.getMaxTemperature() == max
+	 * maximum temperature.
+	 *   | new.getMaxTemperature().equals(max)
 	 * @throws IllegalArgumentException
 	 * The given maximum temperature is illegal for this square.
 	 *   | ! canHaveAsMaxTemperature(max)
@@ -312,20 +311,30 @@ public class Square {
 	 * Returns the cold damage associated with this square.
 	 * 
 	 * @return
-	 * The damage points. One point for every 10 degrees the 
-	 * temperature of this square is below -5 degrees Celcius, rounded 
-	 * below.
-	 *   | if (getTemperature().temperature() &gt; -5)
+	 * The damage points. One point for every COLD_DAMAGE_STEP degrees 
+	 * Celcius the temperature of this square is below 
+	 * COLD_DAMAGE_THRESHOLD degrees Celcius, rounded below.
+	 *   | if (getTemperature().temperature() &gt; COLD_DAMAGE_THRESHOLD)
 	 *   |     then result == 0
 	 *   | else
-	 *   |     result == 1 + (int)((-5 - getTemperature().temperature()) / 10)
+	 *   |     result == 1 + (int)((COLD_DAMAGE_THRESHOLD
+	 *   |				- getTemperature().temperature()) / COLD_DAMAGE_STEP)
 	 */
 	public int coldDamage() {
 		double temp = getTemperature().temperature();
-		if (temp > -5)
+		if (temp > COLD_DAMAGE_THRESHOLD)
 			return 0;
-		return 1 + (int)((-5 - temp) / 10);
+		return 1 + (int)((COLD_DAMAGE_THRESHOLD - temp) / COLD_DAMAGE_STEP);
 	}
+
+	/** 
+	 * Variable registering the cold damage temperature threshold.
+	 */
+	public static final double COLD_DAMAGE_THRESHOLD = -5;
+	/** 
+	 * Variable registering the cold damage temperature step.
+	 */
+	public static final double COLD_DAMAGE_STEP = 10;
 
 
 	/** 
@@ -370,7 +379,7 @@ public class Square {
 	 * @post
 	 * The new heat damage threshold temperature for all squares is equal 
 	 * to the given heat damage threshold temperature.
-	 *   | new.getHeatDamageThreshold() == heatDamageThreshold
+	 *   | new.getHeatDamageThreshold().equals(heatDamageThreshold)
 	 * @throws IllegalArgumentException
 	 * The given heat damage threshold temperature is not valid heat damage 
 	 * threshold temperature for a square
@@ -537,21 +546,32 @@ public class Square {
 	 * 
 	 * @return
 	 * The rust damage associated with this square.
-	 *   | if (getHumidity() &lt; 3000
+	 *   | if (getHumidity() &lt; RUST_DAMAGE_THRESHOLD
 	 *   |		then result == 0
-	 *   |		else result == (getHumidity() - 3000) / 700
+	 *   |		else result == (getHumidity() - RUST_DAMAGE_THRESHOLD)
+	 *   |										/ RUST_DAMAGE_STEP
 	 */
 	public int rustDamage() {
-		if (getHumidity() < 3000)
+		if (getHumidity() < RUST_DAMAGE_THRESHOLD)
 			return 0;
-		return (getHumidity() - 3000) / 700;
+		return (getHumidity() - RUST_DAMAGE_THRESHOLD) / RUST_DAMAGE_STEP;
 	}
+
+	/** 
+	 * Variable registering the humidity threshold for rust damage.
+	 */
+
+	public static final int RUST_DAMAGE_THRESHOLD = 3000;
+	/** 
+	 * Variable registering the humidity step for rust damage.
+	 */
+	public static final int RUST_DAMAGE_STEP = 700;
 
 	/**
 	 * Returns whether or not this square is slippery at the moment.
 	 * 
 	 * @return
-	 * True iff this square has as slippery floor, is slippery because of 
+	 * True iff this square has a slippery floor, is slippery because of 
 	 * its humidity of is slippery because of its temperature.
 	 *   | result == (hasSlipperyFloor()
 	 *   |				|| isSlipperyBecauseOfTemperature()
@@ -583,7 +603,7 @@ public class Square {
 	 * 
 	 * @return
 	 * True iff the temperature is below 0 (in degrees Celcius) and the 
-	 * humidity is higher than 10%.
+	 * humidity is greater than 10%.
 	 *   | result == (getTemperature().temperature() &lt; 0 
 	 *   |				&amp;&amp; getHumidity() &gt; 1000);
 	 */
@@ -732,13 +752,13 @@ public class Square {
 	 * @param direction
 	 * The direction in which to merge the squares.
 	 * @effect
-	 * The borgers get merged
+	 * The borgers get merged.
 	 *   | mergeBorders(others, direction)
 	 * @effect
-	 * The humidities get merges
+	 * The humidities get merged.
 	 *   | mergeHumidities(other)
 	 * @effect
-	 * The temperature get merged
+	 * The temperatures get merged.
 	 *   | mergeTemperatures(other)
 	 * @throws IllegalArgumentException
 	 * The given other square is not effective.
@@ -877,15 +897,17 @@ public class Square {
 	 * @param mergeTemperatureWeight
 	 * The weight constant for merging temperatures to check.
 	 * @return
-	 * True if and only if the given value is not strictly smaller than 0.1 
-	 * and not strictly larger than 0.4.
-	 *   | result == (0.1 &lt;= mergeTemperatureWeight
-	 *   |				&amp;&amp; mergeTemperatureWeight &lt;= 0.4)
+	 * True if and only if the given value is not strictly smaller than 
+	 * MIN_MERGE_TEMPERATURE_WEIGHT and not strictly larger than 
+	 * MAX_MERGE_TEMPERATURE_WEIGHT.
+	 *   | result == (MIN_MERGE_TEMPERATURE_WEIGHT &lt;= mergeTemperatureWeight
+	 *   |			&amp;&amp; 
+	 *   |			mergeTemperatureWeight &lt;= MAX_MERGE_TEMPERATURE_WEIGHT)
 	 */
 	public static boolean isValidMergeTemperatureWeight(
 										double mergeTemperatureWeight) {
-		return (0.1 <= mergeTemperatureWeight
-					&& mergeTemperatureWeight <= 0.4);
+		return (MIN_MERGE_TEMPERATURE_WEIGHT <= mergeTemperatureWeight
+					&& mergeTemperatureWeight <= MAX_MERGE_TEMPERATURE_WEIGHT);
 	}
 	
 	/**
@@ -896,6 +918,18 @@ public class Square {
 	 * The default value is 0.2.
 	 */
 	private static double mergeTemperatureWeight = 0.2;
+
+	/** 
+	 * Variable registering the minimum weight constant for merging 
+	 * temperatures.
+	 */
+	public static final double MIN_MERGE_TEMPERATURE_WEIGHT = 0.1;
+
+	/** 
+	 * Variable registering the maximum weight constant for merging 
+	 * temperatures.
+	 */
+	public static final double MAX_MERGE_TEMPERATURE_WEIGHT = 0.4;
 
 
 	public String toString() {

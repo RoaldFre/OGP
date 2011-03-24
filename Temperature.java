@@ -11,7 +11,54 @@ public class Temperature {
 	 * Enumeration of all the supported scales for all temperatures.
 	 */
 	public static enum Scale {
-		CELCIUS, FAHRENHEIT, KELVIN
+		CELCIUS {
+			public double toCelcius(double value) {
+				return value;
+			}
+			public double fromCelcius(double value) {
+				return value;
+			}
+		},
+		KELVIN {
+			public double toCelcius(double value) {
+				return value - 273.15;
+			}
+			public double fromCelcius(double value) {
+				return value + 273.15;
+			}
+		},
+		FAHRENHEIT {
+			public double toCelcius(double value) {
+				return (value - 32) * 5.0/9.0;
+			}
+			public double fromCelcius(double value) {
+				return value * 9.0/5.0 + 32;
+			}
+		};
+
+		/** 
+		 * Returns the temperature in degrees Celcius that is equivalent to 
+		 * the given temperature in this temperature scale.
+		 * 
+		 * @param value
+		 * The temperature value in this temperature scale.
+		 * @return
+		 * The temperature in degrees Celcius that is equivalent to the 
+		 * given temperature in this temperature scale.
+		 */
+		abstract public double toCelcius(double value);
+
+		/** 
+		 * Returns the temperature value in this temperature scale that is 
+		 * equivalent to the given temperatue value in degrees Celcius. 
+		 * 
+		 * @param value
+		 * The temperature value in degrees Celcius.
+		 * @return
+		 * The temperature value in this temperature scale that is 
+		 * equivalent to the given temperatue value in degrees Celcius. 
+		 */
+		abstract public double fromCelcius(double value);
 	};
 
 	/**
@@ -42,25 +89,14 @@ public class Temperature {
 	 * given temperature.
 	 *   | new.temperature(scale) == temperature
 	 * @throws IllegalArgumentException
-	 * The given temperature scale is invalid or unknown.
+	 * The given temperature scale is not effective.
+	 *   | scale == null
 	 */
 	public Temperature(double temperature, Scale scale) 
 											throws IllegalArgumentException {
 		if (scale == null)
 			throw new IllegalArgumentException();
-		switch (scale) {
-			case CELCIUS:
-				this.temperature = temperature;
-				break;
-			case KELVIN:
-				this.temperature = temperature - 273.15;
-				break;
-			case FAHRENHEIT:
-				this.temperature = (temperature - 32) * 5.0/9.0;
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown scale");
-		}
+		this.temperature = scale.toCelcius(temperature);
 	}
 
 	/**
@@ -77,22 +113,14 @@ public class Temperature {
 	 * @param scale
 	 * The temperature scale in which to return the temperature value.
 	 * @throws IllegalArgumentException
-	 * The given temperature scale is invalid or unknown.
+	 * The given temperature scale is not effective.
+	 *   | scale == null
 	 */
 	@Basic @Raw
 	public double temperature(Scale scale) throws IllegalArgumentException {
 		if (scale == null)
 			throw new IllegalArgumentException();
-		switch (scale) {
-			case CELCIUS:
-				return temperature;
-			case KELVIN:
-				return temperature + 273.15;
-			case FAHRENHEIT:
-				return temperature * 9.0/5.0 + 32;
-			default:
-				throw new IllegalArgumentException("Unknown scale");
-		}
+		return scale.fromCelcius(temperature);
 	}
 	
 	/**
@@ -104,6 +132,8 @@ public class Temperature {
 
 	/** 
 	 * Compare this temperature with a given temperatures.
+	 * The result is valid for any temperature scale that is 'monotonically 
+	 * rising' with the Celcius scale.
 	 * 
 	 * @param other
 	 * The temperature to compare this temperature to.
@@ -126,8 +156,9 @@ public class Temperature {
 
 	/** 
 	 * Check for equality between this temperature and a given temperatures.
-	 * Note: this allows a relative error of 1e-8 in order to compensate 
-	 * for rounding errors when comparing different initial temperature scales.
+	 * Note: this allows a relative error of EQUALS_EPSILON in order to 
+	 * compensate for rounding errors when comparing different initial 
+	 * temperature scales.
 	 * 
 	 * @param other
 	 * The temperature to compare this temperature to.

@@ -379,7 +379,7 @@ public class Square {
 	 * @param heatDamageThreshold
 	 * The heat damage threshold temperature to check.
 	 * @return
-	 * True if and only if the given heat damage threshold temperature is 
+	 * True iff the given heat damage threshold temperature is 
 	 * effective.
 	 *   | result == (heatDamageThreshold != null)
 	 */
@@ -434,7 +434,7 @@ public class Square {
 	 * @param heatDamageStep
 	 * The heat damage temperature step to check.
 	 * @return
-	 * True if and only if the given heat damage step is strictly positive.
+	 * True iff the given heat damage step is strictly positive.
 	 *   | result == (heatDamageStep &gt; 0)
 	 */
 	public static boolean isValidHeatDamageStep(double heatDamageStep) {
@@ -507,7 +507,7 @@ public class Square {
 	 * @param humidity
 	 * The humidity to check.
 	 * @return
-	 * True if and only if the given value is not strictly less than 0 and not 
+	 * True iff the given value is not strictly less than 0 and not 
 	 * strictly larger than 10000.
 	 *   | result == (0 &lt;= humidity) &amp;&amp; (humidity &lt;= 10000);
 	 */
@@ -875,7 +875,7 @@ public class Square {
 	 * @param mergeTemperatureWeight
 	 * The weight constant for merging temperatures to check.
 	 * @return
-	 * True if and only if the given value is not strictly smaller than 
+	 * True iff the given value is not strictly smaller than 
 	 * MIN_MERGE_TEMPERATURE_WEIGHT and not strictly larger than 
 	 * MAX_MERGE_TEMPERATURE_WEIGHT.
 	 *   | result == (MIN_MERGE_TEMPERATURE_WEIGHT &lt;= mergeTemperatureWeight

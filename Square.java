@@ -495,7 +495,10 @@ public class Square {
 	 *   | result == (getHumidity() / 100 + "." + getHumidity() % 100 + "%")
 	 */
 	private String getHumidityString() {
-		return getHumidity() / 100 + "." + getHumidity() % 100 + "%";
+		int integerPart = getHumidity() / 100;
+		int fractionalPart = getHumidity() % 100;
+		return integerPart + "."
+				+ (fractionalPart < 10 ? "0":"") + fractionalPart + "%";
 	}
 
 	/**

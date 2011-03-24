@@ -72,6 +72,39 @@ public class SquareTest {
 		assertTrue(extended.hasSlipperyFloor());
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void extendedConstructor_NullTemp() {
+		Square extended = new Square(
+				null,
+				new Temperature(-10), new Temperature(200),
+				3000,
+				true);
+		/* do something with variable to make compiler happy */
+		assertTrue(extended.hasSlipperyFloor());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void extendedConstructor_NullMinTemp() {
+		Square extended = new Square(
+				new Temperature(25),
+				null, new Temperature(200),
+				3000,
+				true);
+		/* do something with variable to make compiler happy */
+		assertTrue(extended.hasSlipperyFloor());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void extendedConstructor_NullMaxTemp() {
+		Square extended = new Square(
+				new Temperature(25),
+				new Temperature(-10), null,
+				3000,
+				true);
+		/* do something with variable to make compiler happy */
+		assertTrue(extended.hasSlipperyFloor());
+	}
+
 	@Test
 	public void setTemperature_LegalCase() {
 		square_T100_H50.setTemperature(new Temperature(200));
@@ -176,7 +209,6 @@ public class SquareTest {
 		Square.setHeatDamageStep(-1);
 	}
 
-
 	@Test
 	public void rustDamage() {
 		assertEquals(0, square_Tneg15p01_H0.rustDamage());
@@ -209,9 +241,33 @@ public class SquareTest {
 	}
 
 	@Test
-	public void setBorderAt() {
-		squareDefault.setBorderAt(1, true);
-		assertTrue(squareDefault.hasBorderAt(1));
+	public void setBorderAt_LegalCase() {
+		squareDefault.setBorderAt(1, false);
+		assertFalse(squareDefault.hasBorderAt(1));
+	}
+
+	@Test
+	public void setBorderAt_IllegalCale() {
+		squareDefault.setBorderAt(Square.NUM_BORDERS + 1, false);
+		/* everything should remain unchanged from the defaults */
+		for (int i = 1; i <= Square.NUM_BORDERS; i++)
+			assertTrue(squareDefault.hasBorderAt(i));
+	}
+
+	@Test
+	public void hasBorderAt_IllegalCase() {
+		assertFalse(squareDefault.hasBorderAt(Square.NUM_BORDERS + 1));
+	}
+
+	@Test
+	public void setMergeTemperatureWeight_LegalCase() {
+		Square.setMergeTemperatureWeight(0.3);
+		assertEquals(0.3, Square.getMergeTemperatureWeight(), 0); 
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setMergeTemperatureWeight_IllegalCase() {
+		Square.setMergeTemperatureWeight(-1);
 	}
 
 	@Test
@@ -233,7 +289,7 @@ public class SquareTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void mergeWith_Segfault() {
+	public void mergeWith_Null() {
 		square_T100_H50.mergeWith(null, 1);
 	}
 

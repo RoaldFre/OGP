@@ -1,3 +1,5 @@
+package rpg;
+
 /**
  * A class demonstrating the Square class.
  *

@@ -530,7 +530,7 @@ public class Square {
 	 *   | new.getHumidity() == humidity
 	 */
 	@Raw
-	public void setHumidity(int humidity) throws IllegalArgumentException {
+	public void setHumidity(int humidity) {
 		assert isValidHumidity(humidity);
 		this.humidity = humidity;
 	}
@@ -827,16 +827,24 @@ public class Square {
 	
 	/** 
 	 * Merge the temperatures of this square with the given square.
+	 * The new temperature of both squares is a weighted average of the old 
+	 * temperatures. The weights consist of a constant factor 
+	 * 'getMinTemperature()' and an additional weight, proportional to the 
+	 * humidity of the squares, to reach a total average weight of unity.
 	 * 
 	 * @pre
 	 * The other square is effective
 	 *   | other != null
 	 * @post
-	 * New temperature of both squares is a weighted average of the old 
-	 * temperatures. The weights consist of a constant factor 
-	 * 'getMinTemperature()' and an additional weight, proportional to the 
-	 * humidity of the squares, to reach a total average weight of unity.
-	 *   | See implementation.
+	 * Both new squares have the same temperature.
+	 *   | new.getTemperature().equals((new other).getTemperature())
+	 * @post
+	 * The new temperature lies between the old temperatures of the 
+	 * squares.
+	 *   | new.getTemperature()
+	 *   |   &lt;= min(old.getTemperature(), (old other).getTemperature())
+	 *   | &amp;&amp; new.getTemperature()
+	 *   |   &gt;= max(old.getTemperature(), (old other).getTemperature())
 	 */
 	public void mergeTemperatures(Square other) {
 		assert other != null;
@@ -857,6 +865,8 @@ public class Square {
 
 		this.setTemperature(newTemp);
 		other.setTemperature(newTemp);
+		//XXX this can throw IllegalArgumentException if the temperature is 
+		//out of bounds for one of the squares!
 	}
 
 

@@ -8,7 +8,7 @@ import be.kuleuven.cs.som.annotate.*;
  * @author Roald Frederickx
  */
 @Value
-public class Temperature {
+public class Temperature implements Comparable<Temperature> {
 
 	/**
 	 * Enumeration of all the supported scales for all temperatures.
@@ -166,14 +166,33 @@ public class Temperature {
 	 * @param other
 	 * The temperature to compare this temperature to.
 	 * @return
-	 * True iff this temperature is equal to (up to a relative error of 
-	 * EQUALS_EPSILON) to the given temperature.
+	 * True iff the given object is an effective temperature and this 
+	 * temperature is equal to (up to a relative error of EQUALS_EPSILON) 
+	 * to the given temperature.
 	 *   | result == (Math.abs(Temperature() - other.temperature())
 	 *   |				&lt;= Math.abs(temperature() * EQUALS_EPSILON))
 	 */
-	public boolean equals(Temperature other) {
+	@Override
+	public boolean equals(Object other) {
+		if (other == null)
+			return false;
+		if (this.getClass() != other.getClass())
+			return false;
 		double allowedError = Math.abs(temperature() * EQUALS_EPSILON);
-		return Math.abs(temperature() - other.temperature()) <= allowedError;
+		return Math.abs(temperature() - ((Temperature) other).temperature())
+															<= allowedError;
+	}
+
+	/** 
+	 * Returns a hashcode for this temperature object.
+	 * 
+	 * @return
+	 * A hashcode equal to the number of milidegrees Celcius.
+	 *   | result == (int)(1000 * temperature())
+	 */
+	@Override
+	public int hashCode() {
+		return (int)(1000 * temperature());
 	}
 
 	/** 

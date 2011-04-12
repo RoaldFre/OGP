@@ -1,6 +1,7 @@
 package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
+import rpg.exceptions.*;
 
 /**
  * A class of squares involving a temperature, a humidity and a set of 
@@ -671,16 +672,17 @@ public class Square {
 
 
 	/** 
-	 * Return whether or not this square is borderd in the given direction.
+	 * Return the border of this square in the given direction.
 	 * 
 	 * @param direction 
-	 * The direction to check for a border.
+	 * The direction of the border.
+	 * @pre
+	 *   | direction != null
 	 */
 	@Basic
-	public boolean hasBorderAt(int direction) {
-		if (!isValidDirection(direction))
-			return false;
-		return borders[direction - 1];
+	public Border getBorderAt(Direction direction) {
+		assert direction != null;
+		return borders.get(direction);
 	}
 
 	/** 
@@ -707,57 +709,62 @@ public class Square {
 	 * The border to check.
 	 * @return
 	 * True iff this square is terminated and the given border is null; or 
-	 * the border is not null nor terminated, and adding the border at the 
-	 * given position does not violate any of these restrictions:
-	 *   - doors can not be placed in floors or ceilings
-	 *   - there is at least one wall or door
-	 *   - there are no more than three doors
+	 * this square is not terminated and the given border is not null, not 
+	 * terminated and not already shared by two squares.
+	 *   | if (isTerminated())
+	 *   |		then result == (border == null)
+	 *   | else
+	 *   |		result == (border != null 
+	 *   |						&amp;&amp; !border.isTerminated()
+	 *   |						&amp;&amp; !border.isSharedByTwoSquares())
 	 */
 	@Raw
-	public boolean canHaveAsBorderAt(Border border, Direction direction) {
+	public boolean canHaveAsBorderAt(Direction direction, Border border) {
 		if (isTerminated())
 			return border == null;
-
-		if (border == null || border.isTerminated())
-			return false;
-
-		/* A door can not be placed in the floor or ceiling */
-		if (border.isDoor()
-				&& (direction.equals(Direction.UP) 
-						|| direction.equals(Direction.DOWN)))
-			return false;
-
-		/* There should be at least one wall or door */
-		if (!border.isWall() && !border.isDoor()){
-			int numWallsOrDoors = 0;
-			for (Border b : borders.values()){
-				if (b.isWall() || b.isDoor())
-					numWallsOrDoors++;
-				if (numWallsOrDoors > 1)
-					break;
-			}
-			if (numWallsOrDoors <= 1)
-				return false;
-		}
-
-		/* There should be no more than three doors */
-		if (border.isDoor() && !borders.get(direction).isDoor()){
-			int numDoors = 0;
-			for (Border b : borders.values()) {
-				if (b.isDoor())
-					numDoors++;
-				if (numDoors >= 3)
-					return false;
-			}
-		}
-
-		return true;
+		return border != null
+					&& !border.isTerminated()
+					&& !border.isSharedByTwoSquares();
 	}
 
-	public boolean hasProperBorderAt(Border border, Direction direction) {
-		if (!canHaveAsBorderAt(border, direction))
-			return false;
-		return border.bordersSquare(this);
+
+	/**
+	 * Checks whether the borders of this square satisfy the constraints of 
+	 * the game.
+	 *
+	 * @return
+	 * True iff this square has:
+	 *   - no doors placed in ceilings or floors
+	 *   - at least one wall or door
+	 *   - no more than three doors
+	 */
+	@Raw
+	public boolean bordersSatisfyConstraints() {
+		int numWallsOrDoors = 0;
+		int numDoors = 0;
+		for (Direction direction : Direction.values()){
+			Border border = getBorderAt(direction);
+			if (border.isDoor()) {
+				numWallsOrDoors++;
+				numDoors++;
+				/* A door can not be placed in the floor or ceiling */
+				if (direction.equals(Direction.UP) 
+									|| direction.equals(Direction.DOWN))
+					return false;
+			} else if (border.isWall())
+				numWallsOrDoors++;
+		}
+		return (numWallsOrDoors >= 1  &&  numDoors <= 3);
+	}
+
+	public boolean hasProperBorders() {
+		for (Direction direction : Direction.values()){
+			Border border = getBorderAt(direction);
+			if (!canHaveAsBorderAt(direction, border)
+									|| !border.bordersOnSquare(this))
+				return false;
+		}
+		return true;
 	}
 
 
@@ -770,22 +777,35 @@ public class Square {
 	 * @param border
 	 * The new border.
 	 */
-	public void setBorderAt(Direction direction, Border border) {
-		if (!isValidDirection(direction))
-			return;
+	public void setBorderAt(Direction direction, Border border) 
+				throws IllegalArgumentException, BorderConstraintsException {
+		if (!canHaveAsBorderAt(direction, border))
+			throw new IllegalArgumentException();
+		Border oldBorder = getBorderAt(direction);
+		borders.put(direction, border);
+		if (!bordersSatisfyConstraints()){
+			borders.put(direction, oldBorder);
+			throw new BorderConstraintsException(this, border, direction);
+		}
 	}
 
 	/** 
-	 * Initialize the square to have borders in every direction. 
+	 * Initialize the borders of this square.
 	 *
 	 * @post
-	 * The new square is bordered in all directions.
-	 *   | for each direction in 1..NUM_BORDERS
-	 *   | 		hasBorderAt(direction)
+	 * The new square has a 'wall' as a floor, and has open borders 
+	 * everywhere else.
 	 */
+	@Raw
 	private void initializeBorders() {
-		for (int i = 1; i <= NUM_BORDERS; i++)
-			setBorderAt(i, true);
+		for (Direction direction : Direction.values()){
+			Border border;
+			if (direction.equals(Direction.DOWN))
+				border = new Wall(this);
+			else
+				border = new OpenBorder(this);
+			setBorderAt(direction, border);
+		}
 	}
 
    // /** 
@@ -832,34 +852,35 @@ public class Square {
 		if (other == null)
 			throw new IllegalArgumentException();
 
-		mergeBorders(other, direction);
+		////////mergeBorders(other, direction);
+		//TODO
 		mergeTemperatures(other);
 		/* temperatures must be merged before humidities! */
 		mergeHumidities(other);
 	}
 
-	/** 
-	 * Merge the borders of this square with the given square. 
-	 *
-	 * @pre
-	 * The other square is effective
-	 *   | other != null
-	 * @post
-	 * Both new squares are not bordererd in the given direction.
-	 *   | !this.hasBorderAt(direction)
-	 *   | 		&amp;&amp; !other.hasBorderAt(direction)
-	 * @throws IllegalArgumentException
-	 * The given direction is not a valid one
-	 *   | !isValidDirection(direction)
-	 */
-	public void mergeBorders(Square other, int direction)
-									throws IllegalArgumentException {
-		assert other != null;
-		if (!isValidDirection(direction))
-			throw new IllegalArgumentException();
-		this.setBorderAt(direction, false);
-		other.setBorderAt(direction, false);
-	}
+   // /** 
+   //  * Merge the borders of this square with the given square. 
+   //  *
+   //  * @pre
+   //  * The other square is effective
+   //  *   | other != null
+   //  * @post
+   //  * Both new squares are not bordererd in the given direction.
+   //  *   | !this.hasBorderAt(direction)
+   //  *   | 		&amp;&amp; !other.hasBorderAt(direction)
+   //  * @throws IllegalArgumentException
+   //  * The given direction is not a valid one
+   //  *   | !isValidDirection(direction)
+   //  */
+   // public void mergeBorders(Square other, int direction)
+   // 								throws IllegalArgumentException {
+   // 	assert other != null;
+   // 	if (!isValidDirection(direction))
+   // 		throw new IllegalArgumentException();
+   // 	this.setBorderAt(direction, false);
+   // 	other.setBorderAt(direction, false);
+   // }
 	
 	/** 
 	 * Merge the humidities of this square with the given square. 

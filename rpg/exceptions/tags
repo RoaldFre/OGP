@@ -1,0 +1,16 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BorderConstraintsException	BorderConstraintsException.java	/^	public BorderConstraintsException(Square square, Border border,$/;"	method	class:BorderConstraintsException	signature:(Square square, Border border, Direction direction)
+BorderConstraintsException	BorderConstraintsException.java	/^public class BorderConstraintsException extends RuntimeException {$/;"	class
+border	BorderConstraintsException.java	/^	private Border border;$/;"	field	class:BorderConstraintsException	file:
+direction	BorderConstraintsException.java	/^	private Direction direction;$/;"	field	class:BorderConstraintsException	file:
+getBorder	BorderConstraintsException.java	/^	public Border getBorder() {$/;"	method	class:BorderConstraintsException	signature:()
+getDirection	BorderConstraintsException.java	/^	public Direction getDirection() {$/;"	method	class:BorderConstraintsException	signature:()
+getSquare	BorderConstraintsException.java	/^	public Square getSquare() {$/;"	method	class:BorderConstraintsException	signature:()
+rpg.exceptions	BorderConstraintsException.java	/^package rpg.exceptions;$/;"	package
+serialVersionUID	BorderConstraintsException.java	/^	static final long serialVersionUID = 1;$/;"	field	class:BorderConstraintsException
+square	BorderConstraintsException.java	/^	private Square square;$/;"	field	class:BorderConstraintsException	file:

@@ -1,0 +1,18 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Couple	Couple.java	/^	public Couple(Type element) {$/;"	method	class:Couple	signature:(Type element)
+Couple	Couple.java	/^	public Couple(Type element1, Type element2) {$/;"	method	class:Couple	signature:(Type element1, Type element2)
+Couple	Couple.java	/^public class Couple<Type> implements Iterable<Type> {$/;"	class
+add	Couple.java	/^	public void add(Type element) {$/;"	method	class:Couple	signature:(Type element)
+contains	Couple.java	/^	public boolean contains(Type element) {$/;"	method	class:Couple	signature:(Type element)
+elements	Couple.java	/^	private Type elements[] = (Type[]) new Object[2];$/;"	field	class:Couple	file:
+getAnElement	Couple.java	/^	public Type getAnElement() {$/;"	method	class:Couple	signature:()
+getNbElements	Couple.java	/^	public int getNbElements() {$/;"	method	class:Couple	signature:()
+getPartner	Couple.java	/^	public Type getPartner(Type thisElement) {$/;"	method	class:Couple	signature:(Type thisElement)
+iterator	Couple.java	/^	public java.util.Iterator<Type> iterator() {$/;"	method	class:Couple	signature:()
+rpg.util	Couple.java	/^package rpg.util;$/;"	package
+setPartner	Couple.java	/^	public Type setPartner(Type thisElement, Type newPartner) {$/;"	method	class:Couple	signature:(Type thisElement, Type newPartner)

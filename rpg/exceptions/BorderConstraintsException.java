@@ -43,7 +43,8 @@ public class BorderConstraintsException extends RuntimeException {
 	}
 	
 	/**
-	 * Variable registering the offending square for this border constraints exception.
+	 * Variable registering the offending square for this border 
+	 * constraints exception.
 	 */
 	private Square square;
 
@@ -56,12 +57,14 @@ public class BorderConstraintsException extends RuntimeException {
 	}
 	
 	/**
-	 * Variable registering the offending border for this border constraints exception.
+	 * Variable registering the offending border for this border 
+	 * constraints exception.
 	 */
 	private Border border;
 
 	/**
-	 * Return the offending direction for this border constraints exception.
+	 * Return the offending direction for this border constraints 
+	 * exception.
 	 */
 	@Immutable @Raw
 	public Direction getDirection() {
@@ -69,7 +72,8 @@ public class BorderConstraintsException extends RuntimeException {
 	}
 	
 	/**
-	 * Variable registering the offending direction for this border constraints exception.
+	 * Variable registering the offending direction for this border 
+	 * constraints exception.
 	 */
 	private Direction direction;
 

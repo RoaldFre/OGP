@@ -4,6 +4,10 @@ import rpg.util.Couple;
 import be.kuleuven.cs.som.annotate.*;
 
 public abstract class Border {
+	public Border(Square square) {
+		squares = new Couple<Square>(square);
+	}
+
 	/** 
 	 * Returns whether or not this border is open, thus connecting the 
 	 * interior of its adjacent squares.
@@ -19,6 +23,11 @@ public abstract class Border {
 	 * Returns whether or not this border is a wall.
 	 */
 	public abstract boolean isWall();
+
+	/** 
+	 * Returns whether or not this border is slippery.
+	 */
+	public abstract boolean isSlippery();
 
 	/** 
 	 * Merge this border with the given border. 

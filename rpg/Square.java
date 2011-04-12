@@ -29,6 +29,12 @@ import rpg.exceptions.*;
  * The weight constant for merging temperatures that applies to all 
  * squares must be a valid weight constant for merging temperatures.
  *   | isValidMergeTemperatureWeight(getMergeTemperatureWeight()) 
+ * @invar
+ * Each square has proper borders.
+ *   | hasProperBorders()
+ * @invar
+ * The borders of each square satisfy the constraints of the game.
+ *   | bordersSatisfyConstraints()
  *
  * @author Roald Frederickx
  */
@@ -757,6 +763,17 @@ public class Square {
 		return (numWallsOrDoors >= 1  &&  numDoors <= 3);
 	}
 
+	/** 
+	 * Checks whether this square has proper borders associated with it.
+	 *
+	 * @return
+	 * True iff every border of this square is valid for this square in 
+	 * that direction and every border borders on this square.
+	 *   | for each direction in Direction.values()
+	 *   |		canHaveAsBorderAt(direction, getBorderAt(direction))
+	 *   |			&amp;&amp; getBorderAt(direction).bordersOnSquare(this)
+	 */
+	@Raw
 	public boolean hasProperBorders() {
 		for (Direction direction : Direction.values()){
 			Border border = getBorderAt(direction);
@@ -793,15 +810,15 @@ public class Square {
 	 * Initialize the borders of this square.
 	 *
 	 * @post
-	 * The new square has a 'wall' as a floor, and has open borders 
-	 * everywhere else.
+	 * The new square has a non-slippery 'wall' as a floor, and has open 
+	 * borders everywhere else.
 	 */
 	@Raw
 	private void initializeBorders() {
 		for (Direction direction : Direction.values()){
 			Border border;
 			if (direction.equals(Direction.DOWN))
-				border = new Wall(this);
+				border = new Wall(this, false);
 			else
 				border = new OpenBorder(this);
 			setBorderAt(direction, border);

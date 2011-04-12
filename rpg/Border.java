@@ -64,6 +64,21 @@ public abstract class Border {
 		return squares.contains(square);
 	}
 
+	/** 
+	 * Returns the neighbouring square of the given square along this 
+	 * border. 
+	 * 
+	 * @param square 
+	 * The square to get the neighbour from.
+	 * @return 
+	 * Null if the given square is not part of this border, otherwise 
+	 * return the neighbour, or null if this border has only one assocated 
+	 * square (the given one).
+	 */
+	public Square getNeighbour(Square square) {
+		return squares.getPartner(square);
+	}
+
 	protected Couple<Square> squares;
 
 	/** 

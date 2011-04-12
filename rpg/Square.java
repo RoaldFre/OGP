@@ -786,19 +786,45 @@ public class Square {
 
 
 	/** 
-	 * Set the border of this square for the given direction to the given 
+	 * Change the border of this square for the given direction to the given 
 	 * border.
 	 * 
 	 * @param direction 
 	 * The direction of the border.
 	 * @param border
 	 * The new border.
+	 * @pre
+	 * The given border borders on this square.
+	 *   | border.bordersOnSquare(this)
+	 * @pre
+	 * If the old border in the given direction borders on a second square, 
+	 * then the given border must border on that same square as well.
+	 *   | !getBorderAt(direction).isSharedByTwoSquares()
+	 *   | 		|| border.bordersOnSquare(
+	 *   |				getBorderAt(direction).getNeighbour(this))
+	 * @post
+	 * The old border gets changed to the new border, with all dynamic 
+	 * bindings kept intact.
+	 *   | XXX
+	 * @throws IllegalArgumentException
+	 * This square can not have the given border as a border in the given 
+	 * direction.
+	 *   | !canHaveAsBorderAt(direction, border)
+	 * @throws BorderConstraintsException
+	 * If the border of this square were to be changed to the given border, 
+	 * some border constraints would be violated.
 	 */
-	public void setBorderAt(Direction direction, Border border) 
+	public void changeBorderAt(Direction direction, @Raw Border border) 
 				throws IllegalArgumentException, BorderConstraintsException {
 		if (!canHaveAsBorderAt(direction, border))
 			throw new IllegalArgumentException();
+
 		Border oldBorder = getBorderAt(direction);
+
+		assert border.bordersOnSquare(this);
+		assert !getBorderAt(direction).isSharedByTwoSquares()
+					|| border.bordersOnSquare(oldBorder.getNeighbour(this));
+
 		borders.put(direction, border);
 		if (!bordersSatisfyConstraints()){
 			borders.put(direction, oldBorder);
@@ -821,26 +847,26 @@ public class Square {
 				border = new Wall(this, false);
 			else
 				border = new OpenBorder(this);
-			setBorderAt(direction, border);
+			borders.put(direction, border);
 		}
 	}
 
-   // /** 
-   //  * Returns a string representation of the borders.
-   //  */
-   // private String bordersString() {
-   // 	String result = "";
-   // 	for (int i = 1; i <= NUM_BORDERS; i++)
-   // 		result = result + (hasBorderAt(i) ? i : " ");
-   // 	return result;
-   // }
+	// /** 
+	//  * Returns a string representation of the borders.
+	//  */
+	// private String bordersString() {
+	// 	String result = "";
+	// 	for (int i = 1; i <= NUM_BORDERS; i++)
+	// 		result = result + (hasBorderAt(i) ? i : " ");
+	// 	return result;
+	// }
 
 
 	/** 
 	 * Variable referencing an array of borders of this square.
 	 */
 	private java.util.Map<Direction, Border> borders = 
-					new java.util.EnumMap<Direction, Border>(Direction.class);
+		new java.util.EnumMap<Direction, Border>(Direction.class);
 
 
 
@@ -865,7 +891,7 @@ public class Square {
 	 *   | other == null
 	 */
 	public void mergeWith(Square other, int direction)
-							throws IllegalArgumentException {
+		throws IllegalArgumentException {
 		if (other == null)
 			throw new IllegalArgumentException();
 
@@ -876,26 +902,26 @@ public class Square {
 		mergeHumidities(other);
 	}
 
-   // /** 
-   //  * Merge the borders of this square with the given square. 
-   //  *
-   //  * @pre
-   //  * The other square is effective
-   //  *   | other != null
-   //  * @post
-   //  * Both new squares are not bordererd in the given direction.
-   //  *   | !this.hasBorderAt(direction)
-   //  *   | 		&amp;&amp; !other.hasBorderAt(direction)
-   //  * @throws IllegalArgumentException
-   //  * The given direction is not a valid one
-   //  *   | !isValidDirection(direction)
-   //  */
-   // public void mergeBorders(Square other, int direction)
-   // 								throws IllegalArgumentException {
-   // 	assert other != null;
-   // 	if (!isValidDirection(direction))
-   // 		throw new IllegalArgumentException();
-   // 	this.setBorderAt(direction, false);
+	// /** 
+	//  * Merge the borders of this square with the given square. 
+	//  *
+	//  * @pre
+	//  * The other square is effective
+	//  *   | other != null
+	//  * @post
+	//  * Both new squares are not bordererd in the given direction.
+	//  *   | !this.hasBorderAt(direction)
+	//  *   | 		&amp;&amp; !other.hasBorderAt(direction)
+	//  * @throws IllegalArgumentException
+	//  * The given direction is not a valid one
+	//  *   | !isValidDirection(direction)
+	//  */
+	// public void mergeBorders(Square other, int direction)
+	// 								throws IllegalArgumentException {
+	// 	assert other != null;
+	// 	if (!isValidDirection(direction))
+	// 		throw new IllegalArgumentException();
+	// 	this.setBorderAt(direction, false);
    // 	other.setBorderAt(direction, false);
    // }
 	

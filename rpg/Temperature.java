@@ -7,6 +7,7 @@ import be.kuleuven.cs.som.annotate.*;
  *
  * @author Roald Frederickx
  */
+@Value
 public class Temperature {
 
 	/**
@@ -104,7 +105,7 @@ public class Temperature {
 	/**
 	 * Return the temperature value in degrees Celcius for this temperature.
 	 */
-	@Basic @Raw
+	@Basic @Raw @Immutable
 	public double temperature() {
 		return temperature;
 	}
@@ -118,7 +119,7 @@ public class Temperature {
 	 * The given temperature scale is not effective.
 	 *   | scale == null
 	 */
-	@Basic @Raw
+	@Raw @Immutable
 	public double temperature(Scale scale) throws IllegalArgumentException {
 		if (scale == null)
 			throw new IllegalArgumentException();
@@ -189,6 +190,7 @@ public class Temperature {
 	 * A string representation of the temperature, in the Celcius scale.
 	 *   | result == (temperature() + "C")
 	 */
+	@Immutable
 	public String toString() {
 		return temperature() + "C";
 	}

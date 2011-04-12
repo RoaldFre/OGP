@@ -690,28 +690,89 @@ public class Square {
 	 * @param direction
 	 * The direction of the border.
 	 * @return 
-	 * True iff the given value is not strictly less that 1 and not 
-	 * strictly larger than NUM_BORDERS.
-	 *   | result == (1 &lt;= direction 
-	 *   |					&amp;&amp; direction &lt;= NUM_BORDERS)
+	 * True iff the given value is not null.
+	 *   | result == (direction != null)
 	 */
-	public static boolean isValidDirection(int direction) {
-		return 1 <= direction && direction <= NUM_BORDERS;
+	public static boolean isValidDirection(Direction direction) {
+		return direction != null;
 	}
 
 	/** 
-	 * Set the border of this square for the given direction to the given 
-	 * 'boundedness'.
+	 * Check whether this square can have the given border as its border in 
+	 * the given direction.
 	 * 
 	 * @param direction 
 	 * The direction of the border.
-	 * @param bordered
-	 * The new 'boundedness' of the border.
+	 * @param border
+	 * The border to check.
+	 * @return
+	 * True iff this square is terminated and the given border is null; or 
+	 * the border is not null nor terminated, and adding the border at the 
+	 * given position does not violate any of these restrictions:
+	 *   - doors can not be placed in floors or ceilings
+	 *   - there is at least one wall or door
+	 *   - there are no more than three doors
 	 */
-	public void setBorderAt(int direction, boolean bordered) {
+	@Raw
+	public boolean canHaveAsBorderAt(Border border, Direction direction) {
+		if (isTerminated())
+			return border == null;
+
+		if (border == null || border.isTerminated())
+			return false;
+
+		/* A door can not be placed in the floor or ceiling */
+		if (border.isDoor()
+				&& (direction.equals(Direction.UP) 
+						|| direction.equals(Direction.DOWN)))
+			return false;
+
+		/* There should be at least one wall or door */
+		if (!border.isWall() && !border.isDoor()){
+			int numWallsOrDoors = 0;
+			for (Border b : borders.values()){
+				if (b.isWall() || b.isDoor())
+					numWallsOrDoors++;
+				if (numWallsOrDoors > 1)
+					break;
+			}
+			if (numWallsOrDoors <= 1)
+				return false;
+		}
+
+		/* There should be no more than three doors */
+		if (border.isDoor() && !borders.get(direction).isDoor()){
+			int numDoors = 0;
+			for (Border b : borders.values()) {
+				if (b.isDoor())
+					numDoors++;
+				if (numDoors >= 3)
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	public boolean hasProperBorderAt(Border border, Direction direction) {
+		if (!canHaveAsBorderAt(border, direction))
+			return false;
+		return border.bordersSquare(this);
+	}
+
+
+	/** 
+	 * Set the border of this square for the given direction to the given 
+	 * border.
+	 * 
+	 * @param direction 
+	 * The direction of the border.
+	 * @param border
+	 * The new border.
+	 */
+	public void setBorderAt(Direction direction, Border border) {
 		if (!isValidDirection(direction))
 			return;
-		borders[direction - 1] = bordered;
 	}
 
 	/** 
@@ -727,24 +788,22 @@ public class Square {
 			setBorderAt(i, true);
 	}
 
-	/** 
-	 * Returns a string representation of the borders.
-	 */
-	private String bordersString() {
-		String result = "";
-		for (int i = 1; i <= NUM_BORDERS; i++)
-			result = result + (hasBorderAt(i) ? i : " ");
-		return result;
-	}
+   // /** 
+   //  * Returns a string representation of the borders.
+   //  */
+   // private String bordersString() {
+   // 	String result = "";
+   // 	for (int i = 1; i <= NUM_BORDERS; i++)
+   // 		result = result + (hasBorderAt(i) ? i : " ");
+   // 	return result;
+   // }
 
-	/** 
-	 * Variable registering the number of borders for all squares. 
-	 */
-	public static final int NUM_BORDERS = 6;
+
 	/** 
 	 * Variable referencing an array of borders of this square.
 	 */
-	private boolean[] borders = new boolean[NUM_BORDERS];
+	private java.util.Map<Direction, Border> borders = 
+					new java.util.EnumMap<Direction, Border>(Direction.class);
 
 
 
@@ -946,6 +1005,26 @@ public class Square {
 
 
 
+	/**
+	 * Return the termination status for this square.
+	 */
+	@Basic @Raw
+	public boolean isTerminated() {
+		return isTerminated;
+	}
+	
+	public void terminate(){
+		//TODO
+		isTerminated = true;
+	}
+	
+	/**
+	 * Variable registering the termination status for this square.
+	 */
+	private boolean isTerminated = false;
+
+
+
 	public String toString() {
 		return  "Temperature:    " + getTemperature()
 			+ "\nHumidity:       " + getHumidityString()
@@ -955,7 +1034,8 @@ public class Square {
 			+ "\nHeat damage:    " + heatDamage()
 			+ "\nRust damage:    " + rustDamage()
 			+ "\nInhabitability: " + inhabitability()
-			+ "\nBorders:        " + bordersString();
+			//+ "\nBorders:        " + bordersString();
+			;
 	}
 }
 

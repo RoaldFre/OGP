@@ -35,6 +35,9 @@ import rpg.exceptions.*;
  * @invar
  * The borders of each square satisfy the constraints of the game.
  *   | bordersSatisfyConstraints()
+ * @invar
+ * No square has duplicate borders.
+ *   | hasNoDuplicateBorders()
  *
  * @author Roald Frederickx
  */
@@ -715,22 +718,19 @@ public class Square {
 	 * The border to check.
 	 * @return
 	 * True iff this square is terminated and the given border is null; or 
-	 * this square is not terminated and the given border is not null, not 
-	 * terminated and not already shared by two squares.
+	 * this square is not terminated and the given border is not null nor 
+	 * terminated
 	 *   | if (isTerminated())
 	 *   |		then result == (border == null)
 	 *   | else
 	 *   |		result == (border != null 
-	 *   |						&amp;&amp; !border.isTerminated()
-	 *   |						&amp;&amp; !border.isSharedByTwoSquares())
+	 *   |						&amp;&amp; !border.isTerminated())
 	 */
 	@Raw
 	public boolean canHaveAsBorderAt(Direction direction, Border border) {
 		if (isTerminated())
 			return border == null;
-		return border != null
-					&& !border.isTerminated()
-					&& !border.isSharedByTwoSquares();
+		return (border != null) && (!border.isTerminated());
 	}
 
 
@@ -739,13 +739,16 @@ public class Square {
 	 * the game.
 	 *
 	 * @return
-	 * True iff this square has:
+	 * True iff this square is not terminated and has:
 	 *   - no doors placed in ceilings or floors
 	 *   - at least one wall or door
 	 *   - no more than three doors
 	 */
 	@Raw
 	public boolean bordersSatisfyConstraints() {
+		if (isTerminated())
+			return true;
+
 		int numWallsOrDoors = 0;
 		int numDoors = 0;
 		for (Direction direction : Direction.values()){
@@ -784,6 +787,21 @@ public class Square {
 		return true;
 	}
 
+	/** 
+	 * Returns whether this square has no dublicate borders.
+	 *
+	 * @return 
+	 * Whether this square has no duplicate borders.
+	 *   | for all d1 in Direction.values() :
+	 *   | 		{ d2 in Direction.values() |
+	 *   |			true : getBorderAt(d2) == getBorderAt(d1) }.size() == 1
+	 */
+	@Raw
+	public boolean hasNoDuplicateBorders() {
+		return borders.size() 
+				== (new java.util.HashSet<Border>(borders.values())).size();
+	}
+
 
 	/** 
 	 * Change the border of this square for the given direction to the given 
@@ -794,43 +812,80 @@ public class Square {
 	 * @param border
 	 * The new border.
 	 * @pre
-	 * The given border borders on this square.
-	 *   | border.bordersOnSquare(this)
-	 * @pre
-	 * If the old border in the given direction borders on a second square, 
-	 * then the given border must border on that same square as well.
-	 *   | !getBorderAt(direction).isSharedByTwoSquares()
-	 *   | 		|| border.bordersOnSquare(
-	 *   |				getBorderAt(direction).getNeighbour(this))
+	 * If this square is not terminated, then the given border must border 
+	 * on this square (and be effective).
+	 *   | !isTerminated()
+	 *   |		|| (border != null &amp;&amp; border.bordersOnSquare(this))
 	 * @post
-	 * The old border gets changed to the new border, with all dynamic 
-	 * bindings kept intact.
-	 *   | XXX
+	 * The new border in the given direction is equal to the given border.
+	 *   | new.getBorderAt(direction).equals(border)
 	 * @throws IllegalArgumentException
 	 * This square can not have the given border as a border in the given 
 	 * direction.
 	 *   | !canHaveAsBorderAt(direction, border)
+	 * @throws IllegalArgumentException
+	 * This square already has the given border as a border for some 
+	 * direction.
+	 *   | for some direction in Direction.values() :
+	 *   |		border.equals(getBorderAt(direction))
 	 * @throws BorderConstraintsException
 	 * If the border of this square were to be changed to the given border, 
 	 * some border constraints would be violated.
 	 */
 	public void changeBorderAt(Direction direction, @Raw Border border) 
 				throws IllegalArgumentException, BorderConstraintsException {
+		assert !isTerminated()
+				|| (border != null  &&  border.bordersOnSquare(this));
+
 		if (!canHaveAsBorderAt(direction, border))
 			throw new IllegalArgumentException();
 
+		if (borders.containsValue(border))
+			throw new IllegalArgumentException();
+
 		Border oldBorder = getBorderAt(direction);
-
-		assert border.bordersOnSquare(this);
-		assert !getBorderAt(direction).isSharedByTwoSquares()
-					|| border.bordersOnSquare(oldBorder.getNeighbour(this));
-
 		borders.put(direction, border);
 		if (!bordersSatisfyConstraints()){
 			borders.put(direction, oldBorder);
 			throw new BorderConstraintsException(this, border, direction);
 		}
 	}
+
+	/** 
+	 * Update the border of this square to the given border.
+	 * 
+	 * @param oldBorder
+	 * The old border.
+	 * @param newBorder
+	 * The new border.
+	 * @effect
+	 * changeBorderAt(getDirectionOfBorder(oldBorder), newBorder)
+	 */
+	public void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
+				throws IllegalArgumentException, BorderConstraintsException {
+		changeBorderAt(getDirectionOfBorder(oldBorder), newBorder);
+	}
+
+	/** 
+	 * Returns the direction associated with the given border of this 
+	 * square.
+	 *
+	 * @param border
+	 * The border whose direction to search for.
+	 * @return
+	 * The directon of the given border of this square.
+	 * @throws IllegalArgumentException
+	 * The given border is null or does not border this square.
+	 *   | border == null  ||  !border.bordersOnSquare(this)
+	 */
+	public Direction getDirectionOfBorder(Border border) 
+										throws IllegalArgumentException {
+		for (java.util.Map.Entry<Direction, Border> entry : borders.entrySet())
+			if (entry.getValue().equals(border))
+				return entry.getKey();
+		throw new IllegalArgumentException();
+	}
+
 
 	/** 
 	 * Initialize the borders of this square.

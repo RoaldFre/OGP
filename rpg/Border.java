@@ -35,22 +35,33 @@ public abstract class Border {
 	 * @param other 
 	 * The border to merge with this one.
 	 * @pre
-	 *   | this.squares.getNbElements() == 1
 	 * @pre
-	 *   | other.squares.getNbElements() == 1
 	 * @pre
-	 *   | !this.squares.getAnElement().equals(
-	 *   |		other.squares.getAnElement())
-	 * @pre
-	 *   | !this.equals(other) 
 	 */
-	public void mergeWith(Border other) {
-		assert this.squares.getNbElements() == 1;
-		assert other.squares.getNbElements() == 1;
-		assert !this.squares.getAnElement().equals(
-								other.squares.getAnElement());
-		//XXX
+	public void mergeWith(Border other) throws BorderConstraintsException {
+		assert !this.isSharedByTwoSquares();
+		assert !other.isSharedByTwoSquares();
+		//XXX allow loops?
+		assert this.squares.getAnElement() != other.squares.getAnElement();
+
+		//Keep the least open border
+		Border newBorder;		//the border to keep
+		Border otherBorder;		//the other border
+		Square foreignSquare;	//the square that goes with this other border
+		if (this.openness() <= other.openness()){
+			newBorder = this;
+			otherBorder = other;
+			foreignSquare = other.squares.getAnElement();
+		} else {
+			newBorder = other;
+			otherBorder = this;
+			foreignSquare = this.squares.getAnElement();
+		}
+		newBorder.squares.add(foreignSquare);
+		foreignSquare.updateBorder(otherBorder, newBorder);
 	}
+
+
 
 	/** 
 	 * Returns whether or not this border borders on the given square. 

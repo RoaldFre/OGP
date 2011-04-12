@@ -70,6 +70,7 @@ public class SquareTest {
 						Square.getMergeTemperatureWeight()));
 		assertTrue(squareDefault.hasProperBorders());
  		assertTrue(squareDefault.bordersSatisfyConstraints());
+		assertTrue(squareDefault.hasNoDuplicateBorders());
 	}
 	
 	@Test

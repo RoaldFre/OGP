@@ -41,6 +41,8 @@ public abstract class Border {
 	public void mergeWith(Border other) throws BorderConstraintsException {
 		assert !this.isSharedByTwoSquares();
 		assert !other.isSharedByTwoSquares();
+		assert !this.isTerminated();
+		assert !other.isTerminated();
 		//XXX allow loops?
 		assert this.squares.getAnElement() != other.squares.getAnElement();
 
@@ -59,6 +61,7 @@ public abstract class Border {
 		}
 		newBorder.squares.add(foreignSquare);
 		foreignSquare.updateBorder(otherBorder, newBorder);
+		otherBorder.terminate();
 	}
 
 

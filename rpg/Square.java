@@ -814,7 +814,7 @@ public class Square {
 	 * @pre
 	 * If this square is not terminated, then the given border must border 
 	 * on this square (and be effective).
-	 *   | !isTerminated()
+	 *   | isTerminated()
 	 *   |		|| (border != null &amp;&amp; border.bordersOnSquare(this))
 	 * @post
 	 * The new border in the given direction is equal to the given border.
@@ -824,23 +824,24 @@ public class Square {
 	 * direction.
 	 *   | !canHaveAsBorderAt(direction, border)
 	 * @throws IllegalArgumentException
-	 * This square already has the given border as a border for some 
-	 * direction.
-	 *   | for some direction in Direction.values() :
-	 *   |		border.equals(getBorderAt(direction))
+	 * This square already has the given non-null border as a border for 
+	 * some direction.
+	 *   | border != null
+	 *   | 	&amp;&amp; for some direction in Direction.values() :
+	 *   |			border.equals(getBorderAt(direction))
 	 * @throws BorderConstraintsException
 	 * If the border of this square were to be changed to the given border, 
 	 * some border constraints would be violated.
 	 */
 	public void changeBorderAt(Direction direction, @Raw Border border) 
 				throws IllegalArgumentException, BorderConstraintsException {
-		assert !isTerminated()
+		assert isTerminated()
 				|| (border != null  &&  border.bordersOnSquare(this));
 
 		if (!canHaveAsBorderAt(direction, border))
 			throw new IllegalArgumentException();
 
-		if (borders.containsValue(border))
+		if (border != null && borders.containsValue(border))
 			throw new IllegalArgumentException();
 
 		Border oldBorder = getBorderAt(direction);

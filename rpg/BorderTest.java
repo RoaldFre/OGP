@@ -74,6 +74,7 @@ public class BorderTest {
 	public static void testConstructor_fromSquare(Border border,
 													Square square) {
 		assertTrue(border.bordersOnSquare(square));
+		assertFalse(border.isTerminated());
 	}
 
 	/** 

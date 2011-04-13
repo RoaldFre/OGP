@@ -48,7 +48,7 @@ public abstract class Border {
 	 * @param border 
 	 * The border to replace with this new border.
 	 * @pre
-	 *   | !border.isTerminated()
+	 *   | border != null  &amp;&amp;  !border.isTerminated()
 	 * @post
 	 *   | (new border).isTerminated()
 	 * @post
@@ -57,8 +57,8 @@ public abstract class Border {
 	 */
 	@Raw
 	public Border(Border border) {
-		assert !border.isTerminated();
-		squares = border.squares;
+		assert border != null  &&  !border.isTerminated();
+		this.squares = border.squares;
 		for (Square square : squares)
 			square.updateBorder(border, this);
 	}
@@ -96,10 +96,10 @@ public abstract class Border {
 	//XXX package visibility only?
 	public void mergeWith(Border other) throws BorderConstraintsException {
 		assert other != null;
-		assert !this.isSharedByTwoSquares();
-		assert !other.isSharedByTwoSquares();
 		assert !this.isTerminated();
 		assert !other.isTerminated();
+		assert !this.isSharedByTwoSquares();
+		assert !other.isSharedByTwoSquares();
 		//no loops, see invar
 		assert this.squares.getAnElement() != other.squares.getAnElement();
 
@@ -124,12 +124,18 @@ public abstract class Border {
 	 * 
 	 * @param square 
 	 * The square to check.
+	 * @pre
+	 *   | square != null
 	 * @return 
-	 * Whether or not this border borders on the given square. 
+	 * Whether or not this border borders on the given square. This is 
+	 * false if this square is terminated.
 	 */
 	@Raw
 	public boolean bordersOnSquare(Square square) {
-		return isTerminated() || squares.contains(square);
+		assert square != null;
+		if (isTerminated())
+			return false;
+		return squares.contains(square);
 	}
 
 	/** 
@@ -156,7 +162,7 @@ public abstract class Border {
 	 * @return 
 	 * If this border is terminated, or if this border is not shared by two 
 	 * squares, then the result is false. Otherwise, the result is the 
-	 * equality of the two associated squares.
+	 * equality of the two associated squares of this border.
 	 */
 	public boolean hasNoDuplicateSquares() {
 		if (isTerminated() || !isSharedByTwoSquares())
@@ -171,10 +177,13 @@ public abstract class Border {
 	/** 
 	 * Returns whether this border is shared by two squares. 
 	 * 
+	 * @pre
+	 *   | !isTerminated()
 	 * @return 
 	 * Whether this border is shared by two squares. 
 	 */
 	public boolean isSharedByTwoSquares() {
+		assert !isTerminated();
 		return squares.getNbElements() == 2;
 	}
 
@@ -184,7 +193,7 @@ public abstract class Border {
 	 * @param square 
 	 * The square to detatch from this border
 	 * @pre
-	 *   | !square.hasBorder(this)
+	 *   | !isTerminated() &amp;&amp; !square.hasBorder(this)
 	 * @post
 	 *   | !new.bordersOnSquare(square)
 	 * @post
@@ -192,13 +201,12 @@ public abstract class Border {
 	 *   | then (new.isTerminated())
 	 */
 	void detatchFromSquare(@Raw Square square) {
-		assert !square.hasBorder(this);
+		assert !isTerminated() && !square.hasBorder(this);
 
 		if (!isSharedByTwoSquares()) {
 			terminate();
 			return;
 		}
-
 		squares.delete(square);
 	}
 

@@ -54,22 +54,25 @@ public class WallTest {
 		Wall wall = new Wall(square1, true);
 		assertTrue(wall.isSlippery());
 		//assertClassInvariants(wall);
-		//objcet is still raw, as per documentation!
+		//object is still raw, as per documentation!
 		assertTrue(wall.bordersOnSquare(square1));
 		BorderTest.testConstructor_fromSquare(wall, square1);
 	}
 
 	@Test
 	public void mergeWith_CorrectOrder() {
-		new OpenBorder(border1north);
-		Border keeper = new Wall(border2south, false);
+		Border openBorder = new OpenBorder(border1north);
+		Border wall = new Wall(border2south, false);
+		
+		openBorder.mergeWith(wall);
 
-		border1north.mergeWith(border2south);
 		BorderTest.assertClassInvariants(border1north);
 		BorderTest.assertClassInvariants(border2south);
+		BorderTest.assertClassInvariants(openBorder);
+		BorderTest.assertClassInvariants(wall);
 		assertTrue(square1.getBorderAt(Direction.NORTH).equals(
 									square2.getBorderAt(Direction.SOUTH)));
-		assertTrue(square1.getBorderAt(Direction.NORTH).equals(keeper));
+		assertTrue(square1.getBorderAt(Direction.NORTH).isWall());
 
 		assertTrue(square1.getBorderAt(Direction.NORTH).bordersOnSquare(
 																square2));

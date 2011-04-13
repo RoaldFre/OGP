@@ -4,15 +4,40 @@ import be.kuleuven.cs.som.annotate.*;
 
 public class Door extends Border{
 	/** 
-	 * Create a new door.
+	 * Create a new door with the given intrinsic slipperyness that borders 
+	 * the given square.
 	 * 
-	 * @param isOpened 
-	 * Whether or not this new door is opened.
+	 * @param square 
+	 * The square that this door will border.
+	 * @param isSlippery 
+	 * The 'openness' of this new door.
 	 * @post
-	 *   | new.isOpen() == isOpened
+	 *   | isOpen() == isOpened
+	 * @effect
+	 *   | super(square)
 	 */
+	@Raw
 	public Door(Square square, boolean isOpened) {
 		super(square);
+		this.isOpened = isOpened;
+	}
+
+	/** 
+	 * Create a new door with the given 'openness' that replaces the given 
+	 * border.
+	 * 
+	 * @param border
+	 * The border to replace with this new door.
+	 * @param isOpened
+	 * The 'openness' of this new door.
+	 * @post
+	 *   | isOpen() == isOpened
+	 * @effect
+	 *   | super(border)
+	 */
+	@Raw
+	public Door(Border border, boolean isOpened) {
+		super(border);
 		this.isOpened = isOpened;
 	}
 

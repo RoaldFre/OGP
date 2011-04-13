@@ -10,8 +10,8 @@ import org.junit.*;
  */
 public class SquareTest {
 	/**
-	 * Instance variable referencing bank accounts that may
-	 * change during individual tests.
+	 * Instance variable referencing squares that may change during 
+	 * individual tests.
 	 */
 	private Square squareDefault;
 	private Square square_T100_H50;
@@ -53,24 +53,32 @@ public class SquareTest {
 					true);
 	}
 
-	@Test
-	public void defaultConstructor() {
-		Square squareDefault = new Square();
-
-		//test class invariants
+	/** 
+	 * Asserts the class invariants of the given square.
+	 *
+	 * @param square 
+	 * The square to test.
+	 */
+	private void assertClassInvariants(Square square) {
 		assertTrue(Square.matchesMinTemperatureMax(
-						squareDefault.getMinTemperature(), 
-						squareDefault.getTemperature(),
-						squareDefault.getMaxTemperature()));
+						square.getMinTemperature(), 
+						square.getTemperature(),
+						square.getMaxTemperature()));
 		assertTrue(Square.isValidHeatDamageThreshold(
 						Square.getHeatDamageThreshold()));
 		assertTrue(Square.isValidHeatDamageStep(Square.getHeatDamageStep()));
-		assertTrue(Square.isValidHumidity(squareDefault.getHumidity()));
+		assertTrue(Square.isValidHumidity(square.getHumidity()));
 		assertTrue(Square.isValidMergeTemperatureWeight(
 						Square.getMergeTemperatureWeight()));
-		assertTrue(squareDefault.hasProperBorders());
- 		assertTrue(squareDefault.bordersSatisfyConstraints());
-		assertTrue(squareDefault.hasNoDuplicateBorders());
+		assertTrue(square.hasProperBorders());
+ 		assertTrue(square.bordersSatisfyConstraints());
+		assertTrue(square.hasNoDuplicateBorders());
+	}
+
+	@Test
+	public void defaultConstructor() {
+		Square squareDefault = new Square();
+		assertClassInvariants(squareDefault);
 	}
 	
 	@Test
@@ -85,6 +93,7 @@ public class SquareTest {
 		assertEquals(200, extended.getMaxTemperature().temperature(), 0);
 		assertEquals(3000, extended.getHumidity());
 		assertTrue(extended.hasSlipperyFloor());
+		assertClassInvariants(extended);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

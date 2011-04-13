@@ -78,7 +78,7 @@ public class Square {
 	 * to the given slipperiness.
 	 *   | setHasSlipperyFloor(hasSlipperyFloor)
 	 * @effect
-	 * The new square is bordered in all directions.
+	 * The borders of the square get initialized.
 	 *   | initializeBorders();
 	 * @throws IllegalArgumentException
 	 * Some of the given temperatures values are not effective, or the 
@@ -686,11 +686,16 @@ public class Square {
 	 * @param direction 
 	 * The direction of the border.
 	 * @pre
+	 * The direction is effective
 	 *   | direction != null
+	 * @pre
+	 * This square is not terminated
+	 *   | !isTerminated()
 	 */
 	@Basic
 	public Border getBorderAt(Direction direction) {
 		assert direction != null;
+		assert !isTerminated();
 		return borders.get(direction);
 	}
 
@@ -832,6 +837,9 @@ public class Square {
 	 * @throws BorderConstraintsException
 	 * If the border of this square were to be changed to the given border, 
 	 * some border constraints would be violated.
+	 *
+	 * XXX I impose no restrictions on the possible other square of the 
+	 * border, so that part too can be 'raw'.... (ok?)
 	 */
 	public void changeBorderAt(Direction direction, @Raw Border border) 
 				throws IllegalArgumentException, BorderConstraintsException {
@@ -850,6 +858,7 @@ public class Square {
 			borders.put(direction, oldBorder);
 			throw new BorderConstraintsException(this, border, direction);
 		}
+		oldBorder.detatchFromSquare(this);
 	}
 
 	/** 
@@ -879,7 +888,7 @@ public class Square {
 	 * The given border is null or does not border this square.
 	 *   | border == null  ||  !border.bordersOnSquare(this)
 	 */
-	public Direction getDirectionOfBorder(Border border) 
+	public Direction getDirectionOfBorder(@Raw Border border) 
 										throws IllegalArgumentException {
 		for (java.util.Map.Entry<Direction, Border> entry : borders.entrySet())
 			if (entry.getValue().equals(border))
@@ -887,6 +896,19 @@ public class Square {
 		throw new IllegalArgumentException();
 	}
 
+	/** 
+	 * Check whether this square has the given border as its border. 
+	 * 
+	 * @param border 
+	 * The border to check.
+	 * @return 
+	 * Whether this square has the given border as its border. 
+	 *   | result == (for some direction in Direction.values() :
+	 *   |					getBorderAt(direction).equals(border))
+	 */
+	public boolean hasBorder(Border border) {
+		return borders.containsValue(border);
+	}
 
 	/** 
 	 * Initialize the borders of this square.

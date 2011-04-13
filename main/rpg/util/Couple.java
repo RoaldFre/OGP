@@ -124,15 +124,42 @@ public class Couple<Type> implements Iterable<Type> {
 	 * @throws IllegalArgumentException
 	 * 'thisElement' is not a member of this couple.
 	 */
-	public Type setPartner(Type thisElement, Type newPartner) {
+	public void setPartner(Type thisElement, Type newPartner) {
 		if (thisElement == null)
 			throw new IllegalArgumentException();
 		if (thisElement.equals(elements[0]))
 			elements[1] = newPartner;
 		else if (thisElement.equals(elements[1]))
 			elements[0] = newPartner;
+		else
+			throw new IllegalArgumentException();
+	}
+
+	/** 
+	 * Deletes the given element from this couple
+	 * 
+	 * @param element 
+	 * @pre
+	 *   | element != null
+	 * @pre
+	 *   | getNbElements() == 2
+	 * @throws IllegalArgumentException 
+	 *   | !contains(element)
+	 * @post
+	 *   | !contains(element)
+	 * @post
+	 *   | getNbElements() == 1
+	 */
+	public void delete(Type element) throws IllegalArgumentException {
+		assert element != null;
+		assert getNbElements() == 2;
+		if (elements[0].equals(element))
+			elements[0] = null;
+		else if (elements[1].equals(element))
+			elements[1] = null;
 		throw new IllegalArgumentException();
 	}
+
 
 	public int getNbElements() {
 		int num = 0;
@@ -144,18 +171,26 @@ public class Couple<Type> implements Iterable<Type> {
 	}
 
 	/** 
-	 * Returns a 'raw' iterator of the couple. This may contain null 
-	 * values!
-	 * 
-	 * @return 
-	 * A 'raw' iterator over the elements of the couple.
-	 */
-	public java.util.Iterator<Type> iterator() {
-		return java.util.Arrays.asList(elements).iterator();
-	}
-
-	/** 
 	 * Variable referencing an array of elements representing the couple.
 	 */
 	private Type elements[] = (Type[]) new Object[2];
+
+	/** 
+	 * Returns an iterator over the elements of the couple.
+	 * 
+	 * @return 
+	 * An iterator over the elements of the couple.
+	 */
+	public java.util.Iterator<Type> iterator() {
+		Type iteratorElements[];
+
+		if (elements[0] != null  &&  elements[1] != null)
+			iteratorElements = (Type[]) elements.clone();
+		else if (elements[0] != null)
+			iteratorElements = (Type[]) new Object[] {elements[0]};
+		else
+			iteratorElements = (Type[]) new Object[] {elements[1]};
+
+		return java.util.Arrays.asList(iteratorElements).iterator();
+	}
 }

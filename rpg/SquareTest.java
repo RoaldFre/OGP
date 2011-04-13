@@ -313,9 +313,4 @@ public class SquareTest {
 	public void mergeWith_Null() {
 		square_T100_H50.mergeWith(null, 1);
 	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void mergeWith_InvalidDirection() {
-		square_T100_H50.mergeWith(square_T40_H100, 0);
-	}
 }

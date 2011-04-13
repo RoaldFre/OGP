@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 /**
- * A class collecting tests for the class of borders
+ * A class collecting tests for the class of borders.
  *
  * @author Roald Frederickx
  */
@@ -44,7 +44,6 @@ public class BorderTest {
 		assertClassInvariants(border2south);
 		assertTrue(square1.getBorderAt(Direction.NORTH).equals(
 									square2.getBorderAt(Direction.SOUTH)));
-
 		assertTrue(square1.getBorderAt(Direction.NORTH).bordersOnSquare(
 																square2));
 		assertTrue(square2.getBorderAt(Direction.SOUTH).bordersOnSquare(

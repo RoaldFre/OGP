@@ -65,6 +65,7 @@ public class Wall extends Border{
 		return isSlippery;
 	}
 
+	@Override
 	@Immutable
 	protected int openness() {
 		return 10;

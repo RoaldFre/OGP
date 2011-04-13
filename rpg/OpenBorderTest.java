@@ -4,11 +4,11 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 /**
- * A class collecting tests for the class of walls.
+ * A class collecting tests for the class of open borders.
  *
  * @author Roald Frederickx
  */
-public class WallTest {
+public class OpenBorderTest {
 
 	/**
 	 * Instance variables referencing objects that may change during 
@@ -31,41 +31,39 @@ public class WallTest {
 	}
 
 	/** 
-	 * Asserts the class invariants of the given wall.
+	 * Asserts the class invariants of the given open border.
 	 *
-	 * @param wall 
-	 * The wall to test.
+	 * @param openBorder 
+	 * The open border to test.
 	 */
-	public static void assertClassInvariants(Wall wall) {
-		BorderTest.assertClassInvariants(wall);
+	public static void assertClassInvariants(OpenBorder openBorder) {
+		BorderTest.assertClassInvariants(openBorder);
 	}
 
 	@Test
 	public void constructor_fromBorder() {
-		Wall wall = new Wall(border1north, true);
-		assertTrue(wall.isSlippery());
-		assertClassInvariants(wall);
-		assertTrue(wall.bordersOnSquare(square1));
-		BorderTest.testConstructor_fromBorder(border1north, wall);
-		assertTrue(wall.isWall());
-		assertFalse(wall.isDoor());
-		assertFalse(wall.isOpen());
-		assertFalse(wall.isTerminated());
+		OpenBorder openBorder = new OpenBorder(border1north);
+		assertClassInvariants(openBorder);
+		assertTrue(openBorder.bordersOnSquare(square1));
+		BorderTest.testConstructor_fromBorder(border1north, openBorder);
+		assertFalse(openBorder.isWall());
+		assertFalse(openBorder.isDoor());
+		assertTrue(openBorder.isOpen());
+		assertFalse(openBorder.isSlippery());
+		assertFalse(openBorder.isTerminated());
 		assertTrue(border1north.isTerminated());
 	}
 
 	@Test
 	public void constructor_fromSquare() {
-		Wall wall = new Wall(square1, true);
-		assertTrue(wall.isSlippery());
-		//assertClassInvariants(wall);
-		//object is still raw, as per documentation!
-		assertTrue(wall.bordersOnSquare(square1));
-		BorderTest.testConstructor_fromSquare(wall, square1);
-		assertTrue(wall.isWall());
-		assertFalse(wall.isDoor());
-		assertFalse(wall.isOpen());
-		assertFalse(wall.isTerminated());
+		OpenBorder openBorder = new OpenBorder(square1);
+		assertTrue(openBorder.bordersOnSquare(square1));
+		BorderTest.testConstructor_fromSquare(openBorder, square1);
+		assertFalse(openBorder.isWall());
+		assertFalse(openBorder.isDoor());
+		assertTrue(openBorder.isOpen());
+		assertFalse(openBorder.isSlippery());
+		assertFalse(openBorder.isTerminated());
 	}
 
 	@Test
@@ -82,7 +80,6 @@ public class WallTest {
 		assertTrue(square1.getBorderAt(Direction.NORTH).equals(
 									square2.getBorderAt(Direction.SOUTH)));
 		assertTrue(square1.getBorderAt(Direction.NORTH).isWall());
-
 		assertTrue(square1.getBorderAt(Direction.NORTH).bordersOnSquare(
 																square2));
 		assertTrue(square2.getBorderAt(Direction.SOUTH).bordersOnSquare(

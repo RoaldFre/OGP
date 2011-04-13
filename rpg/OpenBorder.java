@@ -54,6 +54,7 @@ public class OpenBorder extends Border{
 		return false;
 	}
 
+	@Override
 	@Immutable
 	protected int openness() {
 		return 30;

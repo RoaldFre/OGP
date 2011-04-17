@@ -93,8 +93,7 @@ public abstract class Border {
 	 * @pre
 	 * @pre
 	 */
-	//XXX package visibility only?
-	public void mergeWith(Border other) throws BorderConstraintsException {
+	void mergeWith(Border other) throws BorderConstraintsException {
 		assert other != null;
 		assert !this.isTerminated();
 		assert !other.isTerminated();
@@ -173,7 +172,6 @@ public abstract class Border {
 	}
 
 
-
 	/** 
 	 * Returns whether this border is shared by two squares. 
 	 * 
@@ -214,7 +212,7 @@ public abstract class Border {
 	 * Check whether this border has proper squares.
 	 * 
 	 * @return 
-	 * True if this border is not terminated and all of the squares it 
+	 * True iff this border is not terminated and all of the squares it 
 	 * is adjacent to also have this border as a border.
 	 */
 	public boolean hasProperSquares() {
@@ -232,7 +230,7 @@ public abstract class Border {
 	/** 
 	 * Variable referencing the square(s) that border(s) on this border.
 	 */
-	protected Couple<Square> squares;
+	private Couple<Square> squares;
 
 	/**
 	 * Return the termination status for this border.
@@ -250,6 +248,8 @@ public abstract class Border {
 	 * border.
 	 * @post
 	 *   | new.isTerminated()
+	 * @post
+	 *   | new.hasProperSquares()
 	 */
 	@Raw
 	private void terminate(){

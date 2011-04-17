@@ -3,9 +3,14 @@ package rpg.exceptions;
 import rpg.*;
 import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * A class for signalling a violation of the constraints on borders.
+ * 
+ * @author Roald Frederickx
+ */
 public class BorderConstraintsException extends RuntimeException {
 	/** 
-	 * Initialize this new border constraints exceptions with the given 
+	 * Initialize this new border constraints exception with the given 
 	 * offending square, border and direction.
 	 *
 	 * @param square

@@ -2,6 +2,7 @@ package rpg;
 
 import static org.junit.Assert.*;
 import org.junit.*;
+import rpg.exceptions.*;
 
 /**
  * A class collecting tests for the class of squares
@@ -133,6 +134,7 @@ public class SquareTest {
 	public void setTemperature_LegalCase() {
 		square_T100_H50.setTemperature(new Temperature(200));
 		assertEquals(200, square_T100_H50.getTemperature().temperature(), 0);
+		assertClassInvariants(square_T100_H50);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -157,12 +159,14 @@ public class SquareTest {
 	public void setMaxTemperature_LegalCase() {
 		square_T100_H50.setMaxTemperature(new Temperature(1000));
 		assertEquals( 1000, square_T100_H50.getMaxTemperature().temperature(), 0);
+		assertClassInvariants(square_T100_H50);
 	}
 
 	@Test
 	public void setMinTemperature_LegalCase() {
 		square_T100_H50.setMinTemperature(new Temperature(-1000));
 		assertEquals(-1000, square_T100_H50.getMinTemperature().temperature(), 0);
+		assertClassInvariants(square_T100_H50);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -234,7 +238,7 @@ public class SquareTest {
 	}
 
 	@Test
-	public void rustDamage() {
+	public void rustDamage_Test() {
 		assertEquals(0, square_Tneg15p01_H0.rustDamage());
 		assertEquals(0, square_Tneg5_H20.rustDamage());
 		assertEquals(2, square_T100_H50.rustDamage());
@@ -242,7 +246,7 @@ public class SquareTest {
 	}
 
 	@Test
-	public void slippery() {
+	public void slippery_Test() {
 		assertTrue(square_T20_Tmin0_Tmax100_H20.isSlippery());
 
 		assertTrue(square_T40_H100.isSlippery());
@@ -253,7 +257,7 @@ public class SquareTest {
 	}
 	
 	@Test
-	public void inhabitability() {
+	public void inhabitability_Test() {
 		double heatDam = squareDefault.heatDamage();
 		double heatDamCubed = heatDam * heatDam * heatDam;
 		double coldDam = squareDefault.coldDamage();
@@ -263,22 +267,6 @@ public class SquareTest {
 					- Math.sqrt(coldDam);
 		assertEquals(expected, squareDefault.inhabitability(), 0);
 	}
-
-	/*
-	@Test
-	public void setBorderAt_LegalCase() {
-		squareDefault.setBorderAt(1, false);
-		assertFalse(squareDefault.hasBorderAt(1));
-	}
-
-	@Test
-	public void setBorderAt_IllegalCale() {
-		squareDefault.setBorderAt(Square.NUM_BORDERS + 1, false);
-		// everything should remain unchanged from the defaults 
-		for (int i = 1; i <= Square.NUM_BORDERS; i++)
-			assertTrue(squareDefault.hasBorderAt(i));
-	}
-	*/
 
 	@Test
 	public void setMergeTemperatureWeight_LegalCase() {
@@ -292,11 +280,114 @@ public class SquareTest {
 	}
 
 	@Test
-	public void mergeWith() {
-		square_T100_H50.mergeWith(square_T40_H100, 2);
+	public void getBorderAt_Test() {
+		Border newBorder = new Wall(
+				squareDefault.getBorderAt(Direction.NORTH), false);
+		assertEquals(newBorder, squareDefault.getBorderAt(Direction.NORTH));
+		assertClassInvariants(squareDefault);
+	}
 
-	//	assertFalse(square_T100_H50.hasBorderAt(2));
-	//	assertFalse(square_T40_H100.hasBorderAt(2));
+	@Test(expected = IllegalArgumentException.class)
+	public void changeBorderAt_NonProperBorder() {
+		squareDefault.changeBorderAt(Direction.NORTH, null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void changeBorderAt_Loop() {
+		squareDefault.changeBorderAt(Direction.NORTH,
+				squareDefault.getBorderAt(Direction.SOUTH));
+	}
+	
+	@Test
+	public void changeBorderAt_BorderConstraints() {
+		Door door = new Door(squareDefault, false);
+		Border original = squareDefault.getBorderAt(Direction.DOWN);
+		try {
+			squareDefault.changeBorderAt(Direction.DOWN, door);
+			assertTrue(false); //if there was no exception, we failed!
+		} catch (BorderConstraintsException e) {
+			//nop
+		}
+		assertEquals(original, squareDefault.getBorderAt(Direction.DOWN));
+		assertClassInvariants(squareDefault);
+	}
+
+	@Test
+	public void canHaveAsBorderAt_Test() {
+		Border terminatedBorder = squareDefault.getBorderAt(Direction.NORTH);
+		Border border = new Wall(terminatedBorder, false);
+
+		assertTrue(squareDefault.canHaveAsBorderAt(Direction.NORTH, border));
+		assertFalse(squareDefault.canHaveAsBorderAt(null, border));
+		assertFalse(squareDefault.canHaveAsBorderAt(Direction.NORTH, null));
+		assertFalse(squareDefault.canHaveAsBorderAt(Direction.NORTH,
+														terminatedBorder));
+
+		squareDefault.terminate();
+		assertTrue(squareDefault.canHaveAsBorderAt(Direction.NORTH, null));
+		assertFalse(squareDefault.canHaveAsBorderAt(Direction.NORTH, border));
+		assertFalse(squareDefault.canHaveAsBorderAt(Direction.NORTH,
+														terminatedBorder));
+	}
+
+	@Test
+	public void isProperBorderAt_Test() {
+		Border terminatedBorder = squareDefault.getBorderAt(Direction.NORTH);
+		new Wall(terminatedBorder, false);
+
+		Border borderWithCorrectSquare = new Wall(squareDefault, false);
+		Border borderWithWrongSquare = new Wall(square_T100_H50, false);
+
+		assertTrue(squareDefault.isProperBorderAt(Direction.NORTH,
+												borderWithCorrectSquare));
+		assertFalse(squareDefault.isProperBorderAt(Direction.NORTH,
+												borderWithWrongSquare));
+		assertFalse(squareDefault.isProperBorderAt(Direction.NORTH,
+												terminatedBorder));
+		assertFalse(squareDefault.isProperBorderAt(null,
+												borderWithCorrectSquare));
+		assertFalse(squareDefault.isProperBorderAt(Direction.NORTH, null));
+
+		squareDefault.terminate();
+		assertTrue(squareDefault.isProperBorderAt(Direction.NORTH, null));
+		assertFalse(squareDefault.isProperBorderAt(Direction.NORTH,
+												borderWithWrongSquare));
+		assertFalse(squareDefault.isProperBorderAt(Direction.NORTH,
+												borderWithCorrectSquare));
+		assertFalse(squareDefault.isProperBorderAt(Direction.NORTH,
+												terminatedBorder));
+	}
+
+	@Test
+	public void getDirectionOfBorder_Legal() {
+		for (Direction direction : Direction.values())
+			assertEquals(direction,
+					squareDefault.getDirectionOfBorder(
+						squareDefault.getBorderAt(direction)));
+
+		Border newBorder = new Wall(
+				squareDefault.getBorderAt(Direction.NORTH), false);
+		assertEquals(Direction.NORTH,
+				squareDefault.getDirectionOfBorder(newBorder));
+	}
+
+	@Test
+	public void hasBorder_Legal() {
+		for (Direction direction : Direction.values())
+			assertTrue(squareDefault.hasBorder(
+						squareDefault.getBorderAt(direction)));
+
+		Border newBorder = new Wall(
+				squareDefault.getBorderAt(Direction.NORTH), false);
+		assertTrue(squareDefault.hasBorder(newBorder));
+	}
+
+	@Test
+	public void mergeWith_TestHumiditiesAndTemperatures_Legal() {
+		square_T100_H50.mergeWith(square_T40_H100, Direction.NORTH);
+
+		assertEquals(square_T100_H50.getBorderAt(Direction.NORTH),
+						square_T40_H100.getBorderAt(Direction.SOUTH));
 
 		assertEquals(7500, square_T100_H50.getHumidity());
 		assertEquals(7500, square_T40_H100.getHumidity());
@@ -307,10 +398,35 @@ public class SquareTest {
 				 + (weightOffset + (1 - weightOffset) * 100/75) * 40) / 2.0);
 		assertTrue(newTemp.equals(square_T100_H50.getTemperature()));
 		assertTrue(newTemp.equals(square_T40_H100.getTemperature()));
+
+		assertClassInvariants(square_T100_H50);
+		assertClassInvariants(square_T40_H100);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void mergeWith_Null() {
-		square_T100_H50.mergeWith(null, 1);
+	public void mergeWith_IllegalSquare() {
+		squareDefault.mergeWith(null, Direction.NORTH);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void mergeWith_IllegalDirection() {
+		squareDefault.mergeWith(square_T40_H100, null);
+	}
+
+	@Test(expected = BorderMergeException.class)
+	public void mergeWith_Loop() {
+		squareDefault.mergeWith(squareDefault, Direction.NORTH);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void mergeWith_ThisTerminated() {
+		square_T100_H50.terminate();
+		square_T100_H50.mergeWith(square_T40_H100, Direction.NORTH);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void mergeWith_OtherTerminated() {
+		square_T40_H100.terminate();
+		square_T100_H50.mergeWith(square_T40_H100, Direction.NORTH);
 	}
 }

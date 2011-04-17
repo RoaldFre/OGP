@@ -104,17 +104,27 @@ public abstract class Border {
 	 * @param other 
 	 * The border to merge with this one.
 	 * @pre
+	 *   | other != null
 	 * @pre
-	 * @pre
+	 *   | !this.isTerminated() &amp;&amp; !other.isTerminated()
+	 * @post
+	 * The two borders get merged into a single border that borders both 
+	 * squares associated with both old borders. That new border is the 
+	 * least open border of the original borders.
+	 * @throws BorderConstraintsException
+	 * Merging the borders would violate a border constraint.
+	 * @throws BorderMergeException
+	 * One of the two borders is already shared by two squares, or both 
+	 * borders share the same square.
 	 */
-	void mergeWith(Border other) throws BorderConstraintsException {
+	void mergeWith(Border other) throws BorderConstraintsException,
+		 								BorderMergeException {
 		assert other != null;
-		assert !this.isTerminated();
-		assert !other.isTerminated();
-		assert !this.isSharedByTwoSquares();
-		assert !other.isSharedByTwoSquares();
-		//no loops, see invar
-		assert this.squares.getAnElement() != other.squares.getAnElement();
+		assert !this.isTerminated() && !other.isTerminated();
+
+		if (this.isSharedByTwoSquares() || other.isSharedByTwoSquares()
+				|| squares.getAnElement() == other.squares.getAnElement())
+			throw new BorderMergeException(this, other);
 
 		//Keep the least open border
 		Border newBorder;		//the border to keep

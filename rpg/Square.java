@@ -74,12 +74,8 @@ public class Square {
 	 * humidity.
 	 *   | setHumidity(humidity)
 	 * @effect
-	 * The slipperiness of the floor for this new square gets initialized 
-	 * to the given slipperiness.
-	 *   | setHasSlipperyFloor(hasSlipperyFloor)
-	 * @effect
 	 * The borders of the square get initialized.
-	 *   | initializeBorders();
+	 *   | initializeBorders(hasSlipperyFloor);
 	 * @throws IllegalArgumentException
 	 * Some of the given temperatures values are not effective, or the 
 	 * given temperature does not match with the given temperature limits.
@@ -96,8 +92,7 @@ public class Square {
 		maxTemperature = maxTemp;
 		setTemperature(temperature);
 		setHumidity(humidity);
-		setHasSlipperyFloor(hasSlipperyFloor);
-		initializeBorders();
+		initializeBorders(hasSlipperyFloor);
 	}
 
 	/** 
@@ -238,7 +233,6 @@ public class Square {
 	 * Variable referencing the minimum temperature of this square. 
 	 */
 	private Temperature minTemperature;
-
 
 
 	/**
@@ -490,7 +484,6 @@ public class Square {
 	private static double heatDamageStep = 15;
 
 
-
 	/**
 	 * Return the humidity for this square.
 	 */
@@ -553,7 +546,6 @@ public class Square {
 	private int humidity;
 
 
-
 	/** 
 	 * Returns the rust damage associated with this square.
 	 * 
@@ -581,36 +573,21 @@ public class Square {
 	public static final int RUST_DAMAGE_STEP = 700;
 
 
-
 	/**
 	 * Return the slipperiness of the floor for this square.
+	 * 
+	 * @pre
+	 * This square is not terminated.
+	 *   | !isTerminated()
+	 * @return
+	 * The slipperiness of the floor.
+	 *   | getBorderAt(Direction.DOWN).isSlippery()
 	 */
-	@Basic @Raw
 	public boolean hasSlipperyFloor() {
-		return hasSlipperyFloor;
+		assert !isTerminated();
+		return getBorderAt(Direction.DOWN).isSlippery();
 	}
 	
-	/**
-	 * Set the slipperiness of the floor for this square.
-	 *
-	 * @param hasSlipperyFloor
-	 * The new slipperiness of the floor for this square.
-	 * @post
-	 * The new slipperiness of the floor for this square is equal to the 
-	 * given slipperiness of the floor.
-	 *   | new.hasSlipperyFloor() == hasSlipperyFloor
-	 */
-	@Raw
-	public void setHasSlipperyFloor(boolean hasSlipperyFloor) {
-		this.hasSlipperyFloor = hasSlipperyFloor;
-	}
-	
-	/**
-	 * Variable registering the slipperiness of the floor for this square.
-	 */
-	private boolean hasSlipperyFloor;
-
-
 
 	/**
 	 * Returns whether or not this square is slippery at the moment.
@@ -657,7 +634,6 @@ public class Square {
 	}
 
 
-
 	/** 
 	 * Return the inhabitability associated with this square. 
 	 * 
@@ -677,7 +653,6 @@ public class Square {
 		return -1 * Math.sqrt(heatDamCubed / (101 - humidityPercent))
 					- Math.sqrt(coldDam);
 	}
-
 
 
 	/** 
@@ -725,7 +700,9 @@ public class Square {
 	 * True iff this square is terminated and the given border is null; or 
 	 * this square is not terminated and the given border is not null nor 
 	 * terminated
-	 *   | if (isTerminated())
+	 *   | if (!isValidDirection(direction))
+	 *   |		then result == false
+	 *   | else if (isTerminated())
 	 *   |		then result == (border == null)
 	 *   | else
 	 *   |		result == (border != null 
@@ -733,6 +710,8 @@ public class Square {
 	 */
 	@Raw
 	public boolean canHaveAsBorderAt(Direction direction, Border border) {
+		if (!isValidDirection(direction))
+			return false;
 		if (isTerminated())
 			return border == null;
 		return (border != null) && (!border.isTerminated());
@@ -772,37 +751,65 @@ public class Square {
 	}
 
 	/** 
+	 * Check whether the given border would be a proper border for the given 
+	 * direction.
+	 * 
+	 * @param direction
+	 * The direction of the border.
+	 * @param border
+	 * The border to check.
+	 * @return 
+	 * True iff this square can have the given border as a border in the 
+	 * given direction and the given border is either null or it borders on 
+	 * this square.
+	 *   | result ==
+	 *   |		(canHaveAsBorderAt(direction, border)
+	 *   |			&amp;&amp;
+	 *   |			(border == null  ||  border.bordersOnSquare(this)))
+	 */
+	@Raw
+	public boolean isProperBorderAt(Direction direction, Border border) {
+		return (canHaveAsBorderAt(direction, border) &&
+				(border == null  ||  border.bordersOnSquare(this)));
+	}
+
+	/** 
 	 * Checks whether this square has proper borders associated with it.
 	 *
 	 * @return
-	 * True iff every border of this square is valid for this square in 
-	 * that direction and every border borders on this square.
-	 *   | for each direction in Direction.values()
-	 *   |		canHaveAsBorderAt(direction, getBorderAt(direction))
-	 *   |			&amp;&amp; getBorderAt(direction).bordersOnSquare(this)
+	 * True iff every border of this square is a proper border for this 
+	 * square in its direction.
+	 *   | result ==
+	 *   | 		for each direction in Direction.values() : 
+	 *   |				isProperBorderAt(direction, getBorderAt(direction)
 	 */
 	@Raw
 	public boolean hasProperBorders() {
 		for (Direction direction : Direction.values()){
-			Border border = getBorderAt(direction);
-			if (!canHaveAsBorderAt(direction, border)
-					|| !border.bordersOnSquare(this))
+			if (!isProperBorderAt(direction, getBorderAt(direction)))
 				return false;
 		}
 		return true;
 	}
 
 	/** 
-	 * Returns whether this square has no dublicate borders.
+	 * Returns whether this square has no duplicate borders.
 	 *
 	 * @return 
-	 * Whether this square has no duplicate borders.
-	 *   | for all d1 in Direction.values() :
-	 *   | 		{ d2 in Direction.values() |
-	 *   |			true : getBorderAt(d2) == getBorderAt(d1) }.size() == 1
+	 * Whether this square has no duplicate borders, or true if this square 
+	 * is terminated
+	 *   | if (isTerminated())
+	 *   |		then result == true
+	 *   | else
+	 *   |		result == (
+	 *   | 			for all d1 in Direction.values() :
+	 *   | 				{ d2 in Direction.values() | true :
+	 *   |					getBorderAt(d2) == getBorderAt(d1) }.size() == 1)
 	 */
 	@Raw
 	public boolean hasNoDuplicateBorders() {
+		if (isTerminated())
+			return true;
 		return borders.size() 
 				== (new java.util.HashSet<Border>(borders.values())).size();
 	}
@@ -816,18 +823,15 @@ public class Square {
 	 * The direction of the border.
 	 * @param border
 	 * The new border.
-	 * @pre
-	 * If this square is not terminated, then the given border must border 
-	 * on this square (and be effective).
-	 *   | isTerminated()
-	 *   |		|| (border != null &amp;&amp; border.bordersOnSquare(this))
 	 * @post
-	 * The new border in the given direction is equal to the given border.
-	 *   | new.getBorderAt(direction).equals(border)
+	 * If this square is not terminated, then the new border in the given 
+	 * direction is equal to the given border.
+	 *   | if (!isTerminated())
+	 *   |		then new.getBorderAt(direction).equals(border)
 	 * @throws IllegalArgumentException
-	 * This square can not have the given border as a border in the given 
-	 * direction.
-	 *   | !canHaveAsBorderAt(direction, border)
+	 * This square can not have the given border as a proper border in the 
+	 * given direction.
+	 *   | !isProperBorderAt(direction, border)
 	 * @throws IllegalArgumentException
 	 * This square already has the given non-null border as a border for 
 	 * some direction.
@@ -838,27 +842,35 @@ public class Square {
 	 * If the border of this square were to be changed to the given border, 
 	 * some border constraints would be violated.
 	 *
-	 * XXX I impose no restrictions on the possible other square of the 
+	 *
+	 * XXX XXX XXX
+	 * I impose no restrictions on the possible other square of the 
 	 * border, so that part too can be 'raw'.... (ok?)
+	 * or somehow make it so that those cannot 'change',
+	 * because assignment says: borders that are built cannot already border 
+	 * another square .... BUT I do need that in order to merge two 
+	 * squares/borders!
+	 * -- or is that only for the constructor?
 	 */
-	public void changeBorderAt(Direction direction, @Raw Border border) 
+	void changeBorderAt(Direction direction, @Raw Border border) 
 				throws IllegalArgumentException, BorderConstraintsException {
-		assert isTerminated()
-				|| (border != null  &&  border.bordersOnSquare(this));
-
-		if (!canHaveAsBorderAt(direction, border))
+		if (!isProperBorderAt(direction, border))
 			throw new IllegalArgumentException();
 
 		if (border != null && borders.containsValue(border))
 			throw new IllegalArgumentException();
 
-		Border oldBorder = getBorderAt(direction);
+		Border oldBorder = borders.get(direction);
 		borders.put(direction, border);
 		if (!bordersSatisfyConstraints()){
 			borders.put(direction, oldBorder);
 			throw new BorderConstraintsException(this, border, direction);
 		}
-		oldBorder.detatchFromSquare(this);
+
+		if (oldBorder == null)
+			assert isTerminated();
+		else
+			oldBorder.detatchFromSquare(this);
 	}
 
 	/** 
@@ -871,7 +883,7 @@ public class Square {
 	 * @effect
 	 * changeBorderAt(getDirectionOfBorder(oldBorder), newBorder)
 	 */
-	public void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
+	void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
 				throws IllegalArgumentException, BorderConstraintsException {
 		changeBorderAt(getDirectionOfBorder(oldBorder), newBorder);
 	}
@@ -887,9 +899,14 @@ public class Square {
 	 * @throws IllegalArgumentException
 	 * The given border is null or does not border this square.
 	 *   | border == null  ||  !border.bordersOnSquare(this)
+	 * @throws IllegalStateException
+	 * This square is terminated.
+	 *   | isTerminated()
 	 */
 	public Direction getDirectionOfBorder(@Raw Border border) 
-										throws IllegalArgumentException {
+					throws IllegalArgumentException, IllegalStateException {
+		if (isTerminated())
+			throw new IllegalStateException("Square is terminated!");
 		for (java.util.Map.Entry<Direction, Border> entry : borders.entrySet())
 			if (entry.getValue().equals(border))
 				return entry.getKey();
@@ -902,27 +919,35 @@ public class Square {
 	 * @param border 
 	 * The border to check.
 	 * @return 
-	 * Whether this square has the given border as its border. 
-	 *   | result == (for some direction in Direction.values() :
-	 *   |					getBorderAt(direction).equals(border))
+	 * Whether this square has the given border as its border, or false if 
+	 * this square is terminated. 
+	 *   | if (isTerminated())
+	 *   |		then result == false
+	 *   | else
+	 *   | 		result == (for some direction in Direction.values() :
+	 *   |						getBorderAt(direction).equals(border))
 	 */
 	public boolean hasBorder(Border border) {
+		if (isTerminated())
+			return false;
 		return borders.containsValue(border);
 	}
 
 	/** 
 	 * Initialize the borders of this square.
 	 *
+	 * @param hasSlipperyFloor
+	 * Whether or not to Initialize the floor as being slippery.
 	 * @post
-	 * The new square has a non-slippery 'wall' as a floor, and has open 
-	 * borders everywhere else.
+	 * The new square has a 'wall' as a floor with the given 
+	 * 'slipperiness', and has open borders everywhere else.
 	 */
-	@Raw
-	private void initializeBorders() {
+	@Raw @Model
+	private void initializeBorders(boolean hasSlipperyFloor) {
 		for (Direction direction : Direction.values()){
 			Border border;
 			if (direction.equals(Direction.DOWN))
-				border = new Wall(this, false);
+				border = new Wall(this, hasSlipperyFloor);
 			else
 				border = new OpenBorder(this);
 			borders.put(direction, border);
@@ -941,11 +966,10 @@ public class Square {
 
 
 	/** 
-	 * Variable referencing an array of borders of this square.
+	 * Variable referencing a map of borders of this square.
 	 */
 	private java.util.Map<Direction, Border> borders = 
 		new java.util.EnumMap<Direction, Border>(Direction.class);
-
 
 
 	/** 
@@ -956,53 +980,42 @@ public class Square {
 	 * @param direction
 	 * The direction in which to merge the squares.
 	 * @effect
-	 * The borgers get merged.
-	 *   | mergeBorders(others, direction)
+	 * The border of this square in the given direction gets merged with 
+	 * the border of the other square in the complementary direction.
+	 *   | getBorderAt(direction).mergeWith(
+	 *   |				other.getBorderAt(direction.complement()))
 	 * @effect
-	 * The humidities get merged.
-	 *   | mergeHumidities(other)
-	 * @effect
-	 * The temperatures get merged.
-	 *   | mergeTemperatures(other)
+	 * XXX
+	 * If the newly merged border is open, the temperature and humidities 
+	 * get merged.
+	 *   | if (new.getBorderAt(direction).isOpen()) {
+	 *   |		mergeTemperatures(other);
+	 *   |		mergeHumidities(other);
+	 *   | }
 	 * @throws IllegalArgumentException
-	 * The given other square is not effective.
-	 *   | other == null
+	 * The given other square is not effective or the given direction is 
+	 * not valid.
+	 *   | other == null  ||  !isValidDirection(direction)
+	 * @throws IllegalStateException
+	 * This square and/or the given square is/are terminated.
+	 *   | this.isTerminated() || other.isTerminated()
 	 */
-	public void mergeWith(Square other, int direction)
-		throws IllegalArgumentException {
-		if (other == null)
+	public void mergeWith(Square other, Direction direction)
+			throws IllegalArgumentException, IllegalStateException {
+		if (other == null  ||  !isValidDirection(direction))
 			throw new IllegalArgumentException();
+		if (isTerminated() || other.isTerminated())
+			throw new IllegalStateException();
 
-		////////mergeBorders(other, direction);
-		//TODO
-		mergeTemperatures(other);
-		/* temperatures must be merged before humidities! */
-		mergeHumidities(other);
+		getBorderAt(direction).mergeWith(
+								other.getBorderAt(direction.complement()));
+
+		if (getBorderAt(direction).isOpen()){
+			mergeTemperatures(other);
+			mergeHumidities(other);
+		}
 	}
 
-	// /** 
-	//  * Merge the borders of this square with the given square. 
-	//  *
-	//  * @pre
-	//  * The other square is effective
-	//  *   | other != null
-	//  * @post
-	//  * Both new squares are not bordererd in the given direction.
-	//  *   | !this.hasBorderAt(direction)
-	//  *   | 		&amp;&amp; !other.hasBorderAt(direction)
-	//  * @throws IllegalArgumentException
-	//  * The given direction is not a valid one
-	//  *   | !isValidDirection(direction)
-	//  */
-	// public void mergeBorders(Square other, int direction)
-	// 								throws IllegalArgumentException {
-	// 	assert other != null;
-	// 	if (!isValidDirection(direction))
-	// 		throw new IllegalArgumentException();
-	// 	this.setBorderAt(direction, false);
-   // 	other.setBorderAt(direction, false);
-   // }
-	
 	/** 
 	 * Merge the humidities of this square with the given square. 
 	 *
@@ -1070,8 +1083,6 @@ public class Square {
 		//out of bounds for one of the squares!
 	}
 
-
-	
 	/**
 	 * Returns the weight constant for merging temperatures that applies to 
 	 * all squares.
@@ -1155,9 +1166,18 @@ public class Square {
 		return isTerminated;
 	}
 	
-	public void terminate(){
-		//TODO
+	/** 
+	 * Terminate this square.
+	 *
+	 * @post
+	 * This square is terminated.
+	 *   | new.isTerminated()
+	 */
+	//XXX NEVER USED?
+	void terminate(){
 		isTerminated = true;
+		for (Direction direction : Direction.values())
+			changeBorderAt(direction, null);
 	}
 	
 	/**
@@ -1168,6 +1188,8 @@ public class Square {
 
 
 	public String toString() {
+		if (isTerminated())
+			return "Terminated!";
 		return  "Temperature:    " + getTemperature()
 			+ "\nHumidity:       " + getHumidityString()
 			+ "\nFloor:          " + (hasSlipperyFloor()?"":"not ")+"slippery"

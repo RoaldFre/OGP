@@ -58,8 +58,6 @@ public class WallTest {
 	public void constructor_fromSquare() {
 		Wall wall = new Wall(square1, true);
 		assertTrue(wall.isSlippery());
-		//assertClassInvariants(wall);
-		//object is still raw, as per documentation!
 		assertTrue(wall.bordersOnSquare(square1));
 		BorderTest.testConstructor_fromSquare(wall, square1);
 		assertTrue(wall.isWall());

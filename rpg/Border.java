@@ -67,22 +67,36 @@ public abstract class Border {
 	 * Returns whether or not this border is open, thus connecting the 
 	 * interior of its adjacent squares.
 	 */
-	public abstract boolean isOpen();
+	@Basic
+	//XXX also @Immutable here, but Liskov prevents subclasses from doing 
+	//fancy things then...
+	public boolean isOpen(){
+		return false;
+	}
 
 	/** 
 	 * Returns whether or not this border is a door.
 	 */
-	public abstract boolean isDoor();
+	@Basic
+	public boolean isDoor(){
+		return false;
+	}
 
 	/** 
 	 * Returns whether or not this border is a wall.
 	 */
-	public abstract boolean isWall();
+	@Basic
+	public boolean isWall(){
+		return false;
+	}
 
 	/** 
 	 * Returns whether or not this border is slippery.
 	 */
-	public abstract boolean isSlippery();
+	@Basic
+	public boolean isSlippery(){
+		return false;
+	}
 
 	/** 
 	 * Merge this border with the given border. 
@@ -274,7 +288,17 @@ public abstract class Border {
 	/** 
 	 * Returns the level of 'openness' of a border. Only relative values 
 	 * will be used to determine which type of border will result from 
-	 * merging two borders.
+	 * merging two borders. The values shall impose a total ordering on the 
+	 * different types of borders.
+	 *
+	 * XXX note:
+	 * Alternative that doesn't need altering code from old classes:
+	 * boolean isMoreOpenThan(Border other)
+	 * New class == implement this for all known classes up till then.
+	 * This imposes a 'partial' oder that can be made complete by assuming 
+	 * anti-symmetry.
+	 * This will probably need instanceof, and will probably break when further 
+	 * subclasse are added ... so stick with an openness() ?
 	 *
 	 * @return
 	 * The openness of a border.

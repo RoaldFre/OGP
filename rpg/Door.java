@@ -42,26 +42,16 @@ public class Door extends Border{
 	}
 
 	@Override
+	@Basic
 	public boolean isOpen() {
 		return isOpened;
 	}
 
 	@Override
 	@Immutable
+	@Basic
 	public boolean isDoor() {
 		return true;
-	}
-
-	@Override
-	@Immutable
-	public boolean isWall() {
-		return false;
-	}
-
-	@Override
-	@Immutable
-	public boolean isSlippery() {
-		return false;
 	}
 
 	@Override

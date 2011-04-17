@@ -43,18 +43,6 @@ public class Wall extends Border{
 
 	@Override
 	@Immutable
-	public boolean isOpen() {
-		return false;
-	}
-
-	@Override
-	@Immutable
-	public boolean isDoor() {
-		return false;
-	}
-
-	@Override
-	@Immutable
 	public boolean isWall() {
 		return true;
 	}

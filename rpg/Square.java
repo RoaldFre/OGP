@@ -786,7 +786,7 @@ public class Square {
 		for (Direction direction : Direction.values()){
 			Border border = getBorderAt(direction);
 			if (!canHaveAsBorderAt(direction, border)
-									|| !border.bordersOnSquare(this))
+					|| !border.bordersOnSquare(this))
 				return false;
 		}
 		return true;

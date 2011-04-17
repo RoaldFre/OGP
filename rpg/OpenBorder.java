@@ -38,24 +38,6 @@ public class OpenBorder extends Border{
 
 	@Override
 	@Immutable
-	public boolean isDoor() {
-		return false;
-	}
-
-	@Override
-	@Immutable
-	public boolean isWall() {
-		return false;
-	}
-
-	@Override
-	@Immutable
-	public boolean isSlippery() {
-		return false;
-	}
-
-	@Override
-	@Immutable
 	protected int openness() {
 		return 30;
 	}

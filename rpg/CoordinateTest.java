@@ -16,7 +16,7 @@ public class CoordinateTest {
 	private static Coordinate coord_n10_n20_n30;
 
 	@BeforeClass
-	public static void setUpImmutableMutableFixture() {
+	public static void setUpImmutableFixture() {
 		origin = new Coordinate(0, 0, 0);
 		coord_10_20_30 = new Coordinate(10, 20, 30);
 		coord_n10_n20_n30 = new Coordinate(-10, -20, -30);

@@ -12,6 +12,7 @@ import org.junit.runners.Suite;
 	OpenBorderTest.class,
 	TemperatureTest.class,
 	CoordinateTest.class,
+	CoordinateSystemTest.class,
 })
 public class AllTests {
 }

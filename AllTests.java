@@ -10,6 +10,8 @@ import org.junit.runners.Suite;
 	WallTest.class,
 	DoorTest.class,
 	OpenBorderTest.class,
+	TemperatureTest.class,
+	CoordinateTest.class,
 })
 public class AllTests {
 }

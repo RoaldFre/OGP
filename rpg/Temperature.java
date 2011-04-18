@@ -130,7 +130,7 @@ public class Temperature implements Comparable<Temperature> {
 	 * Variable registering the temperature (in degrees Celcius) for this 
 	 * temperature.
 	 */
-	private double temperature;	
+	private final double temperature;	
 
 
 	/** 
@@ -142,35 +142,46 @@ public class Temperature implements Comparable<Temperature> {
 	 * The temperature to compare this temperature to.
 	 * @return
 	 * -1 if the other temperature is strictly larger (on the Celcius 
-	 *  scale), 0 if they are equal and 1 otherwise.
-	 *    | if (temperature() &lt; other.temperature())
-	 *    |     result == -1
-	 *    | else if (temperature() &gt; other.temperature())
-	 *    |     result == 1
-	 *    | else result == 0
+	 * scale), 0 if they are equal and 1 otherwise.
+	 *   | if (equals(other))
+	 *   |		then result == 0
+	 *   | else if (temperature() &lt; other.temperature())
+	 *   |     then result == -1
+	 *   | else result == 1
+	 * @throws IllegalArgumentException
+	 * The given other temperature is not effective.
+	 *   | other == null
 	 */
-	public int compareTo(Temperature other) {
+	public int compareTo(Temperature other) throws IllegalArgumentException {
+		if (other == null)
+			throw new IllegalArgumentException();
+		if (equals(other))
+			return 0;
 		if (temperature() < other.temperature())
 			return -1;
-		if (temperature() > other.temperature())
-			return 1;
-		return 0;
+		return 1;
 	}
 
 	/** 
 	 * Check for equality between this temperature and a given temperatures.
-	 * Note: this allows a relative error of EQUALS_EPSILON in order to 
-	 * compensate for rounding errors when comparing different initial 
-	 * temperature scales.
+	 * Note: this allows a relative error (wrt degrees Celcius) of 
+	 * EQUALS_EPSILON in order to compensate for rounding errors when 
+	 * comparing different initial temperature scales.
 	 * 
 	 * @param other
 	 * The temperature to compare this temperature to.
 	 * @return
 	 * True iff the given object is an effective temperature and this 
-	 * temperature is equal to (up to a relative error of EQUALS_EPSILON) 
+	 * temperature is equal (up to a relative error of EQUALS_EPSILON) 
 	 * to the given temperature.
-	 *   | result == (Math.abs(Temperature() - other.temperature())
-	 *   |				&lt;= Math.abs(temperature() * EQUALS_EPSILON))
+	 *   | if (other == null)
+	 *   |		then result == false
+	 *   | else if (this.getClass() != other.getClass())
+	 *   |		then result == false
+	 *   | else result == (Math.abs(Temperature() - other.temperature())
+	 *   |				&lt;= Math.max(Math.abs(temperature()),
+	 *   |								Math.abs(other.temperature()))
+	 *   |						* EQUALS_EPSILON))
 	 */
 	@Override
 	public boolean equals(Object other) {
@@ -178,8 +189,11 @@ public class Temperature implements Comparable<Temperature> {
 			return false;
 		if (this.getClass() != other.getClass())
 			return false;
-		double allowedError = Math.abs(temperature() * EQUALS_EPSILON);
-		return Math.abs(temperature() - ((Temperature) other).temperature())
+		Temperature otherTemp = (Temperature) other;
+		double allowedError = Math.max(Math.abs(temperature()),
+										Math.abs(otherTemp.temperature()))
+								* EQUALS_EPSILON;
+		return Math.abs(temperature() - otherTemp.temperature())
 															<= allowedError;
 	}
 

@@ -828,6 +828,11 @@ public class Square {
 	 * direction is equal to the given border.
 	 *   | if (!isTerminated())
 	 *   |		then new.getBorderAt(direction).equals(border)
+	 * @effect
+	 * If the old border in the given direction is not null, then that old 
+	 * border gets detatched from this square.
+	 *   | if (old.getBorderAt(direction) != null)
+	 *   |		old.getBorderAt(direction).detatchFromSquare(this);
 	 * @throws IllegalArgumentException
 	 * This square can not have the given border as a proper border in the 
 	 * given direction.
@@ -1172,8 +1177,11 @@ public class Square {
 	 * @post
 	 * This square is terminated.
 	 *   | new.isTerminated()
+	 * @effect
+	 * The old borders get changed to null.
+	 *   | for (Direction direction : Direction.values())
+	 *   |		changeBorderAt(direction, null);
 	 */
-	//XXX NEVER USED?
 	void terminate(){
 		isTerminated = true;
 		for (Direction direction : Direction.values())

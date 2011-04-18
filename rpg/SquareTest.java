@@ -5,7 +5,7 @@ import org.junit.*;
 import rpg.exceptions.*;
 
 /**
- * A class collecting tests for the class of squares
+ * A class collecting tests for the class of squares.
  *
  * @author Roald Frederickx
  */

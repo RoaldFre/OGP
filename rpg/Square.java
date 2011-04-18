@@ -1178,7 +1178,8 @@ public class Square {
 	 * This square is terminated.
 	 *   | new.isTerminated()
 	 * @effect
-	 * The old borders get changed to null.
+	 * The old borders get changed to null and they get detatched from any 
+	 * other squares.
 	 *   | for (Direction direction : Direction.values())
 	 *   |		changeBorderAt(direction, null);
 	 */

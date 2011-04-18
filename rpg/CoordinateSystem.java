@@ -1,6 +1,8 @@
 package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
+import java.util.Map;
+import java.util.EnumMap;
 
 /**
  * A class representing a coordinate system with a lower and an upper 
@@ -251,14 +253,14 @@ public class CoordinateSystem {
 	 * An iterable of the neighbours of the given coordinate in this 
 	 * coordinate system.
 	 */
-	public Iterable<Coordinate> neighboursOf(Coordinate coordinate) {
+	public Map<Direction, Coordinate> neighboursOf(Coordinate coordinate) {
 		assert coordinate != null;
-		java.util.ArrayList<Coordinate> result =
-				new java.util.ArrayList<Coordinate>(Direction.values().length);
+		EnumMap<Direction, Coordinate> result =
+						new EnumMap<Direction, Coordinate>(Direction.class);
 		for (Direction direction : Direction.values()) {
 			Coordinate newCoord = coordinate.moveTo(direction);
 			if (isValidCoordinate(newCoord))
-				result.add(newCoord);
+				result.put(direction, newCoord);
 		}
 		return result;
 	}

@@ -13,6 +13,7 @@ import org.junit.runners.Suite;
 	TemperatureTest.class,
 	CoordinateTest.class,
 	CoordinateSystemTest.class,
+	DungeonTest.class,
 })
 public class AllTests {
 }

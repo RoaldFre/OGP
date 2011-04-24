@@ -156,11 +156,11 @@ public class DungeonTest {
 		assertFalse(dungeon_10.isOccupied(coordinate));
 		assertTrue(square.isTerminated());
 	}
-	@Test (expected = IllegalArgumentException)
+	@Test (expected = IllegalArgumentException.class)
 	public void deleteSquareAt_invalidCoordinate_null() {
 		dungeon_10.deleteSquareAt(null);
 	}
-	@Test (expected = IllegalArgumentException)
+	@Test (expected = IllegalArgumentException.class)
 	public void deleteSquareAt_invalidCoordinate_allEqual() {
 		Coordinate coordinate = new Coordinate(1, 1, 1);
 		dungeon_10.deleteSquareAt(coordinate);
@@ -170,6 +170,4 @@ public class DungeonTest {
 		Coordinate coordinate = new Coordinate(1, 2, 3);
 		dungeon_10.deleteSquareAt(coordinate);
 	}
-
-	//getsquareat, deletesquareat -> CoordinateNotOccupiedException
 }

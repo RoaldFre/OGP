@@ -118,13 +118,50 @@ public class Dungeon {
 			throw new DungeonConstraintsException(square, this);
 		}
 
-		for (Map.Entry<Direction, Coordinate> neighbourEntry :
-							coordSyst.neighboursOf(coordinate).entrySet()) {
-			Square neighBour = squares.get(neighbourEntry.getValue());
-			if (neighBour != null)
-				square.mergeWith(neighBour, neighbourEntry.getKey());
+		for (Map.Entry<Direction, Square> neighbourEntry :
+									getNeighboursOf(coordinate).entrySet()){
+			Square neighbour = neighbourEntry.getValue();
+			Direction neighbourDirection = neighbourEntry.getKey();
+			square.mergeWith(neighbour, neighbourDirection);
 		}
 	}
+
+	/** 
+	 * Return a mapping of directions to squares that represent all 
+	 * neighbouring squares of the given coordinate in this dungeon. 
+	 * 
+	 * @param coordinate 
+	 * The coordinate whose neighbours to return.
+	 * @return
+	 * A mapping of directions to squares that represent all neighbouring 
+	 * squares of the given coordinate in this dungeon. 
+	 * @throws IllegalArgumentException
+	 *   | coordinate == null
+	 */
+	public Map<Direction, Square> getNeighboursOf(Coordinate coordinate)
+											throws IllegalArgumentException {
+		if (coordinate == null)
+			throw new IllegalArgumentException();
+
+		java.util.EnumMap<Direction, Square> result =
+					new java.util.EnumMap<Direction, Square>(Direction.class);
+
+		for (Map.Entry<Direction, Coordinate> neighbourEntry :
+							coordSyst.neighboursOf(coordinate).entrySet()) {
+			Coordinate neighbourCoordinate = neighbourEntry.getValue();
+			Direction neighbourDirection = neighbourEntry.getKey();
+			Square neighbour = squares.get(neighbourCoordinate);
+			if (neighbour != null)
+				result.put(neighbourDirection, neighbour);
+		}
+
+		return result;
+	}
+
+
+	//TODO haspropersquares, die checkt op neigbouring in de correcte 
+	//richting etc
+	
 
 	/** 
 	 * Returns the square at the given coordinate in this dungeon.

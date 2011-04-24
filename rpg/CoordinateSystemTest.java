@@ -103,7 +103,7 @@ public class CoordinateSystemTest {
 	@Test
 	public void neighboursOf_test() {
 		for (Coordinate coord : coordSyst_0_to_10.neighboursOf(
-												new Coordinate(1, 2, 3)))
+									new Coordinate(1, 2, 3)).values())
 			assertTrue(coordSyst_0_to_10.isValidCoordinate(coord));
 	}
 }

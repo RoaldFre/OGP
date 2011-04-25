@@ -101,9 +101,13 @@ public class CoordinateSystemTest {
 	}
 
 	@Test
-	public void neighboursOf_test() {
+	public void neighboursOf_legal() {
 		for (Coordinate coord : coordSyst_0_to_10.neighboursOf(
 									new Coordinate(1, 2, 3)).values())
 			assertTrue(coordSyst_0_to_10.isValidCoordinate(coord));
+	}
+	@Test (expected = IllegalArgumentException.class)
+	public void neighboursOf_null() {
+		coordSyst_0_to_10.neighboursOf(null);
 	}
 }

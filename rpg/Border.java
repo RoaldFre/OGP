@@ -221,9 +221,15 @@ public abstract class Border {
 	 * @post
 	 *   | if (!old.isSharedByTwoSquares())
 	 *   | then (new.isTerminated())
+	 * @throws IllegalArgumentException
+	 *   | !bordersOnSquare(square)
 	 */
-	void detatchFromSquare(@Raw Square square) {
+	void detatchFromSquare(@Raw Square square)
+										throws IllegalArgumentException {
 		assert !isTerminated() && !square.hasBorder(this);
+
+		if (!bordersOnSquare(square))
+			throw new IllegalArgumentException();
 
 		if (!isSharedByTwoSquares()) {
 			terminate();

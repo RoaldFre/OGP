@@ -150,8 +150,8 @@ public class CoordinateSystem {
 	 *   | ! canHaveAsUpperBound(upperBound)
 	 */
 	@Raw
-	public void setUpperBound(Coordinate upperBound) throws 
-	IllegalArgumentException {
+	public void setUpperBound(Coordinate upperBound)
+											throws IllegalArgumentException {
 		if (!canHaveAsUpperBound(upperBound))
 			throw new IllegalArgumentException();
 		this.upperBound = upperBound;
@@ -247,14 +247,17 @@ public class CoordinateSystem {
 	 * 
 	 * @param coordinate 
 	 * The coordinate whose neighbours to generate.
-	 * @pre
-	 *   | coordinate != null
 	 * @return
 	 * An iterable of the neighbours of the given coordinate in this 
 	 * coordinate system.
+	 * @throws IllegalArgumentException
+	 *   | coordinate == null
 	 */
-	public Map<Direction, Coordinate> neighboursOf(Coordinate coordinate) {
-		assert coordinate != null;
+	public Map<Direction, Coordinate> neighboursOf(Coordinate coordinate) 
+											throws IllegalArgumentException {
+		if (coordinate == null)
+			throw new IllegalArgumentException();
+
 		EnumMap<Direction, Coordinate> result =
 						new EnumMap<Direction, Coordinate>(Direction.class);
 		for (Direction direction : Direction.values()) {

@@ -12,6 +12,8 @@ import java.util.HashMap;
  *   | squaresHaveValidCoordinates()
  * @invar
  *   | squaresSatisfyConstraints()
+ * @invar
+ *   | hasProperBorderingSquares()
  *
  * @author Roald Frederickx
  */
@@ -58,18 +60,34 @@ public class Dungeon {
 	 * True iff the coordinate is effective, bounded by the origin and the 
 	 * far corner, and the coordinate values in all directions are not 
 	 * equal to each other.
-	 *   | result == (coordinate != null
+	 *   | result == (isPossibleSquareCoordinate(coordinate)
 	 *   |		&amp;&amp; coordinate.isBoundedBy(ORIGIN, getFarCorner())
 	 *   |		&amp;&amp; (coordinate.x != coordinate.y
 	 *   |					|| coordinate.y != coordinate.z
 	 *   |					|| coordinate.z != coordinate.x))
 	 */
 	public boolean isValidSquareCoordinate(Coordinate coordinate) {
+		if (!isPossibleSquareCoordinate(coordinate))
+			return false;
 		if (!coordSyst.isValidCoordinate(coordinate))
 			return false;
 		return coordinate.x != coordinate.y
 			|| coordinate.y != coordinate.z
 			|| coordinate.z != coordinate.x;
+	}
+
+		
+	/** 
+	 * Checks whether or not the given coordinate is a possible square 
+	 * coordinate for all dungeons.
+	 * 
+	 * @param coordinate
+	 * The coordinate to check.
+	 * @return
+	 *   result == (coordinate != null)
+	 */
+	public static boolean isPossibleSquareCoordinate(Coordinate coordinate) {
+		return coordinate != null;
 	}
 
 	/** 
@@ -107,7 +125,7 @@ public class Dungeon {
 										throws IllegalArgumentException,
 												CoordinateOccupiedException,
 												DungeonConstraintsException {
-		if (square == null)
+		if (square == null  ||  !isValidSquareCoordinate(coordinate))
 			throw new IllegalArgumentException();
 		if (isOccupied(coordinate))
 			throw new CoordinateOccupiedException(coordinate, this);
@@ -158,10 +176,30 @@ public class Dungeon {
 		return result;
 	}
 
+	/** 
+	 * Checks whether this dungeon has squares that properly border on 
+	 * neighbouing squares. 
+	 * 
+	 * @return
+	 * True iff every square of this dungeon borders on its neighbours in 
+	 * this dungeon in the correct direction.
+	 */
+	public boolean hasProperBorderingSquares() {
+		for (Map.Entry<Coordinate, Square> entry : getPositionsAndSquares()) {
+			Square square = entry.getValue();
+			Coordinate coordinate = entry.getKey();
+			
+			for (Map.Entry<Direction, Square> neighbourEntry :
+									getNeighboursOf(coordinate).entrySet()) {
+				Square neighbour = neighbourEntry.getValue();
+				Direction direction = neighbourEntry.getKey();
+				if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
+					return false;
+			}
+		}
+		return true;
+	}
 
-	//TODO haspropersquares, die checkt op neigbouring in de correcte 
-	//richting etc
-	
 
 	/** 
 	 * Returns the square at the given coordinate in this dungeon.
@@ -171,14 +209,14 @@ public class Dungeon {
 	 * @return
 	 * The square at the given coordinate in this dungeon.
 	 * @throws IllegalArgumentException
-	 *   | !isValidSquareCoordinate(coordinate)
+	 *   | !isPossibleSquareCoordinate(coordinate)
 	 * @throws CoordinateNotOccupiedException
 	 *   | !isOccupied(coordinate)
 	 */
 	public Square getSquareAt(Coordinate coordinate) 
 									throws IllegalArgumentException,
 											CoordinateNotOccupiedException {
-		if (!isValidSquareCoordinate(coordinate))
+		if (!isPossibleSquareCoordinate(coordinate))
 			throw new IllegalArgumentException();
 
 		Square result = squares.get(coordinate);
@@ -224,11 +262,11 @@ public class Dungeon {
 	 * @param coordinate 
 	 * The coordinate to check.
 	 * @throws IllegalArgumentException
-	 *   | !isValidSquareCoordinate(coordinate)
+	 *   | !isPossibleSquareCoordinate(coordinate)
 	 */
 	@Basic
 	public boolean isOccupied(Coordinate coordinate) {
-		if (!isValidSquareCoordinate(coordinate))
+		if (!isPossibleSquareCoordinate(coordinate))
 			throw new IllegalArgumentException();
 		return squares.containsKey(coordinate);
 	}

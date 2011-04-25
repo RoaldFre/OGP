@@ -79,16 +79,15 @@ public class Coordinate {
 	 * 
 	 * @param direction 
 	 * The direction in which to move this coordinate.
-	 * @pre
-	 *   | direction != null
 	 * @return
 	 * The coordiante resulting in moving this coordinate in the given 
 	 * direction.
 	 * @throws IllegalArgumentException 
-	 * The given direction is unknown.
+	 * The given direction is unknown or not effective.
 	 */
 	public Coordinate moveTo(Direction direction) throws IllegalArgumentException {
-		assert direction != null;
+		if (direction == null)
+			throw new IllegalArgumentException(); //TODO: can leave out if switch fails on null?
 		long new_x = x;
 		long new_y = y;
 		long new_z = z;

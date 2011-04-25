@@ -7,15 +7,43 @@ import rpg.exceptions.*;
 public class DungeonTest {
 
 	private Dungeon dungeon_10;
+	private Dungeon dungeon_10_withSquares;
 
 	@Before
 	public void setUpMutableFixture() {
 		dungeon_10 = new Dungeon(new Coordinate(10, 10, 10));
+
+		dungeon_10_withSquares = new Dungeon(new Coordinate(10, 10, 10));
+		Coordinate coordinate1 = new Coordinate(1, 2, 3);
+		Coordinate coordinate2 = new Coordinate(1, 2, 4);
+		Coordinate coordinate3 = new Coordinate(1, 2, 2);
+		Coordinate coordinate4 = new Coordinate(1, 3, 3);
+		Coordinate coordinate5 = new Coordinate(1, 1, 3);
+		Coordinate coordinate6 = new Coordinate(2, 2, 3);
+		Coordinate coordinate7 = new Coordinate(0, 2, 3);
+		Coordinate coordinate8 = new Coordinate(8, 9, 10);
+		Square square1 = new Square();
+		Square square2 = new Square();
+		Square square3 = new Square();
+		Square square4 = new Square();
+		Square square5 = new Square();
+		Square square6 = new Square();
+		Square square7 = new Square();
+		Square square8 = new Square();
+		dungeon_10_withSquares.addSquareAt(coordinate1, square1);
+		dungeon_10_withSquares.addSquareAt(coordinate2, square2);
+		dungeon_10_withSquares.addSquareAt(coordinate3, square3);
+		dungeon_10_withSquares.addSquareAt(coordinate4, square4);
+		dungeon_10_withSquares.addSquareAt(coordinate5, square5);
+		dungeon_10_withSquares.addSquareAt(coordinate6, square6);
+		dungeon_10_withSquares.addSquareAt(coordinate7, square7);
+		dungeon_10_withSquares.addSquareAt(coordinate8, square8);
 	}
 
 	private void assertClassInvariants(Dungeon dungeon) {
 		assertTrue(dungeon.squaresSatisfyConstraints());
 		assertTrue(dungeon.squaresHaveValidCoordinates());
+		assertTrue(dungeon.hasProperBorderingSquares());
 	}
 
 	@Test
@@ -75,6 +103,14 @@ public class DungeonTest {
 		assertEquals(1, dungeon_10.getNbSquares());
 		assertEquals(0, dungeon_10.getNbSlipperySquares());
 	}
+	@Test
+	public void addSquareAt_multipleSquares() {
+		Coordinate coordinate = new Coordinate(2, 2, 4);
+		Square square = new Square();
+		dungeon_10_withSquares.addSquareAt(coordinate, square);
+		assertClassInvariants(dungeon_10_withSquares);
+	}
+
 	@Test (expected = IllegalArgumentException.class)
 	public void addSquareAt_invalidSquare_null() {
 		Coordinate coordinate = new Coordinate(1, 2, 3);
@@ -134,11 +170,6 @@ public class DungeonTest {
 	public void getSquareAt_invalidCoordinate_null() {
 		dungeon_10.getSquareAt(null);
 	}
-	@Test (expected = IllegalArgumentException.class)
-	public void getSquareAt_invalidCoordinate_allEqual() {
-		Coordinate coordinate = new Coordinate(1, 1, 1);
-		dungeon_10.getSquareAt(coordinate);
-	}
 	@Test (expected = CoordinateNotOccupiedException.class)
 	public void getSquareAt_nonOccupiedCoordinate() {
 		Coordinate coordinate = new Coordinate(1, 2, 3);
@@ -156,14 +187,20 @@ public class DungeonTest {
 		assertFalse(dungeon_10.isOccupied(coordinate));
 		assertTrue(square.isTerminated());
 	}
+	@Test
+	public void deleteSquareAt_multipleSquares() {
+		Coordinate coordinate = new Coordinate(2, 2, 4);
+		Square square = new Square();
+		dungeon_10_withSquares.addSquareAt(coordinate, square);
+		dungeon_10_withSquares.deleteSquareAt(coordinate);
+		assertClassInvariants(dungeon_10_withSquares);
+		assertFalse(dungeon_10_withSquares.hasSquare(square));
+		assertFalse(dungeon_10_withSquares.isOccupied(coordinate));
+		assertTrue(square.isTerminated());
+	}
 	@Test (expected = IllegalArgumentException.class)
 	public void deleteSquareAt_invalidCoordinate_null() {
 		dungeon_10.deleteSquareAt(null);
-	}
-	@Test (expected = IllegalArgumentException.class)
-	public void deleteSquareAt_invalidCoordinate_allEqual() {
-		Coordinate coordinate = new Coordinate(1, 1, 1);
-		dungeon_10.deleteSquareAt(coordinate);
 	}
 	@Test (expected = CoordinateNotOccupiedException.class)
 	public void deleteSquareAt_nonOccupiedCoordinate() {

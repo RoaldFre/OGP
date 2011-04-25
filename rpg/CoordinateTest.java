@@ -49,6 +49,10 @@ public class CoordinateTest {
 		assertEquals(new Coordinate( 0, 0, 1),origin.moveTo(Direction.UP));
 		assertEquals(new Coordinate( 0, 0,-1),origin.moveTo(Direction.DOWN));
 	}
+	@Test (expected = IllegalArgumentException.class)
+	public void moveTo_null() {
+		origin.moveTo(null);
+	}
 
 	@Test
 	public void isBoundedBy_test() {

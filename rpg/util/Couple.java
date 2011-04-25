@@ -153,11 +153,14 @@ public class Couple<Type> implements Iterable<Type> {
 	public void delete(Type element) throws IllegalArgumentException {
 		assert element != null;
 		assert getNbElements() == 2;
+		System.out.println(element);
+		System.out.println(elements[0]);
+		System.out.println(elements[1]);
 		if (elements[0].equals(element))
 			elements[0] = null;
 		else if (elements[1].equals(element))
 			elements[1] = null;
-		throw new IllegalArgumentException();
+		else throw new IllegalArgumentException();
 	}
 
 

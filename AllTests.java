@@ -1,4 +1,5 @@
 import rpg.*;
+import rpg.util.*;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -14,6 +15,7 @@ import org.junit.runners.Suite;
 	CoordinateTest.class,
 	CoordinateSystemTest.class,
 	DungeonTest.class,
+	CoupleTest.class,
 })
 public class AllTests {
 }

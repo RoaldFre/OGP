@@ -51,10 +51,8 @@ public class Couple<Type> implements Iterable<Type> {
 	 * Note that if (getNbElements() == 1), this is <i>the</i> element.
 	 * If (getNbElements() == 2), the other element can be found via 
 	 * getPartner().
-	 * 
-	 * @return 
-	 * An element of the couple.
 	 */
+	@Basic
 	public Type getAnElement() {
 		if (elements[0] != null)
 			return elements[0];
@@ -78,12 +76,11 @@ public class Couple<Type> implements Iterable<Type> {
 	 * Returns whether or not the given element is a member of this couple.
 	 *
 	 * @param element
-	 * The element to searcd for.
+	 * The element to search for.
 	 * @pre
 	 *   | element != null
-	 * @return
-	 * True iff the given element is a member of this couple.
 	 */
+	@Basic
 	public boolean contains(Type element) {
 		assert (element != null);
 		return element.equals(elements[0]) || (element.equals(elements[1]));
@@ -101,6 +98,7 @@ public class Couple<Type> implements Iterable<Type> {
 	 * This will be null if the given element is not a member of this 
 	 * couple, or if the given element is the only element of this couple.
 	 */
+	@Basic
 	public Type getPartner(Type thisElement) {
 		assert thisElement != null;
 		if (thisElement.equals(elements[0]))
@@ -114,7 +112,7 @@ public class Couple<Type> implements Iterable<Type> {
 	 * Sets the 'partner' of the given element in this couple.
 	 * 
 	 * @param thisElement 
-	 * The element whose partner will be returned.
+	 * The element whose partner will be set.
 	 * @param newPartner
 	 * The new 'partner' of thisElement.
 	 * @post
@@ -153,9 +151,6 @@ public class Couple<Type> implements Iterable<Type> {
 	public void delete(Type element) throws IllegalArgumentException {
 		assert element != null;
 		assert getNbElements() == 2;
-		System.out.println(element);
-		System.out.println(elements[0]);
-		System.out.println(elements[1]);
 		if (elements[0].equals(element))
 			elements[0] = null;
 		else if (elements[1].equals(element))
@@ -164,6 +159,10 @@ public class Couple<Type> implements Iterable<Type> {
 	}
 
 
+	/** 
+	 * Returns the number of elements in this couple.
+	 */
+	@Basic
 	public int getNbElements() {
 		int num = 0;
 		if (elements[0] != null)

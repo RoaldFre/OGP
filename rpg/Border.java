@@ -351,15 +351,6 @@ public abstract class Border {
 	 * merging two borders. The values shall impose a total ordering on the 
 	 * different types of borders.
 	 *
-	 * XXX note:
-	 * Alternative that doesn't need altering code from old classes:
-	 * boolean isMoreOpenThan(Border other)
-	 * New class == implement this for all known classes up till then.
-	 * This imposes a 'partial' oder that can be made complete by assuming 
-	 * anti-symmetry.
-	 * This will probably need instanceof, and will probably break when further 
-	 * subclasse are added ... so stick with an openness() ?
-	 *
 	 * @return
 	 * The openness of a border.
 	 */

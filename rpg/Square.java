@@ -845,16 +845,6 @@ public class Square {
 	 * @throws BorderConstraintsException
 	 * If the border of this square were to be changed to the given border, 
 	 * some border constraints would be violated.
-	 *
-	 *
-	 * XXX XXX XXX
-	 * I impose no restrictions on the possible other square of the 
-	 * border, so that part too can be 'raw'.... (ok?)
-	 * or somehow make it so that those cannot 'change',
-	 * because assignment says: borders that are built cannot already border 
-	 * another square .... BUT I do need that in order to merge two 
-	 * squares/borders!
-	 * -- or is that only for the constructor?
 	 */
 	void changeBorderAt(Direction direction, @Raw Border border) 
 				throws IllegalArgumentException, BorderConstraintsException {

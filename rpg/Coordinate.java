@@ -87,7 +87,7 @@ public class Coordinate {
 	 */
 	public Coordinate moveTo(Direction direction) throws IllegalArgumentException {
 		if (direction == null)
-			throw new IllegalArgumentException(); //TODO: can leave out if switch fails on null?
+			throw new IllegalArgumentException();
 		long new_x = x;
 		long new_y = y;
 		long new_z = z;

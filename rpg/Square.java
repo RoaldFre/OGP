@@ -1067,8 +1067,7 @@ public class Square {
 			this.setTemperature(newTemp);
 			other.setTemperature(newTemp);
 		} catch (IllegalArgumentException e) {
-			//throw new MergingTemperaturesViolatesLimitsException();
-			//TODO
+			throw new MergingTemperaturesViolatesLimitsException();
 		}
 	}
 

@@ -68,8 +68,6 @@ public abstract class Border {
 	 * interior of its adjacent squares.
 	 */
 	@Basic
-	//XXX also @Immutable here, but Liskov prevents subclasses from doing 
-	//fancy things then...
 	public boolean isOpen(){
 		return false;
 	}

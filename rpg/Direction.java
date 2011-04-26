@@ -1,32 +1,43 @@
 package rpg;
 
+import be.kuleuven.cs.som.annotate.*;
+
 public enum Direction {
 	NORTH {
-		public String symbol() {return "N";}
-		public Direction complement() {return SOUTH;}
+		@Basic public String symbol() {return "N";}
+		@Basic public Direction complement() {return SOUTH;}
 	}, 
 	SOUTH {
-		public String symbol() {return "S";}
-		public Direction complement() {return NORTH;}
+		@Basic public String symbol() {return "S";}
+		@Basic public Direction complement() {return NORTH;}
 	}, 
 	WEST {
-		public String symbol() {return "W";}
-		public Direction complement() {return EAST;}
+		@Basic public String symbol() {return "W";}
+		@Basic public Direction complement() {return EAST;}
 	}, 
 	EAST {
-		public String symbol() {return "E";}
-		public Direction complement() {return WEST;}
+		@Basic public String symbol() {return "E";}
+		@Basic public Direction complement() {return WEST;}
 	}, 
 	DOWN {
-		public String symbol() {return "D";}
-		public Direction complement() {return UP;}
+		@Basic public String symbol() {return "D";}
+		@Basic public Direction complement() {return UP;}
 	}, 
 	UP {
-		public String symbol() {return "U";}
-		public Direction complement() {return DOWN;}
+		@Basic public String symbol() {return "U";}
+		@Basic public Direction complement() {return DOWN;}
 	};
 
+	/** 
+	 * Returns a short representation of this direction.
+	 */
+	@Basic
 	public abstract String symbol();
+
+	/** 
+	 * Returns the complementary direction of this direction. 
+	 */
+	@Basic
 	public abstract Direction complement();
 }
 

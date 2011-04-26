@@ -25,8 +25,8 @@ public class DoorTest {
 	 */
 	@Before
 	public void setUpMutableFixture() {
-		square1 = new Square();
-		square2 = new Square();
+		square1 = new Square(new Temperature(70), 2000);
+		square2 = new Square(new Temperature(30), 8000);
 		border1north = square1.getBorderAt(Direction.NORTH);
 		border2south = square2.getBorderAt(Direction.SOUTH);
 		
@@ -79,26 +79,22 @@ public class DoorTest {
 		assertFalse(closedDoor.isOpen());
 	}
 
-
 	@Test
 	public void mergeWith_correctOrder_keep() {
 		Border openBorder = new OpenBorder(border1north);
 		Border door = new Door(border2south, false);
 		
-		openBorder.mergeWith(door);
+		Border mergedBorder = openBorder.mergeWith(door);
 
 		BorderTest.assertClassInvariants(border1north);
 		BorderTest.assertClassInvariants(border2south);
 		BorderTest.assertClassInvariants(openBorder);
 		BorderTest.assertClassInvariants(door);
-		assertTrue(square1.getBorderAt(Direction.NORTH).equals(
-									square2.getBorderAt(Direction.SOUTH)));
-		assertTrue(square1.getBorderAt(Direction.NORTH).isDoor());
-
-		assertTrue(square1.getBorderAt(Direction.NORTH).bordersOnSquare(
-																square2));
-		assertTrue(square2.getBorderAt(Direction.SOUTH).bordersOnSquare(
-																square1));
+		assertEquals(mergedBorder, square1.getBorderAt(Direction.NORTH));
+		assertEquals(mergedBorder, square2.getBorderAt(Direction.SOUTH));
+		assertTrue(mergedBorder.isDoor());
+		assertTrue(mergedBorder.bordersOnSquare(square2));
+		assertTrue(mergedBorder.bordersOnSquare(square1));
 	}
 
 	@Test
@@ -106,19 +102,27 @@ public class DoorTest {
 		Border wall = new Wall(border1north, false);
 		Border door = new Door(border2south, false);
 		
-		wall.mergeWith(door);
+		Border mergedBorder = wall.mergeWith(door);
 
 		BorderTest.assertClassInvariants(border1north);
 		BorderTest.assertClassInvariants(border2south);
 		BorderTest.assertClassInvariants(wall);
 		BorderTest.assertClassInvariants(door);
-		assertTrue(square1.getBorderAt(Direction.NORTH).equals(
-									square2.getBorderAt(Direction.SOUTH)));
-		assertTrue(square1.getBorderAt(Direction.NORTH).isWall());
+		assertEquals(mergedBorder, square1.getBorderAt(Direction.NORTH));
+		assertEquals(mergedBorder, square2.getBorderAt(Direction.SOUTH));
+		assertTrue(mergedBorder.isWall());
+		assertTrue(mergedBorder.bordersOnSquare(square2));
+		assertTrue(mergedBorder.bordersOnSquare(square1));
+	}
 
-		assertTrue(square1.getBorderAt(Direction.NORTH).bordersOnSquare(
-																square2));
-		assertTrue(square2.getBorderAt(Direction.SOUTH).bordersOnSquare(
-																square1));
+	@Test
+	public void merged_open_equilibrate() {
+		Border openBorder = new OpenBorder(border1north);
+		Border door = new Door(border2south, false);
+		Door mergedDoor = (Door) door.mergeWith(openBorder);
+		mergedDoor.open();
+
+		assertEquals(square1.getTemperature(), square2.getTemperature());
+		assertEquals(square1.getHumidity(), square2.getHumidity());
 	}
 }

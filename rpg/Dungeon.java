@@ -19,6 +19,17 @@ import java.util.HashMap;
  */
 public class Dungeon {
 
+	/** 
+	 * Create a new dungeon with the given far corner. 
+	 * 
+	 * @param farCorner
+	 * The far corner for this new dungeon.
+	 * @throws IllegalArgumentException
+	 * The given far corner is not effective, or it doesn't form a valid 
+	 * far corner (not all components are positive).
+	 *   | farCorner == null
+	 *   |		|| !Coordinate.formsValidBoundingBox(ORIGIN, farCorner)
+	 */
 	public Dungeon(Coordinate farCorner) throws IllegalArgumentException {
 		coordSyst = new CoordinateSystem(ORIGIN, farCorner);
 	}
@@ -43,6 +54,11 @@ public class Dungeon {
 	 * This dungeon cannot have the given far corner as its far corner. 
 	 * This means it is either not effective, or it is a stricter bound 
 	 * than the previous far corner.
+	 *   | farCorner == null
+	 *   |		|| ((old.getFarCorner() != null) &amp;&amp; 
+	 *   |				Coordinate.formsValidBoundingBox(old.getFarCorner(),
+	 *   |														farCorner))
+	 *   |		|| !Coordinate.formsValidBoundingBox(ORIGIN, farCorner)
 	 */
 	@Raw
 	public void setFarCorner(Coordinate farCorner)
@@ -84,7 +100,7 @@ public class Dungeon {
 	 * @param coordinate
 	 * The coordinate to check.
 	 * @return
-	 *   result == (coordinate != null)
+	 *   | result == (coordinate != null)
 	 */
 	public static boolean isPossibleSquareCoordinate(Coordinate coordinate) {
 		return coordinate != null;
@@ -108,9 +124,11 @@ public class Dungeon {
 	 * The coordinate to add the given square at.
 	 * @param square 
 	 * The square to add at the given coordinate.
-	 * @post
+	 * @effect
 	 * The squares that border the given coordinate in this dungeon get 
 	 * merged with the given square in the appropriate direction.
+	 *   | for each e in getNeighboursOf(coordinate).entrySet() :
+	 *   |		square.mergeWith(e.getValue()), e.getKey()
 	 * @post
 	 *   | new.getSquareAt(coordinate) == square
 	 * @throws IllegalArgumentException
@@ -153,6 +171,8 @@ public class Dungeon {
 	 * @return
 	 * A mapping of directions to squares that represent all neighbouring 
 	 * squares of the given coordinate in this dungeon. 
+	 *   | for each e in result.entrySet() :
+	 *   |		e.getValue() == getSquareAt(coordinate.moveTo(e.getKey()))
 	 * @throws IllegalArgumentException
 	 *   | coordinate == null
 	 */
@@ -183,6 +203,10 @@ public class Dungeon {
 	 * @return
 	 * True iff every square of this dungeon borders on its neighbours in 
 	 * this dungeon in the correct direction.
+	 *   | result == 
+	 *   |		(for each e in getNeighboursOf(Coordinate).entrySet() :
+	 *   |			square.getBorderAt(e.getKey()).bordersOnSquare(
+	 *   |													e.getValue()))
 	 */
 	public boolean hasProperBorderingSquares() {
 		for (Map.Entry<Coordinate, Square> entry : getPositionsAndSquares()) {
@@ -206,13 +230,12 @@ public class Dungeon {
 	 * 
 	 * @param coordinate 
 	 * The coordinate of the square to return.
-	 * @return
-	 * The square at the given coordinate in this dungeon.
 	 * @throws IllegalArgumentException
 	 *   | !isPossibleSquareCoordinate(coordinate)
 	 * @throws CoordinateNotOccupiedException
 	 *   | !isOccupied(coordinate)
 	 */
+	@Basic @Raw
 	public Square getSquareAt(Coordinate coordinate) 
 									throws IllegalArgumentException,
 											CoordinateNotOccupiedException {
@@ -276,6 +299,8 @@ public class Dungeon {
 	 * 
 	 * @return 
 	 * True iff all squares of this dungeon have valid coordinates.
+	 *   | result == (for each e in getPositionsAndSquares() :
+	 *   |								isValidSquareCoordinate(e.getKey()))
 	 */
 	public boolean squaresHaveValidCoordinates() {
 		for (Map.Entry<Coordinate, Square> entry : getPositionsAndSquares())
@@ -312,6 +337,8 @@ public class Dungeon {
 	 * @return
 	 * The number of squares in this dungeon that have a slippery 
 	 * floor.
+	 *   | ({ square in getSquares() | true :
+	 *   |					square.hasSlipperyFloor()}.size() == result)
 	 */
 	public int getNbSlipperySquares() {
 		int nbSlipperySquares = 0;

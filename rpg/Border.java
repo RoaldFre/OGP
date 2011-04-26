@@ -108,16 +108,20 @@ public abstract class Border {
 	 * @pre
 	 *   | !this.isTerminated() &amp;&amp; !other.isTerminated()
 	 * @post
-	 * The two borders get merged into a single border that borders both 
-	 * squares associated with both old borders. That new border is the 
-	 * least open border of the original borders.
+	 * This old border and the given old border get merged into a single 
+	 * new border that borders both squares associated with both old 
+	 * borders. That new border is the least open border of the old 
+	 * borders.
+	 * @return
+	 * The new border that results from merging this old border and the 
+	 * given old border.
 	 * @throws BorderConstraintsException
 	 * Merging the borders would violate a border constraint.
 	 * @throws BorderMergeException
 	 * One of the two borders is already shared by two squares, or both 
 	 * borders share the same square.
 	 */
-	void mergeWith(Border other) throws BorderConstraintsException,
+	Border mergeWith(Border other) throws BorderConstraintsException,
 		 								BorderMergeException {
 		assert other != null;
 		assert !this.isTerminated() && !other.isTerminated();
@@ -140,6 +144,31 @@ public abstract class Border {
 		foreignSquare = otherBorder.squares.getAnElement();
 		newBorder.squares.add(foreignSquare);
 		foreignSquare.updateBorder(otherBorder, newBorder);
+		if (newBorder.isOpen())
+			newBorder.equilibrateSquares();
+		return newBorder;
+		/* Yes, I am aware that I'm doing some complex mutation-like 
+		 * operations *and* returning a value, but this saves some spurious 
+		 * code further down the road and returning the value isn't 
+		 * something new that require any extra calculations anyway. */
+	}
+
+	/**
+	 * Equiliblate the temperatures and humidities of the squares that this 
+	 * border is attached to.
+	 *
+	 * @effect
+	 * If this border is shared by two squares, then their temperatures and 
+	 * humidities get merged.
+	 */
+	@Model
+	protected void equilibrateSquares() {
+		if (isSharedByTwoSquares()){
+			Square square1 = getASquare();
+			Square square2 = getNeighbour(square1);
+			square1.mergeTemperatures(square2);
+			square1.mergeHumidities(square2);
+		}
 	}
 
 	/** 
@@ -162,11 +191,23 @@ public abstract class Border {
 	}
 
 	/** 
+	 * Returns a square along this border. 
+	 * 
+	 * @pre
+	 *   | !isTerminated()
+	 */
+	@Basic
+	public Square getASquare() {
+		assert !isTerminated();
+		return squares.getAnElement();
+	}
+
+	/** 
 	 * Returns the neighbouring square of the given square along this 
 	 * border. 
 	 * 
 	 * @param square 
-	 * The square to get the neighbour from.
+	 * The square to get the neighbour of.
 	 * @pre
 	 *   | !isTerminated()
 	 * @return 
@@ -300,6 +341,11 @@ public abstract class Border {
 	 */
 	private boolean isTerminated = false;
 
+	/**
+	 * Return a small string as a symbol for this border.
+	 */
+	@Basic
+	public abstract String symbol();
 
 	/** 
 	 * Returns the level of 'openness' of a border. Only relative values 

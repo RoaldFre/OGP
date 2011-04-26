@@ -23,6 +23,19 @@ public class Wall extends Border{
 	}
 
 	/** 
+	 * Create a new non-slippery wall that borders the given square.
+	 * 
+	 * @param square 
+	 * The square that this wall will border.
+	 * @effect
+	 *   | this(square, false)
+	 */
+	@Raw
+	public Wall(Square square) {
+		this(square, false);
+	}
+
+	/** 
 	 * Create a new wall with the given intrinsic slipperyness that 
 	 * replaces the given border.
 	 * 
@@ -41,6 +54,19 @@ public class Wall extends Border{
 		this.isSlippery = isSlippery;
 	}
 
+	/** 
+	 * Create a new non-slippery wall that replaces the given border.
+	 * 
+	 * @param border
+	 * The border to replace with this new wall.
+	 * @effect
+	 *   | this(border, false)
+	 */
+	@Raw
+	public Wall(Border border) {
+		this(border, false);
+	}
+
 	@Override
 	@Immutable
 	public boolean isWall() {
@@ -51,6 +77,17 @@ public class Wall extends Border{
 	@Immutable
 	public boolean isSlippery() {
 		return isSlippery;
+	}
+
+	/** 
+	 * Return a small string as a symbol for this border.
+	 * 
+	 * @return 
+	 *   | result.equals("W" + (isSlippery() ? "s" : ""))
+	 */
+	@Override
+	public String symbol() {
+		return "W" + (isSlippery() ? "s" : "");
 	}
 
 	@Override

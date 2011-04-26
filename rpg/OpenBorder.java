@@ -11,10 +11,13 @@ public class OpenBorder extends Border{
 	 * The square that this open border will border.
 	 * @effect
 	 *   | super(square)
+	 * @effect
+	 *   | equilibrateSquares()
 	 */
 	@Raw
 	public OpenBorder(Square square) {
 		super(square);
+		equilibrateSquares();
 	}
 
 	/** 
@@ -24,10 +27,13 @@ public class OpenBorder extends Border{
 	 * The border to replace with this new open border.
 	 * @effect
 	 *   | super(border)
+	 * @effect
+	 *   | equilibrateSquares()
 	 */
 	@Raw
 	public OpenBorder(Border border) {
 		super(border);
+		equilibrateSquares();
 	}
 
 	@Override
@@ -36,6 +42,17 @@ public class OpenBorder extends Border{
 		return true;
 	}
 
+	/** 
+	 * Return a small string as a symbol for this open border.
+	 * 
+	 * @return 
+	 *   | result.equals("O")
+	 */
+	@Override
+	@Immutable
+	public String symbol() {
+		return "O";
+	}
 	@Override
 	@Immutable
 	protected int openness() {

@@ -15,11 +15,16 @@ public class Door extends Border{
 	 *   | isOpen() == isOpened
 	 * @effect
 	 *   | super(square)
+	 * @effect
+	 *   | if (isOpened())
+	 *   |		equilibrateSquares();
 	 */
 	@Raw
 	public Door(Square square, boolean isOpened) {
 		super(square);
 		this.isOpened = isOpened;
+		if (isOpened)
+			equilibrateSquares();
 	}
 
 	/** 
@@ -34,11 +39,16 @@ public class Door extends Border{
 	 *   | isOpen() == isOpened
 	 * @effect
 	 *   | super(border)
+	 * @effect
+	 *   | if (isOpened())
+	 *   |		equilibrateSquares();
 	 */
 	@Raw
 	public Door(Border border, boolean isOpened) {
 		super(border);
 		this.isOpened = isOpened;
+		if (isOpened)
+			equilibrateSquares();
 	}
 
 	@Override
@@ -54,6 +64,17 @@ public class Door extends Border{
 		return true;
 	}
 
+	/** 
+	 * Return a small string as a symbol for this door.
+	 * 
+	 * @return 
+	 *   | result.equals("D" + (isOpen() ? "o" : "c"))
+	 */
+	@Override
+	public String symbol() {
+		return "D" + (isOpen() ? "o" : "c");
+	}
+
 	@Override
 	@Immutable
 	protected int openness() {
@@ -65,10 +86,13 @@ public class Door extends Border{
 	 *
 	 * @post
 	 *   | new.isOpened() == true
+	 * @effect
+	 *   | equilibrateSquares()
 	 */
 	@Raw
 	public void open() {
-		this.isOpened = true;
+		isOpened = true;
+		equilibrateSquares();
 	}
 
 	/**

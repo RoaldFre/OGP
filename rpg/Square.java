@@ -581,7 +581,7 @@ public class Square {
 	 *   | !isTerminated()
 	 * @return
 	 * The slipperiness of the floor.
-	 *   | getBorderAt(Direction.DOWN).isSlippery()
+	 *   | result == getBorderAt(Direction.DOWN).isSlippery()
 	 */
 	public boolean hasSlipperyFloor() {
 		assert !isTerminated();
@@ -740,7 +740,6 @@ public class Square {
 			if (border.isDoor()) {
 				numWallsOrDoors++;
 				numDoors++;
-				/* A door can not be placed in the floor or ceiling */
 				if (direction.equals(Direction.UP) 
 									|| direction.equals(Direction.DOWN))
 					return false;
@@ -886,7 +885,9 @@ public class Square {
 	 * @param newBorder
 	 * The new border.
 	 * @effect
-	 * changeBorderAt(getDirectionOfBorder(oldBorder), newBorder)
+	 * The border of this square in the given direction gets changed to the 
+	 * given border.
+	 *   | changeBorderAt(getDirectionOfBorder(oldBorder), newBorder)
 	 */
 	void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
 				throws IllegalArgumentException, BorderConstraintsException {
@@ -959,15 +960,18 @@ public class Square {
 		}
 	}
 
-	// /** 
-	//  * Returns a string representation of the borders.
-	//  */
-	// private String bordersString() {
-	// 	String result = "";
-	// 	for (int i = 1; i <= NUM_BORDERS; i++)
-	// 		result = result + (hasBorderAt(i) ? i : " ");
-	// 	return result;
-	// }
+	/** 
+	 * Returns a string representation of the borders.
+	 */
+	private String bordersString() {
+		String result = "";
+		for (Direction direction : Direction.values())
+			result += direction.symbol()
+						+ ":" 
+						+ getBorderAt(direction).symbol()
+						+ " ";
+		return result;
+	}
 
 
 	/** 
@@ -989,14 +993,6 @@ public class Square {
 	 * the border of the other square in the complementary direction.
 	 *   | getBorderAt(direction).mergeWith(
 	 *   |				other.getBorderAt(direction.complement()))
-	 * @effect
-	 * XXX
-	 * If the newly merged border is open, the temperature and humidities 
-	 * get merged.
-	 *   | if (new.getBorderAt(direction).isOpen()) {
-	 *   |		mergeTemperatures(other);
-	 *   |		mergeHumidities(other);
-	 *   | }
 	 * @throws IllegalArgumentException
 	 * The given other square is not effective or the given direction is 
 	 * not valid.
@@ -1014,11 +1010,6 @@ public class Square {
 
 		getBorderAt(direction).mergeWith(
 								other.getBorderAt(direction.complement()));
-
-		if (getBorderAt(direction).isOpen()){
-			mergeTemperatures(other);
-			mergeHumidities(other);
-		}
 	}
 
 	/** 
@@ -1082,10 +1073,13 @@ public class Square {
 								+ (otherWeight) * otherTemp) / 2.0;
 		Temperature newTemp = new Temperature(newTempValue);
 
-		this.setTemperature(newTemp);
-		other.setTemperature(newTemp);
-		//XXX this can throw IllegalArgumentException if the temperature is 
-		//out of bounds for one of the squares!
+		try {
+			this.setTemperature(newTemp);
+			other.setTemperature(newTemp);
+		} catch (IllegalArgumentException e) {
+			//throw new MergingTemperaturesViolatesLimitsException();
+			//TODO
+		}
 	}
 
 	/**
@@ -1162,6 +1156,72 @@ public class Square {
 	private static double mergeTemperatureWeight = 0.2;
 
 
+	/** 
+	 * Returns whether or not the given square can be reached, starting 
+	 * from this square and only passing through open borders.
+	 *
+	 * The implementation does a depth-first traversal of the neighbouring 
+	 * squares (in the order as iterated by Direction.values()).
+	 *
+	 * Its time complexity (both average and worst case) is linear in the 
+	 * number of squares that are openly connected to this square.
+	 * In the case of a dungeon this usually means that the time complexity 
+	 * is linear with the number of squares.
+	 *
+	 * The worst case space complexity (due to the additional stack frames 
+	 * from the recursive calls) is linear in the number in the number of 
+	 * openly connected squares.
+	 * The average case space complexity -- assuming that every square is, on 
+	 * average, openly connected to constant number (greater than one) of 
+	 * other squares -- is logaritmic instead of linear.
+	 *
+	 * Note that that if the dungeon enforces extra constraints (eg. open 
+	 * areas can be no larger than N squares), both complexicties 
+	 * effectively reduce to constant-time. 
+	 *
+	 * Finally, note that smarter search strategies can be employed, 
+	 * especially at the level of a Dungeon, where the distance between the 
+	 * coordinates can be used as a heuristic in, for example, the A* 
+	 * search algorithm. 
+	 * 
+	 * @param other 
+	 * The square to check for reachability.
+	 * @pre
+	 * The given square is effective
+	 *   | other != null
+	 * @pre
+	 * This square is not terminated.
+	 *   | !isTerminated()
+	 * @pre
+	 * The given square is not terminated.
+	 *   | !other.isTerminated()
+	 * @return
+	 * If the given square is equal to this square, then return true. Else 
+	 * return true iff at least one recursive call to all neighboring 
+	 * squares that are connected via an open border returns true.
+	 *   | if (this == other)
+	 *   |		then (result == true)
+	 *   | else
+	 *   |		result == (for some direction in Direction.values():
+	 *   |			getBorderAt(direction).isOpen
+	 *   |			&amp;&amp;
+	 *   |			getBorderAt(direction).getNeighbour(this).canReach(other))
+	 */
+	public boolean canReach(Square other) {
+		assert other != null;
+		assert !isTerminated() && !other.isTerminated();
+
+		if (this == other)
+			return true;
+
+		for (Direction direction : Direction.values()){
+			Border border = getBorderAt(direction);
+			if (border.isOpen()
+					&& border.getNeighbour(this).canReach(other))
+				return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Return the termination status for this square.
@@ -1207,8 +1267,7 @@ public class Square {
 			+ "\nHeat damage:    " + heatDamage()
 			+ "\nRust damage:    " + rustDamage()
 			+ "\nInhabitability: " + inhabitability()
-			//+ "\nBorders:        " + bordersString();
-			;
+			+ "\nBorders:        " + bordersString();
 	}
 }
 

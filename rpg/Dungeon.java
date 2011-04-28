@@ -4,6 +4,8 @@ import rpg.exceptions.*;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.HashSet;
 
 /**
  * A class representing a dungeon of squares.
@@ -14,6 +16,8 @@ import java.util.HashMap;
  *   | squaresSatisfyConstraints()
  * @invar
  *   | hasProperBorderingSquares()
+ * @invar
+ *   | hasNoTerminatedSquares()
  *
  * @author Roald Frederickx
  */
@@ -127,7 +131,7 @@ public class Dungeon {
 	 * @effect
 	 * The squares that border the given coordinate in this dungeon get 
 	 * merged with the given square in the appropriate direction.
-	 *   | for each e in getNeighboursOf(coordinate).entrySet() :
+	 *   | for each e in getDirectionsAndNeighboursOf(coordinate).entrySet() :
 	 *   |		square.mergeWith(e.getValue()), e.getKey()
 	 * @post
 	 *   | new.getSquareAt(coordinate) == square
@@ -155,11 +159,45 @@ public class Dungeon {
 		}
 
 		for (Map.Entry<Direction, Square> neighbourEntry :
-									getNeighboursOf(coordinate).entrySet()){
+						getDirectionsAndNeighboursOf(coordinate).entrySet()){
 			Square neighbour = neighbourEntry.getValue();
 			Direction neighbourDirection = neighbourEntry.getKey();
 			square.mergeWith(neighbour, neighbourDirection);
 		}
+	}
+
+
+	/** 
+	 * Return a mapping of coordinates to squares that represent all 
+	 * neighbouring squares of the given coordinate in this dungeon. 
+	 * 
+	 * @param coordinate 
+	 * The coordinate whose neighbours to return.
+	 * @return
+	 * A mapping of coordinates to squares that represent all neighbouring 
+	 * squares of the given coordinate in this dungeon. 
+	 * @throws IllegalArgumentException
+	 *   | coordinate == null
+	 */
+	public Map<Coordinate, Square> getCoordinatesAndNeighboursOf(
+														Coordinate coordinate)
+											throws IllegalArgumentException {
+		if (coordinate == null)
+			throw new IllegalArgumentException();
+
+		HashMap<Coordinate, Square> result =
+								new HashMap<Coordinate, Square>();
+
+		for (Coordinate neighbourCoordinate : 
+								coordSyst.neighboursOf(coordinate).values()) {
+			if (!isOccupied(neighbourCoordinate))
+				continue;
+
+			Square neighbour = getSquareAt(neighbourCoordinate);
+			result.put(neighbourCoordinate, neighbour);
+		}
+
+		return result;
 	}
 
 	/** 
@@ -176,13 +214,14 @@ public class Dungeon {
 	 * @throws IllegalArgumentException
 	 *   | coordinate == null
 	 */
-	public Map<Direction, Square> getNeighboursOf(Coordinate coordinate)
+	public Map<Direction, Square> getDirectionsAndNeighboursOf(
+														Coordinate coordinate)
 											throws IllegalArgumentException {
 		if (coordinate == null)
 			throw new IllegalArgumentException();
 
-		java.util.EnumMap<Direction, Square> result =
-					new java.util.EnumMap<Direction, Square>(Direction.class);
+		EnumMap<Direction, Square> result =
+					new EnumMap<Direction, Square>(Direction.class);
 
 		for (Map.Entry<Direction, Coordinate> neighbourEntry :
 							coordSyst.neighboursOf(coordinate).entrySet()) {
@@ -196,6 +235,7 @@ public class Dungeon {
 		return result;
 	}
 
+
 	/** 
 	 * Checks whether this dungeon has squares that properly border on 
 	 * neighbouing squares. 
@@ -204,7 +244,8 @@ public class Dungeon {
 	 * True iff every square of this dungeon borders on its neighbours in 
 	 * this dungeon in the correct direction.
 	 *   | result == 
-	 *   |		(for each e in getNeighboursOf(Coordinate).entrySet() :
+	 *   |		(for each e in 
+	 *   |				getDirectionsAndNeighboursOf(Coordinate).entrySet() :
 	 *   |			square.getBorderAt(e.getKey()).bordersOnSquare(
 	 *   |													e.getValue()))
 	 */
@@ -214,7 +255,7 @@ public class Dungeon {
 			Coordinate coordinate = entry.getKey();
 			
 			for (Map.Entry<Direction, Square> neighbourEntry :
-									getNeighboursOf(coordinate).entrySet()) {
+						getDirectionsAndNeighboursOf(coordinate).entrySet()) {
 				Square neighbour = neighbourEntry.getValue();
 				Direction direction = neighbourEntry.getKey();
 				if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
@@ -224,6 +265,19 @@ public class Dungeon {
 		return true;
 	}
 
+	/** 
+	 * Checks whether all the squares in this dungeon are not terminated. 
+	 * 
+	 * @return
+	 *   | result == (for each square in getSquare() : 
+	 *   |							!square.isTerminated())
+	 */
+	public boolean hasNoTerminatedSquares() {
+		for (Square square : getSquares())
+			if (square.isTerminated())
+				return false;
+		return true;
+	}
 
 	/** 
 	 * Returns the square at the given coordinate in this dungeon.
@@ -369,4 +423,115 @@ public class Dungeon {
 	 */
 	private Map<Coordinate, Square> squares = 
 										new HashMap<Coordinate, Square>();
+
+	/** 
+	 * Checks whether the given destination coordinate can be reached, 
+	 * starting from the given source coordinate and only moving through 
+	 * open borders.
+	 *
+	 * The implementation does a depth-first traversal of the neighbouring 
+	 * squares of the source coordinate on a spanning tree of the graph of 
+	 * 'openly' (through open borders) connected squares (traversed in the 
+	 * order as iterated by Direction.values()).
+	 *
+	 * Its average time complexity is linear in the number of squares that 
+	 * are openly connected to the source square. Hence, in general this is 
+	 * linear in the number of squares in this dungeon.
+	 * 
+	 * Note that the <i>worst</i> case time complexity is superlinear 
+	 * (probably quadratic, depending on the implementation of java's 
+	 * HashSet). This happens in the pathological case where all 
+	 * coordinates hash to the same value.
+	 *
+	 * Also note that that if this dungeon were to enforce extra 
+	 * constraints (eg. open areas can be no larger than N squares), the 
+	 * time complexity would effectively reduce to constant-time. 
+	 *
+	 * Finally, note that smarter search strategies can be employed, 
+	 * where the distance between the coordinates can be used as a 
+	 * heuristic in, for example, the A* search algorithm. 
+	 *
+	 * 
+	 * @param source
+	 * The source coordinate to check.
+	 * @param destination
+	 * The destination coordinate to check.
+	 * @return
+	 * Whether or not the given destination coordinate can be reached from 
+	 * the given source coordinate, passing only through open borders.
+	 * @throws IllegalArgumentException
+	 *   | !isPossibleSquareCoordinate(source)
+	 *   |			|| !isPossibleSquareCoordinate(destination)
+	 */
+	public boolean canReach(Coordinate source, Coordinate destination) 
+											throws IllegalArgumentException {
+		if (!isOccupied(source) || !isOccupied(destination))
+			return false;
+		
+		HashSet<Coordinate> visited = new HashSet<Coordinate>();
+		return canReach(source, destination, visited);
+	}
+
+
+	/** 
+	 * Checks whether the given destination coordinate can be reached, 
+	 * starting from the given source coordinate and only moving through 
+	 * open borders, when all the coordinates in 'visited' are already 
+	 * looked at.
+	 *
+	 * @param source
+	 * The source coordinate to check.
+	 * @param destination
+	 * The destination coordinate to check.
+	 * @param visited
+	 * The coordinates that have already been visited.
+	 * @pre
+	 *   | source != null  &amp;&amp;  destination != null
+	 * @pre
+	 *   | visited != null
+	 * @pre
+	 *   | isOccupied(source) &amp;&amp; isOccupied(destination)
+	 * @pre
+	 *   | !visited.contains(destination)
+	 * @post
+	 *   | visited.contains(source)
+	 * @post
+	 * If this returns false, the set of visited coordinates is extended 
+	 * with all coordinates that can be reached from the source coordinate 
+	 * by passing open borders and by not passing any coordinates already 
+	 * in the set of visited coordinates.
+	 * @return
+	 * Whether or not the destination can be reached from the source, not 
+	 * passing any coordinates that have already been visited.
+	 */
+	private boolean canReach(Coordinate source, Coordinate destination,
+											HashSet<Coordinate> visited) {
+		assert source != null;
+		assert destination != null;
+		assert visited != null;
+
+		assert isOccupied(source);
+		assert isOccupied(destination);
+
+		assert !visited.contains(destination);
+
+		if (source.equals(destination))
+			return true;
+
+		if (visited.contains(source))
+			return false;
+
+		visited.add(source);
+		
+		Square sourceSquare = getSquareAt(source);
+
+		for (Direction direction :
+							getDirectionsAndNeighboursOf(source).keySet())
+			if (sourceSquare.getBorderAt(direction).isOpen()
+									&& canReach(source.moveTo(direction),
+														destination, visited))
+					return true;
+
+		return false;
+	}
 }

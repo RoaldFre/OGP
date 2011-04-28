@@ -1145,73 +1145,6 @@ public class Square {
 	private static double mergeTemperatureWeight = 0.2;
 
 
-	/** 
-	 * Returns whether or not the given square can be reached, starting 
-	 * from this square and only passing through open borders.
-	 *
-	 * The implementation does a depth-first traversal of the neighbouring 
-	 * squares (in the order as iterated by Direction.values()).
-	 *
-	 * Its time complexity (both average and worst case) is linear in the 
-	 * number of squares that are openly connected to this square.
-	 * In the case of a dungeon this usually means that the time complexity 
-	 * is linear with the number of squares.
-	 *
-	 * The worst case space complexity (due to the additional stack frames 
-	 * from the recursive calls) is linear in the number in the number of 
-	 * openly connected squares.
-	 * The average case space complexity -- assuming that every square is, on 
-	 * average, openly connected to constant number (greater than one) of 
-	 * other squares -- is logaritmic instead of linear.
-	 *
-	 * Note that that if the dungeon enforces extra constraints (eg. open 
-	 * areas can be no larger than N squares), both complexicties 
-	 * effectively reduce to constant-time. 
-	 *
-	 * Finally, note that smarter search strategies can be employed, 
-	 * especially at the level of a Dungeon, where the distance between the 
-	 * coordinates can be used as a heuristic in, for example, the A* 
-	 * search algorithm. 
-	 * 
-	 * @param other 
-	 * The square to check for reachability.
-	 * @pre
-	 * The given square is effective
-	 *   | other != null
-	 * @pre
-	 * This square is not terminated.
-	 *   | !isTerminated()
-	 * @pre
-	 * The given square is not terminated.
-	 *   | !other.isTerminated()
-	 * @return
-	 * If the given square is equal to this square, then return true. Else 
-	 * return true iff at least one recursive call to all neighboring 
-	 * squares that are connected via an open border returns true.
-	 *   | if (this == other)
-	 *   |		then (result == true)
-	 *   | else
-	 *   |		result == (for some direction in Direction.values():
-	 *   |			getBorderAt(direction).isOpen
-	 *   |			&amp;&amp;
-	 *   |			getBorderAt(direction).getNeighbour(this).canReach(other))
-	 */
-	public boolean canReach(Square other) {
-		assert other != null;
-		assert !isTerminated() && !other.isTerminated();
-
-		if (this == other)
-			return true;
-
-		for (Direction direction : Direction.values()){
-			Border border = getBorderAt(direction);
-			if (border.isOpen()
-					&& border.getNeighbour(this).canReach(other))
-				return true;
-		}
-		return false;
-	}
-
 	/**
 	 * Return the termination status for this square.
 	 */
@@ -1250,7 +1183,7 @@ public class Square {
 			return "Terminated!";
 		return  "Temperature:    " + getTemperature()
 			+ "\nHumidity:       " + getHumidityString()
-			+ "\nFloor:          " + (hasSlipperyFloor()?"":"not ")+"slippery"
+			+ "\nSlippery Floor: " + hasSlipperyFloor()
 			+ "\nSlippery:       " + isSlippery()
 			+ "\nCold damage:    " + coldDamage()
 			+ "\nHeat damage:    " + heatDamage()

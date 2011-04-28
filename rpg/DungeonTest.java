@@ -83,9 +83,8 @@ public class DungeonTest {
 
 	private void assertClassInvariants(Dungeon dungeon) {
 		assertTrue(dungeon.squaresSatisfyConstraints());
-		assertTrue(dungeon.squaresHaveValidCoordinates());
+		assertTrue(dungeon.canHaveSquaresAtCoordinates());
 		assertTrue(dungeon.hasProperBorderingSquares());
-		assertTrue(dungeon.hasNoTerminatedSquares());
 	}
 
 	@Test

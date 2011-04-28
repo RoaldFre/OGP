@@ -17,9 +17,9 @@ import be.kuleuven.cs.som.annotate.*;
  * @invar
  * Each border has proper associated squares.
  *   | hasProperSquares()
- * ...
- * ...
- * ...
+ * @invar
+ * No border has terminated squares associated with itself.
+ *   | hasNoTerminatedSquares()
  *
  * @author Roald Frederickx
  */
@@ -59,13 +59,13 @@ public abstract class Border {
 	public Border(Border border) {
 		assert border != null  &&  !border.isTerminated();
 		this.squares = border.squares;
-		for (Square square : squares)
+		for (Square square : getSquares())
 			square.updateBorder(border, this);
 	}
 
 	/** 
 	 * Returns whether or not this border is open, thus connecting the 
-	 * interior of its adjacent squares.
+	 * interior of its bordering squares.
 	 */
 	@Basic
 	public boolean isOpen(){
@@ -152,7 +152,7 @@ public abstract class Border {
 	}
 
 	/**
-	 * Equiliblate the temperatures and humidities of the squares that this 
+	 * Equilibrate the temperatures and humidities of the squares that this 
 	 * border is attached to.
 	 *
 	 * @effect
@@ -178,7 +178,7 @@ public abstract class Border {
 	 *   | square != null
 	 * @return 
 	 * Whether or not this border borders on the given square. This is 
-	 * false if this square is terminated.
+	 * false if this border is terminated.
 	 */
 	@Raw
 	public boolean bordersOnSquare(Square square) {
@@ -198,6 +198,17 @@ public abstract class Border {
 	public Square getASquare() {
 		assert !isTerminated();
 		return squares.getAnElement();
+	}
+
+	/**
+	 * Returns an iterator of the squares along this border.
+	 *
+	 * @pre
+	 *   | !isTerminated()
+	 */
+	@Basic
+	public Iterable<Square> getSquares() {
+		return squares;
 	}
 
 	/** 
@@ -281,20 +292,36 @@ public abstract class Border {
 	 * Check whether this border has proper squares.
 	 * 
 	 * @return 
-	 * True iff this border is not terminated and all of the squares it 
-	 * is adjacent to also have this border as a border.
+	 * True if this border is not terminated and all of the squares it 
+	 * borders to also have this border as a border.
 	 */
 	public boolean hasProperSquares() {
 		if (isTerminated())
 			return (squares == null);
-
-		Square square1 = squares.getAnElement();
-		Square square2 = squares.getPartner(square1);
-		if (!square1.hasBorder(this))
-			return false;
-
-		return square2 == null  ||  square2.hasBorder(this);
+		
+		for (Square square : getSquares())
+			if (!square.hasBorder(this))
+				return false;
+		return true;
 	}
+
+	/** 
+	 * Check whether this border has no terminated squares associated with 
+	 * it.
+	 * 
+	 * @return 
+	 * True iff this border is not terminated or all of the squares it 
+	 * borders are not terminated.
+	 */
+	public boolean hasNoTerminatedSquares() {
+		if (isTerminated())
+			return true;
+		for (Square square : getSquares())
+			if (square.isTerminated())
+				return false;
+		return true;
+	}
+
 		
 	/** 
 	 * Variable referencing the square(s) that border(s) on this border.
@@ -325,10 +352,8 @@ public abstract class Border {
 		if (isTerminated())
 			return;
 
-		Square square1 = squares.getAnElement();
-		Square square2 = squares.getPartner(square1);
-		assert (!square1.hasBorder(this));
-		assert (square2 == null  ||  !square2.hasBorder(this));
+		for (Square square : getSquares())
+			assert !square.hasBorder(this);
 
 		squares = null;
 		isTerminated = true;

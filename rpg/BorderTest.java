@@ -59,6 +59,7 @@ public class BorderTest {
 	public static void assertClassInvariants(Border border) {
  		assertTrue(border.hasNoDuplicateSquares());
 		assertTrue(border.hasProperSquares());
+		assertTrue(border.hasNoTerminatedSquares());
 	}
 
 	/** 
@@ -92,12 +93,4 @@ public class BorderTest {
 		assertTrue(oldBorder.isTerminated());
 		assertFalse(newBorder.isTerminated());
 	}
-
-	//DEBUG
-	/*
-	private void dumpBorders(Square square) {
-		for (Direction d : Direction.values()) 
-			System.out.println(square.getBorderAt(d));
-	}
-	*/
 }

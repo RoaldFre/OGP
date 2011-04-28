@@ -1,14 +1,14 @@
 package rpg;
 
 /**
- * A class demonstrating the Square class.
+ * A class demonstrating the Dungeon class.
  *
  * @author Roald Frederickx
  */
 public class Demo {
 	
 	/** 
-	 * Demo method for the Square class.
+	 * Demo method for the Dungeon class.
 	 */
 	public static void main(String args[]) {
 		Square square_0_10_0 = new Square(new Temperature(100), 5000);

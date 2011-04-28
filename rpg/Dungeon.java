@@ -11,13 +11,11 @@ import java.util.HashSet;
  * A class representing a dungeon of squares.
  *
  * @invar
- *   | squaresHaveValidCoordinates()
+ *   | canHaveSquaresAtCoordinates()
  * @invar
  *   | squaresSatisfyConstraints()
  * @invar
  *   | hasProperBorderingSquares()
- * @invar
- *   | hasNoTerminatedSquares()
  *
  * @author Roald Frederickx
  */
@@ -136,7 +134,7 @@ public class Dungeon {
 	 * @post
 	 *   | new.getSquareAt(coordinate) == square
 	 * @throws IllegalArgumentException
-	 *   | square == null  ||  !isValidSquareCoordinate(coordinate)
+	 *   | !canHaveAsSquareAt(coordinate, square)
 	 * @throws CoordinateOccupiedException
 	 *   | isOccupied(coordinate)
 	 * @throws DungeonConstraintsException
@@ -147,12 +145,13 @@ public class Dungeon {
 										throws IllegalArgumentException,
 												CoordinateOccupiedException,
 												DungeonConstraintsException {
-		if (square == null  ||  !isValidSquareCoordinate(coordinate))
+		if (!canHaveAsSquareAt(coordinate, square))
 			throw new IllegalArgumentException();
 		if (isOccupied(coordinate))
 			throw new CoordinateOccupiedException(coordinate, this);
 
 		squares.put(coordinate, square);
+
 		if (!squaresSatisfyConstraints()){
 			squares.remove(coordinate);
 			throw new DungeonConstraintsException(square, this);
@@ -166,6 +165,24 @@ public class Dungeon {
 		}
 	}
 
+	/** 
+	 * Checks whether this dungeon can have the given square at the given 
+	 * coordinate.
+	 * 
+	 * @param coordinate 
+	 * The coordinate to check.
+	 * @param square 
+	 * The square to check.
+	 * @return 
+	 *   | result == (square != null
+	 *   |				&amp;&amp; !square.isTerminated()
+	 *   |				&amp;&amp; isValidSquareCoordinate(coordinate)
+	 */
+	public boolean canHaveAsSquareAt(Coordinate coordinate, Square square) {
+		return square != null
+					&& !square.isTerminated()
+					&& isValidSquareCoordinate(coordinate);
+	}
 
 	/** 
 	 * Return a mapping of coordinates to squares that represent all 
@@ -266,20 +283,6 @@ public class Dungeon {
 	}
 
 	/** 
-	 * Checks whether all the squares in this dungeon are not terminated. 
-	 * 
-	 * @return
-	 *   | result == (for each square in getSquare() : 
-	 *   |							!square.isTerminated())
-	 */
-	public boolean hasNoTerminatedSquares() {
-		for (Square square : getSquares())
-			if (square.isTerminated())
-				return false;
-		return true;
-	}
-
-	/** 
 	 * Returns the square at the given coordinate in this dungeon.
 	 * 
 	 * @param coordinate 
@@ -354,11 +357,11 @@ public class Dungeon {
 	 * @return 
 	 * True iff all squares of this dungeon have valid coordinates.
 	 *   | result == (for each e in getPositionsAndSquares() :
-	 *   |								isValidSquareCoordinate(e.getKey()))
+	 *   |					canHaveAsSquareAt(e.getKey(), e.getValue()))
 	 */
-	public boolean squaresHaveValidCoordinates() {
-		for (Map.Entry<Coordinate, Square> entry : getPositionsAndSquares())
-			if (!isValidSquareCoordinate(entry.getKey()))
+	public boolean canHaveSquaresAtCoordinates() {
+		for (Map.Entry<Coordinate, Square> e : getPositionsAndSquares())
+			if (!canHaveAsSquareAt(e.getKey(), e.getValue()))
 				return false;
 		return true;
 	}

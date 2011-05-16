@@ -1021,7 +1021,7 @@ abstract public class Square {
     /** 
      * An interface to filter neighbouring squares.
      */
-    private interface NeighbourFilter {
+    private static interface NeighbourFilter {
         /** 
          * Check whether the given neighbour of the given square is allowed 
          * to pass this squarefilter.
@@ -1069,6 +1069,10 @@ abstract public class Square {
         return result;
     }
 
+
+
+
+
     /** 
      * Initialize the borders of this square.
      *
@@ -1089,6 +1093,11 @@ abstract public class Square {
             setBorderAt(direction, border);
         }
     }
+
+
+
+
+
 
     /** 
      * Set the border of this square in the given direction to the given 

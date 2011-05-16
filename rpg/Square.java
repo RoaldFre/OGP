@@ -48,7 +48,7 @@ import java.util.HashSet;
  * @author Roald Frederickx
  */
 
-public class Square {
+abstract public class Square {
     /** 
      * Initialize this new square to a square with the given temperature,
      * temperature limits, humidity and slipperiness of the floor. 
@@ -102,7 +102,7 @@ public class Square {
     }
 
     /** 
-     * Initialize this new square to a square with the given temperature, 
+     * Initialize this new square to a square with the given temperature 
      * and humidity. 
      *
      * @param temperature
@@ -1063,7 +1063,6 @@ public class Square {
         for (Direction direction : Direction.values()){
             Border border = getBorderAt(direction);
             Square neighbour = border.getNeighbour(this);
-            System.out.println(border + " " + neighbour);
             if (neighbour != null  &&  nf.filter(this, border, neighbour))
                 result.put(direction, neighbour);
         }

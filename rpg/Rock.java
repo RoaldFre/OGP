@@ -85,3 +85,5 @@ public class Rock extends Square {
 
 
 }
+
+// vim: ts=4:sw=4:expandtab:smarttab

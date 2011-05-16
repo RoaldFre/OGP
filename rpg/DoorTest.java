@@ -25,12 +25,12 @@ public class DoorTest {
      */
     @Before
     public void setUpMutableFixture() {
-        square1 = new Square(new Temperature(70), 2000);
-        square2 = new Square(new Temperature(30), 8000);
+        square1 = new RegularSquare(new Temperature(70), 2000);
+        square2 = new RegularSquare(new Temperature(30), 8000);
         border1north = square1.getBorderAt(Direction.NORTH);
         border2south = square2.getBorderAt(Direction.SOUTH);
         
-        Square tempSquare = new Square();
+        Square tempSquare = new RegularSquare();
         closedDoor = new Door(tempSquare.getBorderAt(Direction.NORTH), false);
     }
 

@@ -24,8 +24,8 @@ public class OpenBorderTest {
      */
     @Before
     public void setUpMutableFixture() {
-        square1 = new Square();
-        square2 = new Square();
+        square1 = new RegularSquare();
+        square2 = new RegularSquare();
         border1north = square1.getBorderAt(Direction.NORTH);
         border2south = square2.getBorderAt(Direction.SOUTH);
     }

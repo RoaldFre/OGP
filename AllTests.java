@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     SquareTest.class,
+    RegularSquareTest.class,
     BorderTest.class,
     WallTest.class,
     DoorTest.class,

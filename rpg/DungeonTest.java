@@ -10,6 +10,7 @@ public class DungeonTest {
     private Dungeon dungeon_10_withSquares;
     private Dungeon dungeonDemo;
 
+    private Square square;
     private Square square_0_10_0;
     private Square square_1_10_0;
     private Square square_0_11_0;
@@ -21,6 +22,7 @@ public class DungeonTest {
     public void setUpMutableFixture() {
         dungeon_10 = new Dungeon(new Coordinate(10, 10, 10));
 
+        square = new RegularSquare();
 
         dungeon_10_withSquares = new Dungeon(new Coordinate(10, 10, 10));
         Coordinate coordinate1 = new Coordinate(1, 2, 3);
@@ -31,14 +33,14 @@ public class DungeonTest {
         Coordinate coordinate6 = new Coordinate(2, 2, 3);
         Coordinate coordinate7 = new Coordinate(0, 2, 3);
         Coordinate coordinate8 = new Coordinate(8, 9, 10);
-        Square square1 = new Square();
-        Square square2 = new Square();
-        Square square3 = new Square();
-        Square square4 = new Square();
-        Square square5 = new Square();
-        Square square6 = new Square();
-        Square square7 = new Square();
-        Square square8 = new Square();
+        Square square1 = new RegularSquare();
+        Square square2 = new RegularSquare();
+        Square square3 = new RegularSquare();
+        Square square4 = new RegularSquare();
+        Square square5 = new RegularSquare();
+        Square square6 = new RegularSquare();
+        Square square7 = new RegularSquare();
+        Square square8 = new RegularSquare();
         dungeon_10_withSquares.addSquareAt(coordinate1, square1);
         dungeon_10_withSquares.addSquareAt(coordinate2, square2);
         dungeon_10_withSquares.addSquareAt(coordinate3, square3);
@@ -49,25 +51,25 @@ public class DungeonTest {
         dungeon_10_withSquares.addSquareAt(coordinate8, square8);
 
 
-        square_0_10_0 = new Square(new Temperature(100), 5000);
+        square_0_10_0 = new RegularSquare(new Temperature(100), 5000);
         new Wall(square_0_10_0.getBorderAt(Direction.WEST));
         new Wall(square_0_10_0.getBorderAt(Direction.SOUTH));
         new Wall(square_0_10_0.getBorderAt(Direction.EAST));
 
-        square_1_10_0 = new Square(new Temperature(90),  2500);
+        square_1_10_0 = new RegularSquare(new Temperature(90),  2500);
         new Wall(square_1_10_0.getBorderAt(Direction.SOUTH));
         new Wall(square_1_10_0.getBorderAt(Direction.WEST));
         new Wall(square_1_10_0.getBorderAt(Direction.NORTH));
 
-        square_0_11_0 = new Square(new Temperature(100), 5000);
+        square_0_11_0 = new RegularSquare(new Temperature(100), 5000);
         new Wall(square_0_11_0.getBorderAt(Direction.WEST));
         new Wall(square_0_11_0.getBorderAt(Direction.NORTH));
         new Door(square_0_11_0.getBorderAt(Direction.EAST), false);
 
-        square_1_11_0 = new Square(new Temperature(-30), 7000);
+        square_1_11_0 = new RegularSquare(new Temperature(-30), 7000);
         new Wall(square_1_11_0.getBorderAt(Direction.EAST));
 
-        square_1_12_0 = new Square(new Temperature(-30), 5000);
+        square_1_12_0 = new RegularSquare(new Temperature(-30), 5000);
         new Wall(square_1_12_0.getBorderAt(Direction.EAST));
         new Wall(square_1_12_0.getBorderAt(Direction.WEST));
 
@@ -135,7 +137,6 @@ public class DungeonTest {
     @Test
     public void addSquareAt_legal() {
         Coordinate coordinate = new Coordinate(1, 2, 3);
-        Square square = new Square();
         new Wall(square.getBorderAt(Direction.DOWN), false);
         dungeon_10.addSquareAt(coordinate, square);
         assertTrue(dungeon_10.hasSquare(square));
@@ -147,7 +148,6 @@ public class DungeonTest {
     @Test
     public void addSquareAt_multipleSquares() {
         Coordinate coordinate = new Coordinate(2, 2, 4);
-        Square square = new Square();
         dungeon_10_withSquares.addSquareAt(coordinate, square);
         assertClassInvariants(dungeon_10_withSquares);
     }
@@ -159,25 +159,21 @@ public class DungeonTest {
     }
     @Test (expected = IllegalArgumentException.class)
     public void addSquareAt_invalidCoordinate_null() {
-        Square square = new Square();
         dungeon_10.addSquareAt(null, square);
     }
     @Test (expected = IllegalArgumentException.class)
     public void addSquareAt_invalidCoordinate_allEqual() {
         Coordinate coordinate = new Coordinate(1, 1, 1);
-        Square square = new Square();
         dungeon_10.addSquareAt(coordinate, square);
     }
     @Test (expected = DungeonConstraintsException.class)
     public void addSquareAt_tooManySlippery() {
         Coordinate coordinate = new Coordinate(1, 2, 3);
-        Square square = new Square();
         new Wall(square.getBorderAt(Direction.DOWN), true);
         dungeon_10.addSquareAt(coordinate, square);
     }
     public void addSquareAt_tooManySlippery_checkNotAdded() {
         Coordinate coordinate = new Coordinate(1, 2, 3);
-        Square square = new Square();
         new Wall(square.getBorderAt(Direction.DOWN), true);
         try {
             dungeon_10.addSquareAt(coordinate, square);
@@ -193,8 +189,8 @@ public class DungeonTest {
     public void addSquareAt_isOccupied() {
         Coordinate coordinate1 = new Coordinate(1, 2, 3);
         Coordinate coordinate2 = new Coordinate(1, 2, 3);
-        Square square1 = new Square();
-        Square square2 = new Square();
+        Square square1 = new RegularSquare();
+        Square square2 = new RegularSquare();
         dungeon_10.addSquareAt(coordinate1, square1);
         dungeon_10.addSquareAt(coordinate2, square2);
     }
@@ -202,7 +198,6 @@ public class DungeonTest {
     @Test
     public void getSquareAt_legal() {
         Coordinate coordinate = new Coordinate(1, 2, 3);
-        Square square = new Square();
         dungeon_10.addSquareAt(coordinate, square);
         assertEquals(square, dungeon_10.getSquareAt(coordinate));
         assertClassInvariants(dungeon_10);
@@ -220,7 +215,6 @@ public class DungeonTest {
     @Test
     public void deleteSquareAt_legal() {
         Coordinate coordinate = new Coordinate(1, 2, 3);
-        Square square = new Square();
         dungeon_10.addSquareAt(coordinate, square);
         dungeon_10.deleteSquareAt(coordinate);
         assertClassInvariants(dungeon_10);
@@ -231,7 +225,6 @@ public class DungeonTest {
     @Test
     public void deleteSquareAt_multipleSquares() {
         Coordinate coordinate = new Coordinate(2, 2, 4);
-        Square square = new Square();
         dungeon_10_withSquares.addSquareAt(coordinate, square);
         dungeon_10_withSquares.deleteSquareAt(coordinate);
         assertClassInvariants(dungeon_10_withSquares);

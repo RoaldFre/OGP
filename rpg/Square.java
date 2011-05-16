@@ -29,8 +29,8 @@ import java.util.HashSet;
  * a valid heat damage temperature step.
  *   | isValidHeatDamageStep(getHeatDamageStep()) 
  * @invar
- * Each square has a valid humidity.
- *   | isValidHumidity(getHumidity()) 
+ * Each square has a valid humidity for that square.
+ *   | canHaveAsHumidity(getHumidity()) 
  * @invar
  * The weight constant for merging temperatures that applies to all 
  * squares must be a valid weight constant for merging temperatures.
@@ -229,10 +229,25 @@ public class Square {
      */
     @Raw
     public void setMinTemperature(Temperature min)
-        throws IllegalArgumentException {
+                                    throws IllegalArgumentException {
         if (! canHaveAsMinTemperature(min))
             throw new IllegalArgumentException();
-        minTemperature = min;
+        setMinTemperatureRaw(min);
+    }
+
+    /** 
+     * Set the minimum temperature for this square, no matter what.
+     * 
+     * @param min
+     * The minimum temperature for this square.
+     * @post
+     * The new minimum temperature for this square is equal to the given 
+     * minimum temperature.
+     *   | new.getMinTemperature().equals(min)
+     */
+    @Raw
+    protected void setMinTemperatureRaw(Temperature min) {
+          minTemperature = min;
     }
 
     /** 
@@ -280,9 +295,24 @@ public class Square {
      */
     @Raw
     public void setMaxTemperature(Temperature max)
-        throws IllegalArgumentException {
+                                throws IllegalArgumentException {
         if (! canHaveAsMaxTemperature(max))
             throw new IllegalArgumentException();
+        maxTemperature = max;
+    }
+    
+    /** 
+     * Set the maximum temperature for this square, no matter what.
+     * 
+     * @param max
+     * The maximum temperature for this square.
+     * @post
+     * The new maximum temperature for this square is equal to the given 
+     * maximum temperature.
+     *   | new.getMaxTemperature().equals(max)
+     */
+    @Raw
+    protected void setMaxTemperatureRaw(Temperature max) {
         maxTemperature = max;
     }
 
@@ -525,22 +555,37 @@ public class Square {
     public static boolean isValidHumidity(int humidity) {
         return (0 <= humidity) && (humidity <= 10000);
     }
-    
+
+    /** 
+     * Checks whether this square can have the given humidity as its 
+     * humidity. 
+     * 
+     * @param humidity
+     * The humidity to check.
+     * @return 
+     * False if the given humidity is not a valid humidity for a square.
+     *   | if (!isValidHumidity(humidity))
+     *   |      then result == false
+     */
+    public boolean canHaveAsHumidity(int humidity) {
+        return isValidHumidity(humidity);
+    }
+
     /**
      * Set the humidity for this square to the given humidity.
      *
      * @param humidity
      * The new humidity for this square.
      * @pre
-     * The given humidity must be a valid humidity for this square.
-     *   | isValidHumidity(humidity) 
+     * This square can have the given humidity as its humidity.
+     *   | canHaveAsHumidity(humidity) 
      * @post
      * The new humidity for this square is equal to the given humidity.
      *   | new.getHumidity() == humidity
      */
     @Raw
     public void setHumidity(int humidity) {
-        assert isValidHumidity(humidity);
+        assert canHaveAsHumidity(humidity);
         this.humidity = humidity;
     }
     
@@ -1064,7 +1109,7 @@ public class Square {
      *   | new.getBorderAt(direction).equals(border)
      */
     @Raw @Model
-    private void setBorderAt(Direction direction, Border border) {
+    protected void setBorderAt(Direction direction, Border border) {
         assert isProperBorderAt(direction, border);
         borders.put(direction, border);
     }

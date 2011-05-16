@@ -61,8 +61,8 @@ abstract public class Square {
      * The maximum temperature for this new square.
      * @param humidity
      * The humidity for this new square.
-     * @param hasSlipperyFloor
-     * Whether or not this new square has a slippery floor.
+     * @param borders
+     * The borders to associate with this new square.
      * @post
      * The minimum temperature for this new square is equal to the 
      * given minimum temperature.
@@ -81,7 +81,7 @@ abstract public class Square {
      *   | setHumidity(humidity)
      * @effect
      * The borders of the square get initialized.
-     *   | initializeBorders(hasSlipperyFloor);
+     *   | initializeBorders(borders);
      * @throws IllegalArgumentException
      * Some of the given temperatures values are not effective, or the 
      * given temperature does not match with the given temperature limits.
@@ -90,7 +90,7 @@ abstract public class Square {
     @Raw
     public Square(Temperature temperature,
                     Temperature minTemp, Temperature maxTemp,
-                    int humidity, boolean hasSlipperyFloor)
+                    int humidity, Map<Direction, Border> borders)
                                             throws IllegalArgumentException {
         if (minTemp == null || maxTemp == null)
             throw new IllegalArgumentException();
@@ -98,45 +98,34 @@ abstract public class Square {
         maxTemperature = maxTemp;
         setTemperature(temperature);
         setHumidity(humidity);
-        initializeBorders(hasSlipperyFloor);
+        initializeBorders(borders);
     }
 
     /** 
-     * Initialize this new square to a square with the given temperature 
-     * and humidity. 
+     * Initialize this new square to a square with the given temperature, 
+     * humidity and borders.
      *
      * @param temperature
      * The temperature for this new square.
      * @param humidity
      * The humidity for this new square.
+     * @param borders
+     * The borders to associate with this new square.
      * @effect
      * This new square is initialized with the given temperature as 
      * its temperature, the given humidity as its humidity,  -200C as its 
-     * minimum temperature and 5000C as its maximum temperature. The floor 
-     * is not slippery.
+     * minimum temperature and 5000C as its maximum temperature and the 
+     * given borders as its borders.
      *   | this(temperature, new Temperature(-200), new Temperature(5000),
-     *   |                                                  humidity, false)
+     *   |                                               humidity, borders)
      */
     @Raw
-    public Square(Temperature temperature, int humidity) 
-                                    throws IllegalArgumentException {
+    public Square(Temperature temperature, int humidity,
+                                    Map<Direction, Border> borders)
+                                            throws IllegalArgumentException {
         this(temperature, new Temperature(-200), new Temperature(5000),
-                                                        humidity, false);
+                                                        humidity, borders);
     }
-
-    /** 
-     * Initialize this new square to a default square. 
-     *
-     * @effect
-     * This new square is initialized as a square with a temperature of 20C 
-     * and a humidity of 50%.
-     *   | this(new Temperature(20), 5000);
-     */
-    @Raw
-    public Square() {
-        this(new Temperature(20), 5000);
-    }
-
 
     /**
      * Returns the temperature of this square.
@@ -1069,35 +1058,21 @@ abstract public class Square {
         return result;
     }
 
-
-
-
-
     /** 
      * Initialize the borders of this square.
      *
      * @param hasSlipperyFloor
      * Whether or not to Initialize the floor as being slippery.
-     * @post
-     * The new square has a 'wall' as a floor with the given 
-     * 'slipperiness', and has open borders everywhere else.
+     * @effect
+     *   | for each direction in Direction.values():
+     *   |      setBorderAt(direction, borders.get(direction))
      */
     @Raw @Model
-    private void initializeBorders(boolean hasSlipperyFloor) {
+    private void initializeBorders(Map<Direction, Border> borders) {
         for (Direction direction : Direction.values()){
-            Border border;
-            if (direction.equals(Direction.DOWN))
-                border = new Wall(this, hasSlipperyFloor);
-            else
-                border = new OpenBorder(this);
-            setBorderAt(direction, border);
+            setBorderAt(direction, borders.get(direction));
         }
     }
-
-
-
-
-
 
     /** 
      * Set the border of this square in the given direction to the given 

@@ -125,7 +125,7 @@ public abstract class Border {
         assert !this.isTerminated() && !other.isTerminated();
 
         if (this.isSharedByTwoSquares() || other.isSharedByTwoSquares()
-                || squares.getAnElement() == other.squares.getAnElement())
+                        || this.getASquare().equals(other.getASquare()))
             throw new BorderMergeException(this, other);
 
         //Keep the least open border
@@ -139,8 +139,8 @@ public abstract class Border {
             newBorder = other;
             otherBorder = this;
         }
-        foreignSquare = otherBorder.squares.getAnElement();
-        newBorder.squares.add(foreignSquare);
+        foreignSquare = otherBorder.getASquare();
+        newBorder.addSquare(foreignSquare);
         foreignSquare.updateBorder(otherBorder, newBorder);
         if (newBorder.isOpen())
             newBorder.equilibrateSquares();
@@ -240,8 +240,8 @@ public abstract class Border {
     public boolean hasNoDuplicateSquares() {
         if (isTerminated() || !isSharedByTwoSquares())
             return true;
-        Square square1 = squares.getAnElement();
-        Square square2 = squares.getPartner(square1);
+        Square square1 = getASquare();
+        Square square2 = getNeighbour(square1);
         return !square1.equals(square2);
     }
 
@@ -320,6 +320,21 @@ public abstract class Border {
             if (square.isTerminated())
                 return false;
         return true;
+    }
+
+    /**
+     * Add the given square to this border.
+     *
+     * @param square
+     * The square to add to this border.
+     * @pre
+     *   | !isSharedByTwoSquares()
+     * @post
+     *   | getNeighbour(old.getASquare()).equals(square)
+     */
+    private void addSquare(Square square) {
+        assert !isSharedByTwoSquares();
+        squares.add(square);
     }
 
         

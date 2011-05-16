@@ -2,6 +2,11 @@ package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
 import rpg.exceptions.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * A class of squares involving a temperature, a humidity and a set of 
@@ -661,16 +666,12 @@ public class Square {
      * @param direction 
      * The direction of the border.
      * @pre
-     * The direction is effective
-     *   | direction != null
-     * @pre
-     * This square is not terminated
-     *   | !isTerminated()
+     * The direction is valid
+     *   | isValidDirection(direction)
      */
-    @Basic
+    @Basic @Raw
     public Border getBorderAt(Direction direction) {
-        assert direction != null;
-        assert !isTerminated();
+        assert isValidDirection(direction);
         return borders.get(direction);
     }
 
@@ -697,9 +698,11 @@ public class Square {
      * @param border
      * The border to check.
      * @return
-     * True iff this square is terminated and the given border is null; or 
-     * this square is not terminated and the given border is not null nor 
-     * terminated
+     * True iff the given direction is valid and:
+     *   - this square is terminated and the given border is null;
+     *   or 
+     *   - this square is not terminated and the given border is not null 
+     *   nor terminated.
      *   | if (!isValidDirection(direction))
      *   |      then result == false
      *   | else if (isTerminated())
@@ -810,7 +813,7 @@ public class Square {
         if (isTerminated())
             return true;
         return borders.size() 
-                == (new java.util.HashSet<Border>(borders.values())).size();
+                == (new HashSet<Border>(borders.values())).size();
     }
 
 
@@ -839,25 +842,20 @@ public class Square {
      * @throws IllegalArgumentException
      * This square already has the given non-null border as a border for 
      * some direction.
-     *   | border != null
-     *   |  &amp;&amp; for some direction in Direction.values() :
-     *   |          border.equals(getBorderAt(direction))
+     *   | hasBorder(border)
      * @throws BorderConstraintsException
      * If the border of this square were to be changed to the given border, 
      * some border constraints would be violated.
      */
     void changeBorderAt(Direction direction, @Raw Border border) 
                 throws IllegalArgumentException, BorderConstraintsException {
-        if (!isProperBorderAt(direction, border))
+        if (!isProperBorderAt(direction, border)  ||  hasBorder(border))
             throw new IllegalArgumentException();
 
-        if (border != null && borders.containsValue(border))
-            throw new IllegalArgumentException();
-
-        Border oldBorder = borders.get(direction);
-        borders.put(direction, border);
+        Border oldBorder = getBorderAt(direction);
+        setBorderAt(direction, border);
         if (!bordersSatisfyConstraints()){
-            borders.put(direction, oldBorder);
+            setBorderAt(direction, oldBorder);
             throw new BorderConstraintsException(this, border, direction);
         }
 
@@ -903,9 +901,9 @@ public class Square {
                     throws IllegalArgumentException, IllegalStateException {
         if (isTerminated())
             throw new IllegalStateException("Square is terminated!");
-        for (java.util.Map.Entry<Direction, Border> entry : borders.entrySet())
-            if (entry.getValue().equals(border))
-                return entry.getKey();
+        for (Direction direction : Direction.values())
+            if (getBorderAt(direction).equals(border))
+                    return direction;
         throw new IllegalArgumentException();
     }
 
@@ -917,17 +915,19 @@ public class Square {
      * @return 
      * Whether this square has the given border as its border, or false if 
      * this square is terminated. 
-     *   | if (isTerminated())
+     *   | if (isTerminated()  ||  border == null)
      *   |      then result == false
      *   | else
      *   |      result == (for some direction in Direction.values() :
      *   |                      getBorderAt(direction).equals(border))
      */
     public boolean hasBorder(Border border) {
-        if (isTerminated())
+        if (isTerminated()  ||  border == null)
             return false;
         return borders.containsValue(border);
     }
+
+
 
     /** 
      * Initialize the borders of this square.
@@ -946,8 +946,33 @@ public class Square {
                 border = new Wall(this, hasSlipperyFloor);
             else
                 border = new OpenBorder(this);
-            borders.put(direction, border);
+            setBorderAt(direction, border);
         }
+    }
+
+    
+    
+    /** 
+     * Set the border of this square in the given direction to the given 
+     * border.
+     * 
+     * @param direction 
+     * The direction of the new border.
+     * @param border 
+     * The new border.
+     * @pre
+     * The given border is a proper border for this square in the given 
+     * direction.
+     *   | isProperBorderAt(direction, border)
+     * @post
+     * The given border is the new border for this square in the given 
+     * direction.
+     *   | new.getBorderAt(direction).equals(border)
+     */
+    @Raw @Model
+    private void setBorderAt(Direction direction, Border border) {
+        assert isProperBorderAt(direction, border);
+        borders.put(direction, border);
     }
 
     /** 
@@ -967,8 +992,8 @@ public class Square {
     /** 
      * Variable referencing a map of borders of this square.
      */
-    private java.util.Map<Direction, Border> borders = 
-        new java.util.EnumMap<Direction, Border>(Direction.class);
+    private Map<Direction, Border> borders = 
+        new EnumMap<Direction, Border>(Direction.class);
 
 
     /** 

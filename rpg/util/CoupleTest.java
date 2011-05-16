@@ -75,6 +75,17 @@ public class CoupleTest {
         Couple<String> couple = new Couple<String>("black", "white");
         couple.delete("gray");
     }
+
+    @Test
+    public void iterator_test() {
+        Couple<String> couple1 = new Couple<String>("a");
+        for (String string : couple1)
+            assertTrue(string.equals("a"));
+
+        Couple<String> couple2 = new Couple<String>("b", "c");
+        for (String string : couple2)
+            assertTrue(string.equals("b") || string.equals("c"));
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

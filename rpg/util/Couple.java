@@ -193,7 +193,7 @@ public class Couple<E> implements Iterable<E> {
             }
 
 			public boolean hasNext() {
-                return (count == 0  ||  second != null);
+                return (count == 0  ||  (count == 1 && second != null));
 			}
 
 			public E next() throws java.util.NoSuchElementException {

@@ -4,9 +4,9 @@ import be.kuleuven.cs.som.annotate.*;
 import rpg.exceptions.*;
 import java.util.Collection;
 import java.util.Map;
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.EnumMap;
-import java.util.Set;
+//import java.util.Set;
 import java.util.HashSet;
 
 /**
@@ -1164,8 +1164,12 @@ public class Square {
      *   |   &lt;= min(old.getTemperature(), (old other).getTemperature())
      *   | &amp;&amp; new.getTemperature()
      *   |   &gt;= max(old.getTemperature(), (old other).getTemperature())
+     * @throws MergingTemperaturesViolatesLimitsException
+     * Merging the temperaturs would violate the temperature limits of one 
+     * of the squares.
      */
-    public void mergeTemperatures(Square other) {
+    public void mergeTemperatures(Square other)
+                        throws MergingTemperaturesViolatesLimitsException {
         assert other != null;
         double thisTemp = this.getTemperature().temperature();
         double otherTemp = other.getTemperature().temperature();
@@ -1182,12 +1186,12 @@ public class Square {
                                 + (otherWeight) * otherTemp) / 2.0;
         Temperature newTemp = new Temperature(newTempValue);
 
-        try {
-            this.setTemperature(newTemp);
-            other.setTemperature(newTemp);
-        } catch (IllegalArgumentException e) {
+        if (!this.canHaveAsTemperature(newTemp)
+                        || !other.canHaveAsTemperature(newTemp))
             throw new MergingTemperaturesViolatesLimitsException();
-        }
+
+        this.setTemperature(newTemp);
+        other.setTemperature(newTemp);
     }
 
     /**

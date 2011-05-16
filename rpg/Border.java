@@ -160,7 +160,8 @@ public abstract class Border {
      * humidities get merged.
      */
     @Model
-    protected void equilibrateSquares() {
+    protected void equilibrateSquares() 
+                        throws MergingTemperaturesViolatesLimitsException {
         if (isSharedByTwoSquares()){
             Square square1 = getASquare();
             Square square2 = getNeighbour(square1);

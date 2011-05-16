@@ -4,7 +4,7 @@ import be.kuleuven.cs.som.annotate.*;
 
 /**
  * A class representing a 'couple' or unordered 2-tuple. Null is allowed, 
- * but  only once (so it's basically a bag with a minimum capacity of 1 and 
+ * but only once (so it's basically a bag with a minimum capacity of 1 and 
  * a maximum capacity of 2).
  *
  * @invar
@@ -13,7 +13,8 @@ import be.kuleuven.cs.som.annotate.*;
  *
  * @author Roald Frederickx
  */
-public class Couple<Type> implements Iterable<Type> {
+@SuppressWarnings("unchecked")
+public class Couple<E> implements Iterable<E> {
     /** 
      * Create a new couple with the given element.
      * 
@@ -23,7 +24,7 @@ public class Couple<Type> implements Iterable<Type> {
      *   | this(element.null)
      */
     @Raw
-    public Couple(Type element) {
+    public Couple(E element) {
         this(element, null);
     }
 
@@ -40,7 +41,7 @@ public class Couple<Type> implements Iterable<Type> {
      * This new couple contains the given elements.
      */
     @Raw
-    public Couple(Type element1, Type element2) {
+    public Couple(E element1, E element2) {
         assert (element1 != null) || (element2 != null);
         elements[0] = element1;
         elements[1] = element2;
@@ -53,10 +54,10 @@ public class Couple<Type> implements Iterable<Type> {
      * getPartner().
      */
     @Basic
-    public Type getAnElement() {
+    public E getAnElement() {
         if (elements[0] != null)
-            return elements[0];
-        return elements[1];
+            return (E) elements[0];
+        return (E) elements[1];
     }
 
     /**
@@ -67,7 +68,7 @@ public class Couple<Type> implements Iterable<Type> {
      * @post
      * The given element gets added as a second member of the new couple.
      */
-    public void add(Type element) {
+    public void add(E element) {
         assert getNbElements() == 1;
         setPartner(getAnElement(), element);
     }
@@ -81,7 +82,7 @@ public class Couple<Type> implements Iterable<Type> {
      *   | element != null
      */
     @Basic
-    public boolean contains(Type element) {
+    public boolean contains(E element) {
         assert (element != null);
         return element.equals(elements[0]) || (element.equals(elements[1]));
     }
@@ -98,13 +99,13 @@ public class Couple<Type> implements Iterable<Type> {
      * This will be null if the given element is not a member of this 
      * couple, or if the given element is the only element of this couple.
      */
-    @Basic
-    public Type getPartner(Type thisElement) {
+	@Basic
+    public E getPartner(E thisElement) {
         assert thisElement != null;
         if (thisElement.equals(elements[0]))
-            return elements[1];
+            return (E) elements[1];
         if (thisElement.equals(elements[1]))
-            return elements[0];
+            return (E) elements[0];
         return null;
     }
 
@@ -122,7 +123,7 @@ public class Couple<Type> implements Iterable<Type> {
      * @throws IllegalArgumentException
      * 'thisElement' is not a member of this couple.
      */
-    public void setPartner(Type thisElement, Type newPartner) {
+    public void setPartner(E thisElement, E newPartner) {
         if (thisElement == null)
             throw new IllegalArgumentException();
         if (thisElement.equals(elements[0]))
@@ -148,7 +149,7 @@ public class Couple<Type> implements Iterable<Type> {
      * @post
      *   | getNbElements() == 1
      */
-    public void delete(Type element) throws IllegalArgumentException {
+    public void delete(E element) throws IllegalArgumentException {
         assert element != null;
         assert getNbElements() == 2;
         if (elements[0].equals(element))
@@ -175,7 +176,7 @@ public class Couple<Type> implements Iterable<Type> {
     /** 
      * Variable referencing an array of elements representing the couple.
      */
-    private Type elements[] = (Type[]) new Object[2];
+    private Object elements[] = new Object[2];
 
     /** 
      * Returns an iterator over the elements of the couple.
@@ -183,17 +184,35 @@ public class Couple<Type> implements Iterable<Type> {
      * @return 
      * An iterator over the elements of the couple.
      */
-    public java.util.Iterator<Type> iterator() {
-        Type iteratorElements[];
+    public java.util.Iterator<E> iterator() {
+        return new java.util.Iterator<E>() {
+            {
+                E first = getAnElement();
+                this.first = first;
+                this.second = getPartner(first);
+            }
 
-        if (elements[0] != null  &&  elements[1] != null)
-            iteratorElements = (Type[]) elements.clone();
-        else if (elements[0] != null)
-            iteratorElements = (Type[]) new Object[] {elements[0]};
-        else
-            iteratorElements = (Type[]) new Object[] {elements[1]};
+			public boolean hasNext() {
+                return (count == 0  ||  second != null);
+			}
 
-        return java.util.Arrays.asList(iteratorElements).iterator();
+			public E next() throws java.util.NoSuchElementException {
+				if (!hasNext())
+					throw new java.util.NoSuchElementException();
+                count++;
+                if (count == 1)
+                    return first;
+                return second;
+			}
+
+			public void remove() throws UnsupportedOperationException {
+				throw new UnsupportedOperationException();
+			}
+
+            private E first;
+            private E second;
+            private int count = 0;
+        };
     }
 }
 

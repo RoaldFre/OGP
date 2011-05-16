@@ -61,8 +61,8 @@ abstract public class Square {
      * The maximum temperature for this new square.
      * @param humidity
      * The humidity for this new square.
-     * @param borders
-     * The borders to associate with this new square.
+     * @param borderInitializer
+     * The borderInitializer to use for this new square.
      * @post
      * The minimum temperature for this new square is equal to the 
      * given minimum temperature.
@@ -90,7 +90,7 @@ abstract public class Square {
     @Raw
     public Square(Temperature temperature,
                     Temperature minTemp, Temperature maxTemp,
-                    int humidity, Map<Direction, Border> borders)
+                    int humidity, BorderInitializer borderInitializer)
                                             throws IllegalArgumentException {
         if (minTemp == null || maxTemp == null)
             throw new IllegalArgumentException();
@@ -98,7 +98,7 @@ abstract public class Square {
         maxTemperature = maxTemp;
         setTemperature(temperature);
         setHumidity(humidity);
-        initializeBorders(borders);
+        initializeBorders(borderInitializer);
     }
 
     /** 
@@ -109,8 +109,8 @@ abstract public class Square {
      * The temperature for this new square.
      * @param humidity
      * The humidity for this new square.
-     * @param borders
-     * The borders to associate with this new square.
+     * @param borderInitializer
+     * The borderInitializer to use for this new square.
      * @effect
      * This new square is initialized with the given temperature as 
      * its temperature, the given humidity as its humidity,  -200C as its 
@@ -121,10 +121,10 @@ abstract public class Square {
      */
     @Raw
     public Square(Temperature temperature, int humidity,
-                                    Map<Direction, Border> borders)
+                            BorderInitializer borderInitializer)
                                             throws IllegalArgumentException {
         this(temperature, new Temperature(-200), new Temperature(5000),
-                                                        humidity, borders);
+                                                humidity, borderInitializer);
     }
 
     /**
@@ -1068,10 +1068,12 @@ abstract public class Square {
      *   |      setBorderAt(direction, borders.get(direction))
      */
     @Raw @Model
-    private void initializeBorders(Map<Direction, Border> borders) {
-        for (Direction direction : Direction.values()){
-            setBorderAt(direction, borders.get(direction));
-        }
+    private void initializeBorders(BorderInitializer borderInitializer) {
+        borderInitializer.initializeBorders(this);
+    }
+
+    protected static interface BorderInitializer {
+        public void initializeBorders(Square square);
     }
 
     /** 

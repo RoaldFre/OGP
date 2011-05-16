@@ -5,13 +5,13 @@ import org.junit.*;
 import rpg.exceptions.*;
 
 /**
- * A class collecting tests for the class of squares.
+ * A class collecting tests for the class of regular squares.
  *
  * @author Roald Frederickx
  */
 public class RegularSquareTest {
     /**
-     * Instance variable referencing squares that may change during 
+     * Instance variable referencing regular squares that may change during 
      * individual tests.
      */
     private RegularSquare squareDefault;

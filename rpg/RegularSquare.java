@@ -1,8 +1,6 @@
 package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
-import java.util.Map;
-import java.util.EnumMap;
 
 /**
  * A class of regular squares involving a temperature, a humidity and a set 
@@ -38,7 +36,7 @@ public class RegularSquare extends Square {
                     int humidity, boolean hasSlipperyFloor)
                                             throws IllegalArgumentException {
         super(temperature, minTemp, maxTemp, humidity, 
-                                        initialBorders(hasSlipperyFloor));
+                            new RegularBorderInitializer(hasSlipperyFloor));
     }
 
     /** 
@@ -55,7 +53,7 @@ public class RegularSquare extends Square {
     @Raw
     public RegularSquare(Temperature temperature, int humidity) 
                                     throws IllegalArgumentException {
-        super(temperature, humidity, initialBorders(false));
+        super(temperature, humidity, new RegularBorderInitializer(false));
     }
 
     /** 
@@ -71,29 +69,26 @@ public class RegularSquare extends Square {
 
 
     /** 
-     * Returns initial borders for this square.
+     * A default border initializer for regular squares.
      *
-     * @param hasSlipperyFloor
-     * Whether or not to initialize the floor as being slippery.
-     * @return
-     * A mapping of directions to borders that can be used in the 
-     * constructors. The result has a 'wall' as a floor with the given 
-     * 'slipperiness', and has open borders everywhere else.
+     * This border initializer initializes squares with a 'wall' as a floor 
+     * with the given 'slipperiness', and open borders everywhere else.
      */
-    @Raw @Model
-    private Map<Direction, Border> initialBorders(
-                                                boolean hasSlipperyFloor) {
-        Map<Direction, Border> result = 
-                            new EnumMap<Direction, Border>(Direction.class);
-        for (Direction direction : Direction.values()){
-            Border border;
-            if (direction.equals(Direction.DOWN))
-                border = new Wall(this, hasSlipperyFloor);
-            else
-                border = new OpenBorder(this);
-            result.put(direction, border);
+    public static class RegularBorderInitializer implements BorderInitializer {
+        RegularBorderInitializer(boolean hasSlipperyFloor) {
+            this.hasSlipperyFloor = hasSlipperyFloor;
         }
-        return result;
+        public void initializeBorders(Square square) {
+            for (Direction direction : Direction.values()){
+                Border border;
+                if (direction.equals(Direction.DOWN))
+                    border = new Wall(square, hasSlipperyFloor);
+                else
+                    border = new OpenBorder(square);
+                square.setBorderAt(direction, border);
+            }
+        }
+        private boolean hasSlipperyFloor;
     }
 }
 

@@ -81,7 +81,7 @@ abstract public class Square {
      *   | setHumidity(humidity)
      * @effect
      * The borders of the square get initialized.
-     *   | initializeBorders(borders);
+     *   | initializeBorders(borderInitializer);
      * @throws IllegalArgumentException
      * Some of the given temperatures values are not effective, or the 
      * given temperature does not match with the given temperature limits.
@@ -1061,19 +1061,30 @@ abstract public class Square {
     /** 
      * Initialize the borders of this square.
      *
-     * @param hasSlipperyFloor
-     * Whether or not to Initialize the floor as being slippery.
+     * @param borderInitializer
+     * The border initializer to use for the initialization of the borders.
      * @effect
-     *   | for each direction in Direction.values():
-     *   |      setBorderAt(direction, borders.get(direction))
+     *   | borderInitializer.initializeBorders(this)
      */
     @Raw @Model
     private void initializeBorders(BorderInitializer borderInitializer) {
         borderInitializer.initializeBorders(this);
     }
 
-    protected static interface BorderInitializer {
-        public void initializeBorders(Square square);
+    /** 
+     * An interface to initialize the borders of a square during 
+     * construction.
+     */
+    //@Model //not allowed, so it seems
+    static interface BorderInitializer {
+        /**
+         * Initialize the borders of the given square.
+         *
+         * @post
+         *   | for each direction in Direction.values():
+         *   |      canHaveAsBorderAt(direction, getBorderAt(direction))
+         */
+        public void initializeBorders(@Raw Square square);
     }
 
     /** 

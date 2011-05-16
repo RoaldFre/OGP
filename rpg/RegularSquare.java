@@ -74,11 +74,11 @@ public class RegularSquare extends Square {
      * This border initializer initializes squares with a 'wall' as a floor 
      * with the given 'slipperiness', and open borders everywhere else.
      */
-    public static class RegularBorderInitializer implements BorderInitializer {
+    static class RegularBorderInitializer implements BorderInitializer {
         RegularBorderInitializer(boolean hasSlipperyFloor) {
             this.hasSlipperyFloor = hasSlipperyFloor;
         }
-        public void initializeBorders(Square square) {
+        public void initializeBorders(@Raw Square square) {
             for (Direction direction : Direction.values()){
                 Border border;
                 if (direction.equals(Direction.DOWN))

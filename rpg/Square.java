@@ -2,6 +2,7 @@ package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
 import rpg.exceptions.*;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
@@ -927,7 +928,102 @@ public class Square {
         return borders.containsValue(border);
     }
 
+    
+    /** 
+     * Returns the squares that neighbour this square. 
+     * 
+     * @return 
+     * A mapping of direction and squares that neighbour this square (in 
+     * said direction).
+     */
+    public Map<Direction, Square> getNeighbours(){
+        return getFilteredNeighbours(
+                new NeighbourFilter() {
+                    public boolean filter(Square s, Border b, Square n){
+                        return true;
+                    }
+                });
+    }
 
+    /** 
+     * Returns the squares that neighbour this square through open borders. 
+     * 
+     * @return 
+     * A mapping of direction and squares that neighbour this square (in 
+     * said direction) through open borders.
+     */
+    public Map<Direction, Square> getAccessibleNeighbours(){
+        return getFilteredNeighbours(
+                new NeighbourFilter() {
+                    public boolean filter(Square s, Border border, Square n){
+                        return border.isOpen();
+                    }
+                });
+    }
+
+    /** 
+     * Return a collection of squares that can be navigated to from this 
+     * square in one way or another.
+     * 
+     * @return 
+     * A collection of squares that can be navigated to from this square in 
+     * one way or another.
+     */
+    public Collection<Square> getNavigatableSquares() {
+        return getAccessibleNeighbours().values();
+    }
+
+    /** 
+     * An interface to filter neighbouring squares.
+     */
+    private interface NeighbourFilter {
+        /** 
+         * Check whether the given neighbour of the given square is allowed 
+         * to pass this squarefilter.
+         * 
+         * @param square
+         * The square whose neighbour to filter.
+         * @param border
+         * The border at which the given square borders the given neighbour.
+         * @param neighbour
+         * The neighbour to filter.
+         * @pre
+         *   | border != null &amp;&amp;
+         *   |              square != null &amp;&amp; neighbour != null
+         * @pre
+         *   | border.isSharedByTwoSquares()
+         * @pre
+         *   | border.bordersOnSquare(square);
+         * @pre
+         *   | border.bordersOnSquare(neighbour);
+         */
+        @Basic
+        public boolean filter(Square square, Border border, Square neighbour);
+    }
+    
+    /** 
+     * Return a list of neighbouring squares that satisfy the given filter.
+     * 
+     * @param nf
+     * The neighbourfilter that will be applied to the neighbours.
+     * @pre
+     *   | nf != null
+     * @return
+     * A list of neighbouring squares that satisfy the given filter.
+     */
+    private Map<Direction, Square> getFilteredNeighbours(NeighbourFilter nf) {
+        assert nf != null;
+        Map<Direction, Square> result = 
+                        new EnumMap<Direction, Square>(Direction.class);
+        for (Direction direction : Direction.values()){
+            Border border = getBorderAt(direction);
+            Square neighbour = border.getNeighbour(this);
+            System.out.println(border + " " + neighbour);
+            if (neighbour != null  &&  nf.filter(this, border, neighbour))
+                result.put(direction, neighbour);
+        }
+        return result;
+    }
 
     /** 
      * Initialize the borders of this square.
@@ -950,8 +1046,6 @@ public class Square {
         }
     }
 
-    
-    
     /** 
      * Set the border of this square in the given direction to the given 
      * border.

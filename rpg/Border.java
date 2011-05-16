@@ -58,7 +58,7 @@ public abstract class Border {
     @Raw
     public Border(Border border) {
         assert border != null  &&  !border.isTerminated();
-        this.squares = border.squares;
+        this.squares = new Couple<Square>(border.squares);
         for (Square square : getSquares())
             square.updateBorder(border, this);
     }

@@ -47,6 +47,21 @@ public class Couple<E> implements Iterable<E> {
         elements[1] = element2;
     }
 
+    /**
+     * Create a deep clone of the given couple.
+     *
+     * @param couple
+     * The couple to be cloned.
+     * @effect
+     *   | this(couple.getAnElement(), 
+     *   |      couple.getPartner(couple.getAnElement()))
+     */
+    @Raw
+    public Couple(Couple<E> couple) {
+        this(couple.getAnElement(),
+                couple.getPartner(couple.getAnElement()));
+    }
+
     /** 
      * Returns an element of this couple.
      * Note that if (getNbElements() == 1), this is <i>the</i> element.

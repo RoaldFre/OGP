@@ -383,11 +383,26 @@ public class SquareTest {
     }
 
     @Test
-    public void mergeWith_TestHumiditiesAndTemperatures_Legal() {
+    public void mergeWith_TestProperBinding() {
         square_T100_H50.mergeWith(square_T40_H100, Direction.NORTH);
+        Border border = square_T100_H50.getBorderAt(Direction.NORTH);
 
         assertEquals(square_T100_H50.getBorderAt(Direction.NORTH),
                         square_T40_H100.getBorderAt(Direction.SOUTH));
+
+        assertTrue(border.bordersOnSquare(square_T100_H50));
+        assertTrue(border.bordersOnSquare(square_T40_H100));
+        
+        assertEquals(square_T40_H100, border.getNeighbour(square_T100_H50));
+        assertEquals(square_T100_H50, border.getNeighbour(square_T40_H100));
+
+        assertClassInvariants(square_T100_H50);
+        assertClassInvariants(square_T40_H100);
+    }
+
+    @Test
+    public void mergeWith_TestHumiditiesAndTemperatures_Legal() {
+        square_T100_H50.mergeWith(square_T40_H100, Direction.NORTH);
 
         assertEquals(7500, square_T100_H50.getHumidity());
         assertEquals(7500, square_T40_H100.getHumidity());
@@ -428,6 +443,42 @@ public class SquareTest {
     public void mergeWith_OtherTerminated() {
         square_T40_H100.terminate();
         square_T100_H50.mergeWith(square_T40_H100, Direction.NORTH);
+    }
+
+
+    @Test
+    public void getNeighbours_getAccessibleNeighbours_getNavigatableSquares() {
+        assertTrue(square_T100_H50.getNeighbours().isEmpty());
+        assertTrue(square_T100_H50.getAccessibleNeighbours().isEmpty());
+        assertTrue(square_T100_H50.getNavigatableSquares().isEmpty());
+
+        square_T100_H50.mergeWith(square_T40_H100, Direction.NORTH);
+        Door door = new Door(square_T100_H50.getBorderAt(Direction.NORTH), false);
+
+
+        assertEquals(1, square_T100_H50.getNeighbours().size());
+        assertEquals(square_T40_H100,
+                     square_T100_H50.getNeighbours().get(Direction.NORTH));
+        assertTrue(square_T100_H50.getAccessibleNeighbours().isEmpty());
+        assertTrue(square_T100_H50.getNavigatableSquares().isEmpty());
+
+        door.open();
+
+        assertEquals(1, square_T100_H50.getNeighbours().size());
+        assertEquals(square_T40_H100,
+                     square_T100_H50.getNeighbours().get(Direction.NORTH));
+
+        assertEquals(1, square_T100_H50.getAccessibleNeighbours().size());
+        assertEquals(square_T40_H100,
+                     square_T100_H50.getAccessibleNeighbours().get(
+                                                        Direction.NORTH));
+
+        assertEquals(1, square_T100_H50.getNavigatableSquares().size());
+        assertTrue(square_T100_H50.getNavigatableSquares().contains(
+                                                        square_T40_H100));
+
+        assertClassInvariants(square_T100_H50);
+        assertClassInvariants(square_T40_H100);
     }
 }
 

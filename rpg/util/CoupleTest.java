@@ -25,6 +25,12 @@ public class CoupleTest {
         assertTrue(couple3.contains("dead"));
         assertTrue(couple3.contains("parrot"));
     }
+    @Test
+    public void constructor_clone() {
+        Couple<String> couple = new Couple<String>("Dolly");
+        Couple<String> clone = new Couple<String>(couple);
+        assertTrue(clone.contains("Dolly"));
+    }
 
     @Test
     public void getAnElement_test() {

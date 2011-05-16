@@ -44,10 +44,13 @@ public class BorderTest {
         assertClassInvariants(border2south);
         assertTrue(square1.getBorderAt(Direction.NORTH).equals(
                                     square2.getBorderAt(Direction.SOUTH)));
+        Border mergedBorder = square1.getBorderAt(Direction.NORTH);
         assertTrue(square1.getBorderAt(Direction.NORTH).bordersOnSquare(
                                                                 square2));
         assertTrue(square2.getBorderAt(Direction.SOUTH).bordersOnSquare(
                                                                 square1));
+        assertEquals(square1, mergedBorder.getNeighbour(square2));
+        assertEquals(square2, mergedBorder.getNeighbour(square1));
     }
 
     /** 

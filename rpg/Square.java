@@ -962,12 +962,12 @@ public class Square {
     }
 
     /** 
-     * Return a collection of squares that can be navigated to from this 
-     * square in one way or another.
+     * Return a collection of squares that can directly be navigated to 
+     * from this square in a single step in one way or another.
      * 
      * @return 
-     * A collection of squares that can be navigated to from this square in 
-     * one way or another.
+     * A collection of squares that can directly be navigated to from this 
+     * square in a single step in one way or another.
      */
     public Collection<Square> getNavigatableSquares() {
         return getAccessibleNeighbours().values();

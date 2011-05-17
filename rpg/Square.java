@@ -66,15 +66,15 @@ abstract public class Square {
      * @post
      * The minimum temperature for this new square is equal to the 
      * given minimum temperature.
-     *   | new.getMinTemperature() == minTemp
+     *   | new.getMinTemperature().equals(minTemp)
      * @post
      * The temperature for this new square is equal to the given 
      * temperature.
-     *   | new.getTemperature() == temperature
+     *   | new.getTemperature().equals(temperature)
      * @post
      * The maximum temperature for this new square is equal to the 
      * given maximum temperature.
-     *   | new.getMaxTemperature() == maxTemp
+     *   | new.getMaxTemperature().equals(maxTemp)
      * @effect
      * The humidity for this new square gets initialized to the given 
      * humidity.
@@ -87,8 +87,8 @@ abstract public class Square {
      * given temperature does not match with the given temperature limits.
      *   | ! matchesMinTemperatureMax(minTemp, temperature, maxTemp)
      */
-    @Raw
-    public Square(Temperature temperature,
+    @Raw @Model
+    protected Square(Temperature temperature,
                     Temperature minTemp, Temperature maxTemp,
                     int humidity, BorderInitializer borderInitializer)
                                             throws IllegalArgumentException {
@@ -725,8 +725,9 @@ abstract public class Square {
     }
 
     /** 
-     * Check whether this square can have the given border as its border in 
-     * the given direction.
+     * Check whether this square can possibly have the given border as its 
+     * border in the given direction, not taking into account specific 
+     * rules for specific types of squares.
      * 
      * @param direction 
      * The direction of the border.
@@ -747,7 +748,7 @@ abstract public class Square {
      *   |                      &amp;&amp; !border.isTerminated())
      */
     @Raw
-    public boolean canHaveAsBorderAt(Direction direction, Border border) {
+    public boolean canPossiblyHaveAsBorderAt(Direction direction, Border border) {
         if (!isValidDirection(direction))
             return false;
         if (isTerminated())
@@ -755,40 +756,33 @@ abstract public class Square {
         return (border != null) && (!border.isTerminated());
     }
 
+    /** 
+     * Check whether this square can have the given border as its border in 
+     * the given direction, taking into account specific rules for specific 
+     * types of squares.
+     * 
+     * @param direction 
+     * The direction of the border.
+     * @param border
+     * The border to check.
+     */
+    @Raw
+    abstract public boolean canHaveAsBorderAt(Direction direction, Border border);
 
     /**
      * Checks whether the borders of this square satisfy the constraints of 
      * the game.
      *
      * @return
-     * True iff this square is not terminated and has:
-     *   - no doors placed in ceilings or floors
-     *   - at least one wall or door
-     *   - no more than three doors
+     * True if this square is terminated.
+     *   | if (isTerminated())
+     *   |      then result == true
      */
     @Raw
-    public boolean bordersSatisfyConstraints() {
-        if (isTerminated())
-            return true;
-
-        int numWallsOrDoors = 0;
-        int numDoors = 0;
-        for (Direction direction : Direction.values()){
-            Border border = getBorderAt(direction);
-            if (border.isDoor()) {
-                numWallsOrDoors++;
-                numDoors++;
-                if (direction.equals(Direction.UP) 
-                                    || direction.equals(Direction.DOWN))
-                    return false;
-            } else if (border.isWall())
-                numWallsOrDoors++;
-        }
-        return (numWallsOrDoors >= 1  &&  numDoors <= 3);
-    }
+    abstract public boolean bordersSatisfyConstraints();
 
     /** 
-     * Check whether the given border would be a proper border for the given 
+     * Check whether the given border is a proper border for the given 
      * direction.
      * 
      * @param direction

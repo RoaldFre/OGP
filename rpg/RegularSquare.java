@@ -90,6 +90,55 @@ public class RegularSquare extends Square {
         }
         private boolean hasSlipperyFloor;
     }
+
+
+    /** 
+     * Check whether this regular square can have the given border as its 
+     * border in the given direction.
+     * 
+     * @param direction 
+     * The direction of the border.
+     * @param border
+     * The border to check.
+     * @return
+     */
+    public boolean canHaveAsBorderAt(Direction direction, Border border) {
+        return super.canPossiblyHaveAsBorderAt(direction, border);
+    }
+
+
+    /**
+     * Checks whether the borders of this regular square satisfy the 
+     * constraints for regular squares.
+     *
+     * @return
+     * True iff this regular square is not terminated and has:
+     *   - no doors placed in ceilings or floors
+     *   - at least one wall or door
+     *   - no more than three doors
+     */
+    @Raw
+    public boolean bordersSatisfyConstraints() {
+        if (isTerminated())
+            return true;
+
+        int numWallsOrDoors = 0;
+        int numDoors = 0;
+        for (Direction direction : Direction.values()){
+            Border border = getBorderAt(direction);
+            if (border.isDoor()) {
+                numWallsOrDoors++;
+                numDoors++;
+                if (direction.equals(Direction.UP) 
+                                    || direction.equals(Direction.DOWN))
+                    return false;
+            } else if (border.isWall())
+                numWallsOrDoors++;
+        }
+        return (numWallsOrDoors >= 1  &&  numDoors <= 3);
+    }
+
+
 }
 
 

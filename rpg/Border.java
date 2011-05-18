@@ -142,6 +142,7 @@ public abstract class Border {
         foreignSquare = otherBorder.getASquare();
         newBorder.addSquare(foreignSquare);
         foreignSquare.updateBorder(otherBorder, newBorder);
+        //TODO
         if (newBorder.isOpen())
             newBorder.equilibrateSquares();
         return newBorder;
@@ -160,6 +161,7 @@ public abstract class Border {
      * humidities get merged.
      */
     @Model
+    @Deprecated
     protected void equilibrateSquares() 
                         throws MergingTemperaturesViolatesLimitsException {
         if (isSharedByTwoSquares()){

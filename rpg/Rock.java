@@ -72,7 +72,7 @@ public class Rock extends Square {
 
 
     /** 
-     * Initialize the borders of this square.
+     * Initialize the borders of this rock.
      *
      * @post
      * The new rock has non slippery walls all around.
@@ -87,3 +87,4 @@ public class Rock extends Square {
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab
+

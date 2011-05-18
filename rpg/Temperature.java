@@ -227,6 +227,24 @@ public class Temperature implements Comparable<Temperature> {
     public String toString() {
         return temperature() + "C";
     }
+
+    /** 
+     * Return the result of coercing this temperature to the given limits.
+     * 
+     * @param low
+     * The lower temperature limit.
+     * @param high
+     * The upper temperature limit.
+     * @return
+     * The coerced value of this temperature to the given limits.
+     */
+    public Temperature coerce(Temperature low, Temperature high) {
+        if (this.compareTo(low) <= 0)
+            return low;
+        if (this.compareTo(high) >= 0)
+            return high;
+        return this;
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

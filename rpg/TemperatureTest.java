@@ -12,11 +12,13 @@ public class TemperatureTest {
 
     private static Temperature zeroC;
     private static Temperature tenC;
+    private static Temperature hundredC;
 
     @BeforeClass
     public static void setUpImmutableFixture() {
         zeroC = new Temperature(0);
         tenC = new Temperature(10);
+        hundredC = new Temperature(100);
     }
 
     @Test
@@ -76,6 +78,15 @@ public class TemperatureTest {
     @Test
     public void toString_test() {
         assertEquals(zeroC.temperature() + "C", zeroC.toString());
+    }
+
+    @Test
+    public void coerce() {
+        assertEquals(tenC, tenC.coerce(zeroC, hundredC));
+        assertEquals(zeroC, zeroC.coerce(zeroC, hundredC));
+        assertEquals(hundredC, hundredC.coerce(zeroC, hundredC));
+        assertEquals(zeroC, tenC.coerce(zeroC, zeroC));
+        assertEquals(hundredC, tenC.coerce(hundredC, hundredC));
     }
 }
 

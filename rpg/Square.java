@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.Map;
 //import java.util.HashMap;
 import java.util.EnumMap;
-//import java.util.Set;
+import java.util.Set;
 import java.util.HashSet;
+import java.util.Queue;
+import java.util.LinkedList;
 
 /**
  * A class of squares involving a temperature, a humidity and a set of 
@@ -44,6 +46,9 @@ import java.util.HashSet;
  * @invar
  * No square has duplicate borders.
  *   | hasNoDuplicateBorders()
+ *
+ * @invar
+ * area................................
  *
  * @author Roald Frederickx
  */
@@ -159,16 +164,17 @@ abstract public class Square {
      * The new temperature.
      * @post
      * The new temperature of this square is equal to the given temperature
-     *   | new.getTemperature().equal(temperature)
+     *   | new.getTemperature().equals(temperature)
      * @throws IllegalArgumentException
      * This square can not have the given temperature.
      *   | !canHaveAsTemperature(temperature)
      */
     @Raw
     public void setTemperature(Temperature temperature)
-        throws IllegalArgumentException {
+                                            throws IllegalArgumentException {
         if (! canHaveAsTemperature(temperature))
             throw new IllegalArgumentException();
+
         this.temperature = temperature;
     }
 
@@ -770,8 +776,8 @@ abstract public class Square {
     abstract public boolean canHaveAsBorderAt(Direction direction, Border border);
 
     /**
-     * Checks whether the borders of this square satisfy the constraints of 
-     * the game.
+     * Checks whether the borders of this square satisfy the specific 
+     * constraints of the game for this type of square.
      *
      * @return
      * True if this square is terminated.
@@ -965,12 +971,7 @@ abstract public class Square {
      * said direction).
      */
     public Map<Direction, Square> getNeighbours(){
-        return getFilteredNeighbours(
-                new NeighbourFilter() {
-                    public boolean filter(Square s, Border b, Square n){
-                        return true;
-                    }
-                });
+        return getFilteredNeighbours(acceptAllNeighboursFilter);
     }
 
     /** 
@@ -981,12 +982,7 @@ abstract public class Square {
      * said direction) through open borders.
      */
     public Map<Direction, Square> getAccessibleNeighbours(){
-        return getFilteredNeighbours(
-                new NeighbourFilter() {
-                    public boolean filter(Square s, Border border, Square n){
-                        return border.isOpen();
-                    }
-                });
+        return getFilteredNeighbours(acceptOpenlyConnectedNeighboursFilter);
     }
 
     /** 
@@ -1004,10 +1000,10 @@ abstract public class Square {
     /** 
      * An interface to filter neighbouring squares.
      */
-    private static interface NeighbourFilter {
+    static interface NeighbourFilter {
         /** 
          * Check whether the given neighbour of the given square is allowed 
-         * to pass this squarefilter.
+         * to pass this neighbour filter.
          * 
          * @param square
          * The square whose neighbour to filter.
@@ -1029,6 +1025,20 @@ abstract public class Square {
         public boolean filter(Square square, Border border, Square neighbour);
     }
     
+    static NeighbourFilter acceptAllNeighboursFilter =
+                new NeighbourFilter() {
+                    public boolean filter(Square s, Border b, Square n){
+                        return true;
+                    }
+                };
+
+    static NeighbourFilter acceptOpenlyConnectedNeighboursFilter =
+                new NeighbourFilter() {
+                    public boolean filter(Square s, Border border, Square n){
+                        return border.isOpen();
+                    }
+                };
+
     /** 
      * Return a list of neighbouring squares that satisfy the given filter.
      * 
@@ -1039,7 +1049,7 @@ abstract public class Square {
      * @return
      * A list of neighbouring squares that satisfy the given filter.
      */
-    private Map<Direction, Square> getFilteredNeighbours(NeighbourFilter nf) {
+    Map<Direction, Square> getFilteredNeighbours(NeighbourFilter nf) {
         assert nf != null;
         Map<Direction, Square> result = 
                         new EnumMap<Direction, Square>(Direction.class);
@@ -1183,8 +1193,9 @@ abstract public class Square {
      * Merge the temperatures of this square with the given square.
      * The new temperature of both squares is a weighted average of the old 
      * temperatures. The weights consist of a constant factor 
-     * 'getMinTemperature()' and an additional weight, proportional to the 
-     * humidity of the squares, to reach a total average weight of unity.
+     * 'getMergeTemperatureWeight()' and an additional weight, proportional 
+     * to the humidity of the squares, to reach a total average weight of 
+     * unity.
      * 
      * @pre
      * The other square is effective
@@ -1335,6 +1346,134 @@ abstract public class Square {
     private boolean isTerminated = false;
 
 
+    protected void equilibrateMyArea() {
+        Set<Square> area = getArea();
+        equilibrateAreaInternally(area);
+        Set<Square> boundary = getBoundary(area);
+        equilibrateBoundary(boundary);
+    }
+
+    /** 
+     * TODO 
+     * 
+     * @param squares 
+     * @param nf 
+     * @return 
+     */
+    @Raw
+    static Set<Square> getNeighbouringSquares(@Raw Set<Square> squares,
+                                                    NeighbourFilter nf) {
+        Set<Square> result = new HashSet<Square>();
+        for (Square next : squares) {
+            for (Square neigh : next.getFilteredNeighbours(nf).values()) {
+                if (!squares.contains(neigh))
+                    result.add(neigh);
+            }
+        }
+        return result;
+    }
+
+    /** 
+     * TODO 
+     * 
+     * @param squares 
+     * @param nf 
+     * @return 
+     */
+    @Raw
+    static Set<Square> getNeighbouringSquaresRecursively(
+                                                    @Raw Set<Square> squares,
+                                                    NeighbourFilter nf) {
+        Set<Square> result = new HashSet<Square>();
+        Queue<Square> queue = new LinkedList<Square>();
+        queue.addAll(squares);
+        while (!queue.isEmpty()) {
+            Square next = queue.remove();
+            for (Square neigh : next.getFilteredNeighbours(nf).values()) {
+                if (!squares.contains(neigh) && !result.contains(neigh)){
+                    result.add(neigh);
+                    queue.add(neigh);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Raw
+    protected Set<Square> getArea() {
+        Set<Square> squareSet = new HashSet<Square>();
+        squareSet.add(this);
+        Set<Square> neighbours = getNeighbouringSquaresRecursively(squareSet,
+                                    acceptOpenlyConnectedNeighboursFilter);
+        neighbours.addAll(squareSet);
+        return neighbours;
+    }
+
+    @Raw
+    protected static Set<Square> getBoundary(@Raw Set<Square> area) {
+        return getNeighbouringSquares(area, acceptAllNeighboursFilter);
+    }
+
+    protected static void equilibrateAreaInternally(@Raw Set<Square> area) {
+        if (area.size() == 0)
+            return;
+
+        double temperatureWeightedSum = 0;
+        double humiditiesSum = 0;
+        double temperatureWeightOffset = getMergeTemperatureWeight();
+        double temperatureBaseWeight = 1 - temperatureWeightOffset;
+
+        for (Square square : area) {
+            humiditiesSum  += square.getHumidity();
+        }
+        double averageHumidity = humiditiesSum / area.size();
+
+        for (Square square : area) {
+            double temperatureWeight = temperatureWeightOffset
+                            + temperatureBaseWeight * square.getHumidity() 
+                                                        / averageHumidity;
+            temperatureWeightedSum += square.getTemperature().temperature()
+                                                        * temperatureWeight;
+        }
+        Temperature newTemperature = new Temperature(
+                                        temperatureWeightedSum / area.size());
+        int newHumidity = (int) Math.round(averageHumidity);
+
+        for (Square square : area){
+            if (!square.canHaveAsTemperature(newTemperature)
+                                    || !square.canHaveAsHumidity(newHumidity))
+                throw new EquilibratingSquaresViolatesLimitsException();
+        }
+        for (Square square : area) {
+            square.setTemperature(newTemperature);
+            square.setHumidity(newHumidity);
+        }
+    }
+
+    /** 
+     * Notify all the squares in the given set that one of their neighbours 
+     * has changed its temperature and/or humidity. 
+     * 
+     * @param boundary 
+     * .............
+     */
+    protected static void equilibrateBoundary(@Raw Set<Square> boundary) {
+        for (Square square : boundary) {
+            square.neighbourHasChangedTemperatureOrHumidity();
+        }
+    }
+
+    /** 
+     * Function signalling that one of the neighbours of this square has 
+     * changed its temperature or humidity.
+     * This function will <i>only</i> be called if this square is bordering 
+     * an area that has just been equilibrated. It will <i>not</i> get 
+     * called for every temperature and/or humidity change of the squares 
+     * in an area that get equilibrated.
+     */
+    protected void neighbourHasChangedTemperatureOrHumidity() {
+        return;
+    }
 
     public String toString() {
         if (isTerminated())

@@ -28,7 +28,8 @@ public class RegularSquare extends Square {
      * @param hasSlipperyFloor
      * Whether or not this new regular square has a slippery floor.
      * @effect
-     *   | super(temperature, minTemp, maxTemp, humidity, hasSlipperyFloor);
+     *   | super(temperature, minTemp, maxTemp, humidity, 
+     *   |              new RegularBorderInitializer(hasSlipperyFloor));
      */
     @Raw
     public RegularSquare(Temperature temperature,
@@ -60,11 +61,11 @@ public class RegularSquare extends Square {
      * Initialize this new regular square to a default regular square. 
      *
      * @effect
-     *   | this(new Temperature(20), 5000);
+     *   | super(new RegularBorderInitializer(false))
      */
     @Raw
     public RegularSquare() {
-        this(new Temperature(20), 5000);
+        super(new RegularBorderInitializer(false));
     }
 
 

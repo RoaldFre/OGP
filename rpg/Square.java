@@ -132,6 +132,23 @@ abstract public class Square {
                                                 humidity, borderInitializer);
     }
 
+
+    /** 
+     * Initialize this new square to a square with the given borders.
+     *
+     * @param borderInitializer
+     * The borderInitializer to use for this new square.
+     * @effect
+     * This new square is initialized with the given borders, 20C as its 
+     * temperature and 50% humidity.
+     *   | this(new Temperature(20), 5000, borderInitializer)
+     */
+    @Raw
+    public Square(BorderInitializer borderInitializer)
+                                            throws IllegalArgumentException {
+        this(new Temperature(20), 5000, borderInitializer);
+    }
+
     /**
      * Returns the temperature of this square.
      */

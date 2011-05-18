@@ -90,18 +90,18 @@ abstract public class Square {
      * @throws IllegalArgumentException
      * Some of the given temperatures values are not effective, or the 
      * given temperature does not match with the given temperature limits.
-     *   | ! matchesMinTemperatureMax(minTemp, temperature, maxTemp)
+     *   | !matchesMinTemperatureMax(minTemp, temperature, maxTemp)
      */
     @Raw @Model
     protected Square(Temperature temperature,
                     Temperature minTemp, Temperature maxTemp,
                     int humidity, BorderInitializer borderInitializer)
                                             throws IllegalArgumentException {
-        if (minTemp == null || maxTemp == null)
+        if(!matchesMinTemperatureMax(minTemp, temperature, maxTemp))
             throw new IllegalArgumentException();
         minTemperature = minTemp;
         maxTemperature = maxTemp;
-        setTemperature(temperature);
+        setTemperatureRaw(temperature);
         setHumidity(humidity);
         initializeBorders(borderInitializer);
     }
@@ -146,11 +146,12 @@ abstract public class Square {
      * @param temperature
      * The temperature of this square.
      * @return
-     * True iff the given temperature is effective, not strictly lower than 
-     * the minimum temperature for this square, and not strictly higher 
+     * False if the given temperature is not effective, strictly lower than 
+     * the minimum temperature for this square, or strictly higher 
      * than the maximum temperature for this square.
-     *   | result == matchesMinTemperatureMax(getMinTemperature(), 
-     *   |                              temperature, getMaxTemperature());
+     *   | if !matchesMinTemperatureMax(getMinTemperature(), 
+     *   |                              temperature, getMaxTemperature())
+     *   |      then result == false
      */
     public boolean canHaveAsTemperature(Temperature temperature){
         return matchesMinTemperatureMax(getMinTemperature(), temperature,
@@ -158,23 +159,57 @@ abstract public class Square {
     }
 
     /**
+     * Sets the temperature of this square and equilibrate its area 
+     * afterwards.
+     *
+     * @param temperature
+     * The new temperature.
+     * @effect
+     * The new temperature of this square is set to the given temperature 
+     * and then the area of this square is equilibrated.
+     *   | setTemperatureRaw(temperature); equilibrateMyArea()
+     * @throws IllegalArgumentException
+     * This square can not have the given temperature.
+     *   | !canHaveAsTemperature(temperature)
+     * @throws EquilibratingSquaresViolatesLimitsException
+     * Equilibrating the area of this square after having set its 
+     * temperature to the given temperature, violates some temperature or 
+     * humidities constraints of a square in said area.
+     */
+    @Raw
+    public void setTemperature(Temperature temperature)
+                        throws IllegalArgumentException,
+                                EquilibratingSquaresViolatesLimitsException {
+        if (! canHaveAsTemperature(temperature))
+            throw new IllegalArgumentException();
+        Temperature oldTemperature = getTemperature();
+        setTemperatureRaw(temperature);
+        try {
+            equilibrateMyArea();
+        } catch (EquilibratingSquaresViolatesLimitsException e) {
+            setTemperatureRaw(oldTemperature);
+            throw e;
+        }
+    }
+
+    /**
      * Sets the temperature of this square.
      *
      * @param temperature
      * The new temperature.
+     * @pre
+     * This square can have the given temperature as its temperature.
+     *   | canHaveAsTemperature(temperature)
      * @post
      * The new temperature of this square is equal to the given temperature
      *   | new.getTemperature().equals(temperature)
      * @throws IllegalArgumentException
      * This square can not have the given temperature.
-     *   | !canHaveAsTemperature(temperature)
      */
-    @Raw
-    public void setTemperature(Temperature temperature)
+    @Raw @Model
+    public void setTemperatureRaw(Temperature temperature)
                                             throws IllegalArgumentException {
-        if (! canHaveAsTemperature(temperature))
-            throw new IllegalArgumentException();
-
+        assert canHaveAsTemperature(temperature);
         this.temperature = temperature;
     }
 
@@ -779,6 +814,9 @@ abstract public class Square {
      * Checks whether the borders of this square satisfy the specific 
      * constraints of the game for this type of square.
      *
+     * @pre
+     * This square has prober, non-duplicated borders
+     *   | hasProperBorders() &amp;&amp; hasNoDuplicateBorders()
      * @return
      * True if this square is terminated.
      *   | if (isTerminated())
@@ -1025,14 +1063,14 @@ abstract public class Square {
         public boolean filter(Square square, Border border, Square neighbour);
     }
     
-    static NeighbourFilter acceptAllNeighboursFilter =
+    static final NeighbourFilter acceptAllNeighboursFilter =
                 new NeighbourFilter() {
                     public boolean filter(Square s, Border b, Square n){
                         return true;
                     }
                 };
 
-    static NeighbourFilter acceptOpenlyConnectedNeighboursFilter =
+    static final NeighbourFilter acceptOpenlyConnectedNeighboursFilter =
                 new NeighbourFilter() {
                     public boolean filter(Square s, Border border, Square n){
                         return border.isOpen();
@@ -1214,6 +1252,7 @@ abstract public class Square {
      * Merging the temperaturs would violate the temperature limits of one 
      * of the squares.
      */
+    @Deprecated
     public void mergeTemperatures(Square other)
                         throws MergingTemperaturesViolatesLimitsException {
         assert other != null;
@@ -1236,8 +1275,8 @@ abstract public class Square {
                         || !other.canHaveAsTemperature(newTemp))
             throw new MergingTemperaturesViolatesLimitsException();
 
-        this.setTemperature(newTemp);
-        other.setTemperature(newTemp);
+        this.setTemperatureRaw(newTemp);
+        other.setTemperatureRaw(newTemp);
     }
 
     /**
@@ -1346,7 +1385,8 @@ abstract public class Square {
     private boolean isTerminated = false;
 
 
-    protected void equilibrateMyArea() {
+    protected void equilibrateMyArea() 
+                        throws EquilibratingSquaresViolatesLimitsException {
         Set<Square> area = getArea();
         equilibrateAreaInternally(area);
         Set<Square> boundary = getBoundary(area);
@@ -1414,7 +1454,8 @@ abstract public class Square {
         return getNeighbouringSquares(area, acceptAllNeighboursFilter);
     }
 
-    protected static void equilibrateAreaInternally(@Raw Set<Square> area) {
+    protected static void equilibrateAreaInternally(@Raw Set<Square> area) 
+                        throws EquilibratingSquaresViolatesLimitsException {
         if (area.size() == 0)
             return;
 
@@ -1445,7 +1486,7 @@ abstract public class Square {
                 throw new EquilibratingSquaresViolatesLimitsException();
         }
         for (Square square : area) {
-            square.setTemperature(newTemperature);
+            square.setTemperatureRaw(newTemperature);
             square.setHumidity(newHumidity);
         }
     }
@@ -1471,6 +1512,7 @@ abstract public class Square {
      * called for every temperature and/or humidity change of the squares 
      * in an area that get equilibrated.
      */
+    @Raw
     protected void neighbourHasChangedTemperatureOrHumidity() {
         return;
     }

@@ -8,6 +8,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     SquareTest.class,
     RegularSquareTest.class,
+    RockTest.class,
     BorderTest.class,
     WallTest.class,
     DoorTest.class,

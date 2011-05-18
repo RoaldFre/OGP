@@ -69,35 +69,26 @@ public class RegularSquareTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void extendedConstructor_NullTemp() {
-        RegularSquare extended = new RegularSquare(
-                null,
+        new RegularSquare( null,
                 new Temperature(-10), new Temperature(200),
                 3000,
                 true);
-        /* do something with variable to make compiler happy */
-        assertTrue(extended.hasSlipperyFloor());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void extendedConstructor_NullMinTemp() {
-        RegularSquare extended = new RegularSquare(
-                new Temperature(25),
+        new RegularSquare(new Temperature(25),
                 null, new Temperature(200),
                 3000,
                 true);
-        /* do something with variable to make compiler happy */
-        assertTrue(extended.hasSlipperyFloor());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void extendedConstructor_NullMaxTemp() {
-        RegularSquare extended = new RegularSquare(
-                new Temperature(25),
+        new RegularSquare(new Temperature(25),
                 new Temperature(-10), null,
                 3000,
                 true);
-        /* do something with variable to make compiler happy */
-        assertTrue(extended.hasSlipperyFloor());
     }
     
     @Test

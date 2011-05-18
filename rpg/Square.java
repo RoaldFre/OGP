@@ -1084,23 +1084,18 @@ abstract public class Square {
      * The neighbourfilter that will be applied to the neighbours.
      * @pre
      *   | nf != null
-     * @pre
-     *   | !isTerminated()
-     * @pre
-     *   | for each direction in Direction.values():
-     *   |      getBorderAt(direction) != null
      * @return
      * A list of neighbouring squares that satisfy the given filter.
      */
     @Raw
     Map<Direction, Square> getFilteredNeighbours(NeighbourFilter nf) {
         assert nf != null;
-        assert !isTerminated();
         Map<Direction, Square> result = 
             new EnumMap<Direction, Square>(Direction.class);
         for (Direction direction : Direction.values()){
             Border border = getBorderAt(direction);
-            assert(border != null);
+            if (border == null)
+                continue;
             Square neighbour = border.getNeighbour(this);
             if (neighbour != null  &&  nf.filter(this, border, neighbour))
                 result.put(direction, neighbour);

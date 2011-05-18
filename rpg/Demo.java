@@ -11,6 +11,7 @@ public class Demo {
      * Demo method for the Dungeon class.
      */
     public static void main(String args[]) {
+    	/*
         Square square_0_10_0 = new Square(new Temperature(100), 5000);
         new Wall(square_0_10_0.getBorderAt(Direction.WEST));
         new Wall(square_0_10_0.getBorderAt(Direction.SOUTH));
@@ -48,6 +49,7 @@ public class Demo {
 
         System.out.println("\nAfter opening door:");
         System.out.println(square_0_10_0);
+        */
     }
 }
 

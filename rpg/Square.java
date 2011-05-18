@@ -1084,15 +1084,23 @@ abstract public class Square {
      * The neighbourfilter that will be applied to the neighbours.
      * @pre
      *   | nf != null
+     * @pre
+     *   | !isTerminated()
+     * @pre
+     *   | for each direction in Direction.values():
+     *   |      getBorderAt(direction) != null
      * @return
      * A list of neighbouring squares that satisfy the given filter.
      */
+    @Raw
     Map<Direction, Square> getFilteredNeighbours(NeighbourFilter nf) {
         assert nf != null;
+        assert !isTerminated();
         Map<Direction, Square> result = 
-                        new EnumMap<Direction, Square>(Direction.class);
+            new EnumMap<Direction, Square>(Direction.class);
         for (Direction direction : Direction.values()){
             Border border = getBorderAt(direction);
+            assert(border != null);
             Square neighbour = border.getNeighbour(this);
             if (neighbour != null  &&  nf.filter(this, border, neighbour))
                 result.put(direction, neighbour);
@@ -1159,9 +1167,9 @@ abstract public class Square {
         String result = "";
         for (Direction direction : Direction.values())
             result += direction.symbol()
-                        + ":" 
-                        + getBorderAt(direction).symbol()
-                        + " ";
+                + ":" 
+                + getBorderAt(direction).symbol()
+                + " ";
         return result;
     }
 
@@ -1170,7 +1178,7 @@ abstract public class Square {
      * Variable referencing a map of borders of this square.
      */
     private Map<Direction, Border> borders = 
-        new EnumMap<Direction, Border>(Direction.class);
+                            new EnumMap<Direction, Border>(Direction.class);
 
 
     /** 
@@ -1194,14 +1202,14 @@ abstract public class Square {
      *   | this.isTerminated() || other.isTerminated()
      */
     public void mergeWith(Square other, Direction direction)
-            throws IllegalArgumentException, IllegalStateException {
+        throws IllegalArgumentException, IllegalStateException {
         if (other == null  ||  !isValidDirection(direction))
             throw new IllegalArgumentException();
         if (isTerminated() || other.isTerminated())
             throw new IllegalStateException();
 
         getBorderAt(direction).mergeWith(
-                                other.getBorderAt(direction.complement()));
+                other.getBorderAt(direction.complement()));
     }
 
     /** 
@@ -1222,11 +1230,11 @@ abstract public class Square {
     public void mergeHumidities(Square other) {
         assert other != null;
         int newHumididty = (this.getHumidity() + other.getHumidity() + 1) / 2;
-                                                    //+1 to round correctly
+                                                       //+1 to round correctly
         this.setHumidity(newHumididty);
         other.setHumidity(newHumididty);
     }
-    
+
     /** 
      * Merge the temperatures of this square with the given square.
      * The new temperature of both squares is a weighted average of the old 
@@ -1264,15 +1272,15 @@ abstract public class Square {
         double weightOffset = getMergeTemperatureWeight();
         double baseWeight = 1 - weightOffset;
         double thisWeight = weightOffset 
-                            + baseWeight * getHumidity() / averageHumidity;
+            + baseWeight * getHumidity() / averageHumidity;
         double otherWeight = 2 - thisWeight;
 
         double newTempValue = ((thisWeight) * thisTemp
-                                + (otherWeight) * otherTemp) / 2.0;
+                + (otherWeight) * otherTemp) / 2.0;
         Temperature newTemp = new Temperature(newTempValue);
 
         if (!this.canHaveAsTemperature(newTemp)
-                        || !other.canHaveAsTemperature(newTemp))
+                || !other.canHaveAsTemperature(newTemp))
             throw new MergingTemperaturesViolatesLimitsException();
 
         this.setTemperatureRaw(newTemp);
@@ -1287,7 +1295,7 @@ abstract public class Square {
     public static double getMergeTemperatureWeight() {
         return mergeTemperatureWeight;
     }
-    
+
     /**
      * Checks whether the given weight constant for merging temperatures is 
      * a valid weight constant for merging temperatures for all squares.
@@ -1303,11 +1311,11 @@ abstract public class Square {
      *   |          mergeTemperatureWeight &lt;= MAX_MERGE_TEMPERATURE_WEIGHT)
      */
     public static boolean isValidMergeTemperatureWeight(
-                                        double mergeTemperatureWeight) {
+                                            double mergeTemperatureWeight) {
         return (MIN_MERGE_TEMPERATURE_WEIGHT <= mergeTemperatureWeight
-                    && mergeTemperatureWeight <= MAX_MERGE_TEMPERATURE_WEIGHT);
+                && mergeTemperatureWeight <= MAX_MERGE_TEMPERATURE_WEIGHT);
     }
-    
+
     /**
      * Set the weight constant for merging temperatures that applies to all 
      * squares to the given weight constant for merging temperatures.
@@ -1325,12 +1333,12 @@ abstract public class Square {
      */
     @Raw
     public static void setMergeTemperatureWeight(double mergeTemperatureWeight)
-                                        throws IllegalArgumentException {
+        throws IllegalArgumentException {
         if (!isValidMergeTemperatureWeight(mergeTemperatureWeight))
             throw new IllegalArgumentException();
         Square.mergeTemperatureWeight = mergeTemperatureWeight;
     }
-    
+
     /** 
      * Variable registering the minimum weight constant for merging 
      * temperatures.
@@ -1360,7 +1368,7 @@ abstract public class Square {
     public boolean isTerminated() {
         return isTerminated;
     }
-    
+
     /** 
      * Terminate this square.
      *
@@ -1378,7 +1386,7 @@ abstract public class Square {
         for (Direction direction : Direction.values())
             changeBorderAt(direction, null);
     }
-    
+
     /**
      * Variable registering the termination status for this square.
      */
@@ -1386,7 +1394,7 @@ abstract public class Square {
 
 
     protected void equilibrateMyArea() 
-                        throws EquilibratingSquaresViolatesLimitsException {
+        throws EquilibratingSquaresViolatesLimitsException {
         Set<Square> area = getArea();
         equilibrateAreaInternally(area);
         Set<Square> boundary = getBoundary(area);
@@ -1394,7 +1402,7 @@ abstract public class Square {
     }
 
     /** 
-     * TODO 
+     * ..................... 
      * 
      * @param squares 
      * @param nf 
@@ -1402,10 +1410,10 @@ abstract public class Square {
      */
     @Raw
     static Set<Square> getNeighbouringSquares(@Raw Set<Square> squares,
-                                                    NeighbourFilter nf) {
-        Set<Square> result = new HashSet<Square>();
-        for (Square next : squares) {
-            for (Square neigh : next.getFilteredNeighbours(nf).values()) {
+                NeighbourFilter nf) {
+            Set<Square> result = new HashSet<Square>();
+            for (Square next : squares) {
+                for (Square neigh : next.getFilteredNeighbours(nf).values()) {
                 if (!squares.contains(neigh))
                     result.add(neigh);
             }
@@ -1414,7 +1422,7 @@ abstract public class Square {
     }
 
     /** 
-     * TODO 
+     * ..................... 
      * 
      * @param squares 
      * @param nf 

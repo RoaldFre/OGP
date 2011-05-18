@@ -15,13 +15,13 @@ public class TransparantSquare extends Square {
      * The border to check.
      * @return
      *   | result == (super.canPossiblyHaveAsBorderAt(direction, border)
-     *   |      &amp;&amp; border.isWall())
+     *   |                  &amp;&amp; (border == null || border.isWall()))
      */
     @Raw
     @Override
     public boolean canHaveAsBorderAt(Direction direction, Border border) {
         return super.canPossiblyHaveAsBorderAt(direction, border)
-                && border.isWall();
+                                    && (border == null || border.isWall());
     }
 
     /**

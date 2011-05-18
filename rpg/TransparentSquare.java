@@ -3,10 +3,10 @@ package rpg;
 import be.kuleuven.cs.som.annotate.*;
 
 //TODO specs
-public class TransparantSquare extends Square {
+public class TransparentSquare extends Square {
 
     /** 
-     * Check whether this transparant square can have the given border as 
+     * Check whether this transparent square can have the given border as 
      * its border in the given direction.
      * 
      * @param direction 
@@ -25,11 +25,11 @@ public class TransparantSquare extends Square {
     }
 
     /**
-     * Checks whether the borders of this transparant square satisfy the 
+     * Checks whether the borders of this transparent square satisfy the 
      * constraints of the game.
      *
      * @return
-     * True iff this transparant square is not terminated and has:
+     * True iff this transparent square is not terminated and has:
      *   - no walls
      *   - no doors placed in ceilings or floors
      *   - at least one door, and no more than two doors

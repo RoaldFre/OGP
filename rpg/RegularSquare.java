@@ -101,7 +101,9 @@ public class RegularSquare extends Square {
      * @param border
      * The border to check.
      * @return
+     *   | result == super.canPossiblyHaveAsBorderAt(direction, border)
      */
+    @Override
     public boolean canHaveAsBorderAt(Direction direction, Border border) {
         return super.canPossiblyHaveAsBorderAt(direction, border);
     }
@@ -118,6 +120,7 @@ public class RegularSquare extends Square {
      *   - no more than three doors
      */
     @Raw
+    @Override
     public boolean bordersSatisfyConstraints() {
         if (isTerminated())
             return true;

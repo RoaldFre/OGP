@@ -227,6 +227,17 @@ public class Coordinate {
                     * java.lang.Math.pow(5, java.lang.Math.abs(z)))).intValue();
         */
     }
+
+    /**
+     * Returns a string representation for this coordinate object
+     *
+     * @result
+     *   | result.equals("(" + x + ", " + y + ", " + z + ")")
+     */
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

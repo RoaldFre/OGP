@@ -87,21 +87,68 @@ public class DungeonTest {
         assertTrue(dungeon.squaresSatisfyConstraints());
         assertTrue(dungeon.canHaveSquaresAtTheirCoordinates());
         assertTrue(dungeon.hasProperBorderingSquares());
+        assertTrue(Dungeon.isValidCoordSyst(dungeon.getCoordSyst()));
+    }
+
+
+    @Test
+    public void constructor_coordSyst_legal() {
+        Coordinate origin = new Coordinate(-1, -2, -3);
+        Coordinate farCorner = new Coordinate(1, 2, 3);
+        CoordinateSystem coordSyst = new CoordinateSystem(origin, farCorner);
+        Dungeon dungeon = new Dungeon(coordSyst);
+        assertEquals(origin, dungeon.getOrigin());
+        assertEquals(farCorner, dungeon.getFarCorner());
+        assertClassInvariants(dungeon);
+    }
+    @Test (expected = IllegalArgumentException.class)
+    public void constructor_coordSyst_null() {
+        new Dungeon((CoordinateSystem) null);
     }
 
     @Test
-    public void constructor_legal() {
+    public void constructor_originAndFarCorner_legal() {
+        Coordinate origin = new Coordinate(-1, -2, -3);
+        Coordinate farCorner = new Coordinate(1, 2, 3);
+        Dungeon dungeon = new Dungeon(origin, farCorner);
+        assertEquals(origin, dungeon.getOrigin());
+        assertEquals(farCorner, dungeon.getFarCorner());
+        assertClassInvariants(dungeon);
+    }
+    @Test (expected = IllegalArgumentException.class)
+    public void constructor_originAndFarCorner_invalidCoordSyst() {
+        Coordinate origin = new Coordinate(1, 2, 3);
+        Coordinate farCorner = new Coordinate(-1, -2, -3);
+        new Dungeon(origin, farCorner);
+    }
+    @Test (expected = IllegalArgumentException.class)
+    public void constructor_originAndFarCorner_nullOrigin() {
+        Coordinate farCorner = new Coordinate(1, 2, 3);
+        new Dungeon(null, farCorner);
+    }
+    @Test (expected = IllegalArgumentException.class)
+    public void constructor_originAndFarCorner_nullFarCorner() {
+        Coordinate origin = new Coordinate(-1, -2, -3);
+        new Dungeon(origin, null);
+    }
+    @Test (expected = IllegalArgumentException.class)
+    public void constructor_originAndFarCorner_bothNull() {
+        new Dungeon(null, null);
+    }
+
+    @Test
+    public void constructor_farcorner_legal() {
         Coordinate farCorner = new Coordinate(1, 2, 3);
         Dungeon dungeon = new Dungeon(farCorner);
         assertEquals(farCorner, dungeon.getFarCorner());
         assertClassInvariants(dungeon);
     }
     @Test (expected = IllegalArgumentException.class)
-    public void constructor_nullFarCorner() {
-        new Dungeon(null);
+    public void constructor_farcorner_nullFarCorner() {
+        new Dungeon((Coordinate) null);
     }
     @Test (expected = IllegalArgumentException.class)
-    public void constructor_negativeFarCorner() {
+    public void constructor_farcorner_negativeFarCorner() {
         new Dungeon(new Coordinate(-1, -1, -1));
     }
 

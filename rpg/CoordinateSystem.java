@@ -19,7 +19,7 @@ import java.util.EnumMap;
  *
  * @author Roald Frederickx
  */
-public class CoordinateSystem {
+public class CoordinateSystem implements Cloneable {
 
     /** 
      * Create a new coordinate system with the given lower and upper 
@@ -314,6 +314,40 @@ public class CoordinateSystem {
     public void translate(Coordinate offset) {
         setLowerBoundRaw(getLowerBound().add(offset));
         setUpperBoundRaw(getUpperBound().add(offset));
+    }
+
+    /** 
+     * Check for equality between this coordinate system and a given object.
+     *
+     * @return
+     * True iff the given object is an effective coordinate system with 
+     * lower and upper bounds equal to the lower and upper bound of this 
+     * coordinate system.
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (other == null)
+            return false;
+        if (this.getClass() != other.getClass())
+            return false;
+        CoordinateSystem otherCoordSyst = (CoordinateSystem) other;
+        return this.getLowerBound().equals(otherCoordSyst.getLowerBound())
+                && this.getUpperBound().equals(otherCoordSyst.getUpperBound());
+    }
+
+    /** 
+     * Clone this coordinate system.
+     * 
+     * @return 
+     *   | result == (CoordinateSystem) super.clone()
+     */
+    public CoordinateSystem clone() {
+        try {
+            return (CoordinateSystem) super.clone();
+        } catch (CloneNotSupportedException e) {
+            assert false;
+            return null;
+        }
     }
 }
 

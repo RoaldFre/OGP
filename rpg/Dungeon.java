@@ -16,28 +16,93 @@ import java.util.HashSet;
  *   | squaresSatisfyConstraints()
  * @invar
  *   | hasProperBorderingSquares()
+ * @invar
+ *   | isValidCoordSyst(getCoordSyst())
  *
  * @author Roald Frederickx
  */
 public class Dungeon {
 
     /** 
-     * Create a new dungeon with the given far corner. 
+     * Create a new dungeon with the given coordinate system as its 
+     * coordinate system. 
+     * 
+     * @param coordinateSystem
+     * The coordinate system of this new dungeon.
+     * @effect
+     *   | setCoordSyst(coordinateSystem)
+     */
+    @Raw
+    public Dungeon(CoordinateSystem coordinateSystem)
+                                        throws IllegalArgumentException {
+        setCoordSyst(coordinateSystem);
+    }
+
+    /** 
+     * Create a new dungeon with the given origin and far corner. 
+     * 
+     * @param origin
+     * The origin of this new dungeon.
+     * @param farCorner
+     * The far corner of this new dungeon.
+     * @effect
+     *   | this(new CoordinateSystem(origin, farCorner))
+     */
+    @Raw
+    public Dungeon(Coordinate origin, Coordinate farCorner)
+                                        throws IllegalArgumentException {
+        coordSyst = new CoordinateSystem(origin, farCorner);
+    }
+
+    /** 
+     * Create a new dungeon with the given far corner and an origin of
+     * (0, 0, 0). 
      * 
      * @param farCorner
-     * The far corner for this new dungeon.
-     * @throws IllegalArgumentException
-     * The given far corner is not effective, or it doesn't form a valid 
-     * far corner (not all components are positive).
-     *   | farCorner == null
-     *   |      || !Coordinate.formsValidBoundingBox(ORIGIN, farCorner)
+     * The far corner of this new dungeon.
+     * @effect
+     *   | this(new Coordinate(0, 0  0), farCorner)
      */
+    @Raw
     public Dungeon(Coordinate farCorner) throws IllegalArgumentException {
-        coordSyst = new CoordinateSystem(ORIGIN, farCorner);
+        this(new Coordinate(0, 0, 0), farCorner);
     }
 
     /**
-     * Return the far corner for this dungeon.
+     * Return the origin of this dungeon.
+     */
+    @Basic @Raw
+    public Coordinate getOrigin() {
+        return coordSyst.getLowerBound();
+    }
+    
+    /**
+     * Set the origin of this dungeon to the given origin.
+     *
+     * @param origin
+     * The new origin of this dungeon.
+     * @post
+     * The new origin of this dungeon is equal to the given origin.
+     *   | new.getOrigin().equals(origin)
+     * @throws IllegalArgumentException
+     * This dungeon cannot have the given origin as its origin. 
+     * This means it is either not effective, or it is a stricter bound 
+     * than the previous origin.
+     *   | origin == null
+     *   |      || ((old.getOrigin() != null) &amp;&amp; 
+     *   |              Coordinate.formsValidBoundingBox(old.getOrigin(),
+     *   |                                                      origin))
+     *   |      || !Coordinate.formsValidBoundingBox(ORIGIN, origin)
+     */
+    @Raw
+    public void setOrigin(Coordinate origin)
+                                        throws IllegalArgumentException {
+        coordSyst.setUpperBound(origin);
+        //TODO aan root vragen of dit niet overlapt!
+    }
+
+    /**
+     * Return the far corner of this dungeon.
      */
     @Basic @Raw
     public Coordinate getFarCorner() {
@@ -45,12 +110,12 @@ public class Dungeon {
     }
     
     /**
-     * Set the far corner for this dungeon to the given far corner.
+     * Set the far corner of this dungeon to the given far corner.
      *
      * @param farCorner
-     * The new far corner for this dungeon.
+     * The new far corner of this dungeon.
      * @post
-     * The new far corner for this dungeon is equal to the given far corner.
+     * The new far corner of this dungeon is equal to the given far corner.
      *   | new.getFarCorner().equals(farCorner)
      * @throws IllegalArgumentException
      * This dungeon cannot have the given far corner as its far corner. 
@@ -66,8 +131,62 @@ public class Dungeon {
     public void setFarCorner(Coordinate farCorner)
                                         throws IllegalArgumentException {
         coordSyst.setUpperBound(farCorner);
+        //TODO aan root vragen of dit niet overlapt!
     }
 
+    /**
+     * Return the coordinate system for this dungeon.
+     */
+    @Basic @Raw
+    public CoordinateSystem getCoordSyst() {
+        return coordSyst.clone();
+    }
+    
+    /**
+     * Checks whether the given coordinate system is a valid coordinate 
+     * system for all dungeons.
+     *
+     * @param coordSyst
+     * The coordinate system to check.
+     * @return
+     * True iff the given coordinate system is effective
+     *   | result == (coordSyst != null)
+     */
+    @Raw
+    public static boolean isValidCoordSyst(CoordinateSystem coordSyst) {
+        return (coordSyst != null);
+    }
+
+    /**
+     * Set the coordinate system for this dungeon to the given coordinate 
+     * system.
+     *
+     * @param coordSyst
+     * The new coordinate system for this dungeon.
+     * @post
+     * The new coordinate system for this dungeon is equal to the given 
+     * coordinate system.
+     *   | new.getCoordSyst().equals(coordSyst)
+     * @throws IllegalArgumentException
+     * This dungeon cannot have the given coordinate system as its 
+     * coordinate system.
+     *   | !isValidCoordSyst(coordSyst)
+     */
+    @Raw @Model
+    private void setCoordSyst(CoordinateSystem coordSyst)
+                                        throws IllegalArgumentException {
+        if (!isValidCoordSyst(coordSyst))
+            throw new IllegalArgumentException();
+        this.coordSyst = coordSyst;
+    }
+    
+    /** 
+     * Variable referencing the coordinate system that belongs to this 
+     * dungeon.
+     */
+    private CoordinateSystem coordSyst;
+
+    
     /** 
      * Checks whether the given coordinate is a valid coordinate in this 
      * dungeon.
@@ -107,17 +226,6 @@ public class Dungeon {
     public static boolean isPossibleSquareCoordinate(Coordinate coordinate) {
         return coordinate != null;
     }
-
-    /** 
-     * Variable referencing the coordinate of the origin of this dungeon.
-     */
-    public final Coordinate ORIGIN = new Coordinate(0, 0, 0);
-
-    /** 
-     * Variable referencing the coordinate system that belongs to this 
-     * dungeon.
-     */
-    private CoordinateSystem coordSyst;
 
     /** 
      * Add the given square to this dungeon at the given coordinate.
@@ -426,6 +534,34 @@ public class Dungeon {
      */
     private Map<Coordinate, Square> squares = 
                                         new HashMap<Coordinate, Square>();
+
+
+    /**
+     * Return the termination status for this dungeon.
+     */
+    @Basic @Raw
+    public boolean isTerminated() {
+        return isTerminated;
+    }
+
+    /** 
+     * Terminate this dungeon.
+     *
+     * @post
+     * This dungeon is terminated.
+     *   | new.isTerminated()
+     */
+    void terminate(){
+        isTerminated = true;
+        //TODO
+    }
+
+    /**
+     * Variable registering the termination status for this dungeon.
+     */
+    private boolean isTerminated = false;
+
+
 
     /** 
      * Checks whether the given destination coordinate can be reached, 

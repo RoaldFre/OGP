@@ -163,25 +163,17 @@ public class Temperature implements Comparable<Temperature> {
     }
 
     /** 
-     * Check for equality between this temperature and a given temperatures.
+     * Check for equality between this temperature and a given object.
      * Note: this allows a relative error (wrt degrees Celcius) of 
      * EQUALS_EPSILON in order to compensate for rounding errors when 
      * comparing different initial temperature scales.
      * 
      * @param other
-     * The temperature to compare this temperature to.
+     * The object to compare this temperature to.
      * @return
      * True iff the given object is an effective temperature and this 
      * temperature is equal (up to a relative error of EQUALS_EPSILON) 
      * to the given temperature.
-     *   | if (other == null)
-     *   |      then result == false
-     *   | else if (this.getClass() != other.getClass())
-     *   |      then result == false
-     *   | else result == (Math.abs(Temperature() - other.temperature())
-     *   |              &lt;= Math.max(Math.abs(temperature()),
-     *   |                              Math.abs(other.temperature()))
-     *   |                      * EQUALS_EPSILON))
      */
     @Override
     public boolean equals(Object other) {

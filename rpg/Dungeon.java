@@ -11,7 +11,7 @@ import java.util.HashSet;
  * A class representing a dungeon of squares.
  *
  * @invar
- *   | canHaveSquaresAtCoordinates()
+ *   | canHaveSquaresAtTheirCoordinates()
  * @invar
  *   | squaresSatisfyConstraints()
  * @invar
@@ -359,7 +359,7 @@ public class Dungeon {
      *   | result == (for each e in getPositionsAndSquares() :
      *   |                  canHaveAsSquareAt(e.getKey(), e.getValue()))
      */
-    public boolean canHaveSquaresAtCoordinates() {
+    public boolean canHaveSquaresAtTheirCoordinates() {
         for (Map.Entry<Coordinate, Square> e : getPositionsAndSquares())
             if (!canHaveAsSquareAt(e.getKey(), e.getValue()))
                 return false;

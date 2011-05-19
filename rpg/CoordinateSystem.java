@@ -310,8 +310,12 @@ public class CoordinateSystem implements Cloneable {
      *   | new.getLowerBound().equals(old.getLowerBound().add(offset))
      * @post
      *   | new.getUpperBound().equals(old.getUpperBound().add(offset))
+     * @throws IllegalArgumentException
+     *   | offset == null
      */
-    public void translate(Coordinate offset) {
+    public void translate(Coordinate offset) throws IllegalArgumentException {
+        if (offset == null)
+            throw new IllegalArgumentException();
         setLowerBoundRaw(getLowerBound().add(offset));
         setUpperBoundRaw(getUpperBound().add(offset));
     }

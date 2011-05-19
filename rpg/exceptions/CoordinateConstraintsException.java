@@ -4,14 +4,15 @@ import rpg.*;
 import be.kuleuven.cs.som.annotate.*;
 
 /**
- * A class for signalling a violation of the constraints on dungeons.
+ * A class for signalling a violation of the constraints on coordinates of 
+ * squares in dungeons.
  * 
  * @author Roald Frederickx
  */
-public class DungeonConstraintsException extends RuntimeException {
+public class CoordinateConstraintsException extends RuntimeException {
     /** 
-     * Initialize this new dungeon constraints exception with the given 
-     * offending square and dungeon.
+     * Initialize this new coordinate constraints exception with the given 
+     * offending square and its dungeon.
      *
      * @param square
      * The offending square for this new dungeon constraints exception.
@@ -26,7 +27,7 @@ public class DungeonConstraintsException extends RuntimeException {
      * equal to the given offending square.
      *   | new.getSquare() == square
      */
-    public DungeonConstraintsException(Square square, Dungeon<?> dungeon) {
+    public CoordinateConstraintsException(Square square, Dungeon<?> dungeon) {
         this.square = square;
         this.dungeon = dungeon;
     }

@@ -120,7 +120,10 @@ public class CoordinateSystemTest {
                                                 new Coordinate(11, 12, 13));
 
     }
-
+    @Test (expected = IllegalArgumentException.class)
+    public void translate_null() {
+        coordSyst_0_to_10.translate(null);
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

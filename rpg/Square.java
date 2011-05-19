@@ -1046,6 +1046,10 @@ abstract public class Square {
      * @return 
      * A set of squares that can directly be navigated to from this 
      * square in a single step in one way or another.
+     * @return
+     * The resulting set contains all accessible neighbours.
+     *   | for each square in getAccessibleNeighbours().values()
+     *   |      result.contains(square)
      */
     public Set<Square> getNavigatableSquares() {
         return new HashSet<Square>(getAccessibleNeighbours().values());

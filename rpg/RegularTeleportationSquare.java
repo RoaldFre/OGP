@@ -147,8 +147,8 @@ public class RegularTeleportationSquare
      * from this square in a single step in one way or another.
      * 
      * @return 
-     * A set of squares that can directly be navigated to from this 
-     * square in a single step in one way or another.
+	 * The result contains the teleportation destination
+	 *   | result.contains(getTeleporter().getDestination())
      */
 	@Override
     public Set<Square> getNavigatableSquares() {

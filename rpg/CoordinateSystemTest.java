@@ -110,6 +110,17 @@ public class CoordinateSystemTest {
     public void neighboursOf_null() {
         coordSyst_0_to_10.neighboursOf(null);
     }
+
+    @Test
+    public void translate_test() {
+        Coordinate offset = new Coordinate(1, 2, 3);
+        coordSyst_0_to_10.translate(offset);
+        assertEquals(coordSyst_0_to_10.getLowerBound(), offset);
+        assertEquals(coordSyst_0_to_10.getUpperBound(),
+                                                new Coordinate(11, 12, 13));
+
+    }
+
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

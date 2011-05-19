@@ -60,6 +60,25 @@ public class CoordinateTest {
         assertFalse(origin.isBoundedBy(coord_10_20_30, coord_n10_n20_n30));
         assertTrue(origin.isBoundedBy(origin, origin));
     }
+
+    @Test
+    public void add_test() {
+        assertEquals(origin, coord_10_20_30.add(coord_n10_n20_n30));
+        assertEquals(coord_10_20_30, coord_10_20_30.add(origin));
+    }
+
+    @Test
+    public void sub_test() {
+        assertEquals(origin, coord_10_20_30.sub(coord_10_20_30));
+        assertEquals(coord_10_20_30, coord_10_20_30.sub(origin));
+    }
+
+    @Test
+    public void mirror_test() {
+        assertEquals(origin, origin.mirror());
+        assertEquals(coord_n10_n20_n30, coord_10_20_30.mirror());
+    }
+
 }
 
 

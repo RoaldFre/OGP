@@ -40,7 +40,7 @@ public class CoordinateSystem {
      */
     public CoordinateSystem(Coordinate lowerBound, Coordinate upperBound) 
                                             throws IllegalArgumentException {
-        this.lowerBound = lowerBound;
+        setLowerBoundRaw(lowerBound);
         setUpperBound(upperBound);
     }
 
@@ -72,8 +72,25 @@ public class CoordinateSystem {
                                         throws IllegalArgumentException {
         if (!canHaveAsLowerBound(lowerBound))
             throw new IllegalArgumentException();
+        setLowerBoundRaw(lowerBound);
+    }
+
+    /**
+     * Set the lower coordinate bound for this coordinate system to the 
+     * given lower coordinate bound, no matter what.
+     *
+     * @param lowerBound
+     * The new lower coordinate bound for this coordinate system.
+     * @post
+     * The new lower coordinate bound for this coordinate system is equal 
+     * to the given lower coordinate bound.
+     *   | new.getLowerBound() == lowerBound
+     */
+    @Raw
+    public void setLowerBoundRaw(Coordinate lowerBound) {
         this.lowerBound = lowerBound;
     }
+
     
     /**
      * Checks whether this coordinate system can have the given lower 
@@ -154,6 +171,22 @@ public class CoordinateSystem {
                                             throws IllegalArgumentException {
         if (!canHaveAsUpperBound(upperBound))
             throw new IllegalArgumentException();
+        setUpperBoundRaw(upperBound);
+    }
+
+    /**
+     * Set the upper coordinate bound for this coordinate system to the 
+     * given upper coordinate bound, no matter what.
+     *
+     * @param upperBound
+     * The new upper coordinate bound for this coordinate system.
+     * @post
+     * The new upper coordinate bound for this coordinate system is equal 
+     * to the given upper coordinate bound.
+     *   | new.getUpperBound() == upperBound
+     */
+    @Raw
+    public void setUpperBoundRaw(Coordinate upperBound) {
         this.upperBound = upperBound;
     }
     
@@ -266,6 +299,21 @@ public class CoordinateSystem {
                 result.put(direction, newCoord);
         }
         return result;
+    }
+
+    /** 
+     * Translate this coordinate system over the given offset.
+     * 
+     * @param offset 
+     * The offset over which to translate this coordinate system.
+     * @post
+     *   | new.getLowerBound().equals(old.getLowerBound().add(offset))
+     * @post
+     *   | new.getUpperBound().equals(old.getUpperBound().add(offset))
+     */
+    public void translate(Coordinate offset) {
+        setLowerBoundRaw(getLowerBound().add(offset));
+        setUpperBoundRaw(getUpperBound().add(offset));
     }
 }
 

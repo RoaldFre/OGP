@@ -79,13 +79,29 @@ public class Coordinate {
      * 
      * @param direction 
      * The direction in which to move this coordinate.
+     * @effect
+     *   result == moveTo(direction, 1)
+     */
+    public Coordinate moveTo(Direction direction) throws IllegalArgumentException {
+        return moveTo(direction, 1);
+    }
+
+    /** 
+     * Return a new coordinate that is the result of moving this coordinate 
+     * in the given direction for the given number of steps.
+     * 
+     * @param direction 
+     * The direction in which to move this coordinate.
+     * @param steps
+     * The number of steps in which to move this coordinate.
      * @return
      * The coordiante resulting in moving this coordinate in the given 
-     * direction.
+     * direction for the given number of steps.
      * @throws IllegalArgumentException 
      * The given direction is unknown or not effective.
      */
-    public Coordinate moveTo(Direction direction) throws IllegalArgumentException {
+    public Coordinate moveTo(Direction direction, int steps)
+                                        throws IllegalArgumentException {
         if (direction == null)
             throw new IllegalArgumentException();
         long new_x = x;
@@ -93,21 +109,67 @@ public class Coordinate {
         long new_z = z;
         switch (direction) {
             case EAST:
-                new_x++; break;
+                new_x += steps; break;
             case WEST:
-                new_x--; break;
+                new_x -= steps; break;
             case NORTH:
-                new_y++; break;
+                new_y += steps; break;
             case SOUTH:
-                new_y--; break;
+                new_y -= steps; break;
             case UP:
-                new_z++; break;
+                new_z += steps; break;
             case DOWN:
-                new_z--; break;
+                new_z -= steps; break;
             default:
                 throw new IllegalArgumentException();
         }
         return new Coordinate(new_x, new_y, new_z);
+    }
+
+    /** 
+     * Return a new coordinate that is the result of adding the given 
+     * coordinate to this coordinate.
+     * 
+     * @param offset
+     * The coordinate to add to this coordinate.
+     * @pre
+     *   | offset != null
+     * @return
+     * A new coordinate that is the result of adding the given coordinate 
+     * to this coordinate.
+     */
+    public Coordinate add(Coordinate offset) {
+        assert offset != null;
+        return new Coordinate(x + offset.x, y + offset.y, z + offset.z);
+    }
+
+    /** 
+     * Return a new coordinate that is the result of subtracting the given 
+     * coordinate from this coordinate.
+     * 
+     * @param offset 
+     * The coordinate to subtract from this coordinate.
+     * @pre
+     *   | offset != null
+     * @return 
+     * A new coordinate that is the result of subtracting the given 
+     * coordinate from this coordinate.
+     */
+    public Coordinate sub(Coordinate offset) {
+        assert offset != null;
+        return add(offset.mirror());
+    }
+
+    /** 
+     * Return a new coordinate that is the result of mirroring this 
+     * coordinate around (0, 0, 0).
+     *
+     * @return 
+     * A new coordinate that is the result of mirroring this 
+     * coordinate around (0, 0, 0).
+     */
+    public Coordinate mirror() {
+        return new Coordinate(-x, -y, -z);
     }
 
     /** 
@@ -146,13 +208,19 @@ public class Coordinate {
      */
     @Override
     public int hashCode() {
-        //light and easy
-        return (int) (x + y + z);
+        // Go for the maximum base possible without overflowing an integer. 
+        // Hopefully the compiler can calculate this in advance and 
+        // hard-code the result to make it faster and avoid floating point 
+        // calculations.
+        int base = (int) java.lang.Math.floor(java.lang.Math.pow(Integer.MAX_VALUE,1/3.));
+        return (int) (x  +  base * y  +  base * base * z);
+        // Note: this does collide when the 'span' of the coordinates 
+        // exceed the cube root of Integer.MAX_VALUE.
 
         /*
-        //Goedel encoding may be a bit of overkill, but at least it's 
-        //guaranteed to be unique (well, modulo integer wrap-around) :-)
-        //Negative coordinates will collide with positive ones, though.
+        // Goedel encoding may be a bit of overkill, but at least it's 
+        // guaranteed to be unique (well, modulo integer wrap-around) :-)
+        // Negative coordinates will collide with positive ones, though.
         return (new java.lang.Double(
                     java.lang.Math.pow(2, java.lang.Math.abs(x)) 
                     * java.lang.Math.pow(3, java.lang.Math.abs(y))

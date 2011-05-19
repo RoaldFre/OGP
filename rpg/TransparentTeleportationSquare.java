@@ -5,65 +5,62 @@ import java.util.Set;
 
 /**
  * @invar
- * Each regular teleportation square can have its teleporter as its teleporter.
+ * Each transparent teleportation square can have its teleporter as its teleporter.
  *   | canHaveAsTeleporter(getTeleporter())
  *
  * @author Roald Frederickx
  */
-public class RegularTeleportationSquare
-							extends RegularSquare
+public class TransparentTeleportationSquare
+							extends TransparentSquare
 							implements Teleportable {
     /** 
-	 * Initialize this new regular teleportation square to a regular 
-	 * teleportation square with the given temperature, temperature limits, 
-	 * humidity, slipperiness of the floor and teleporter. 
+	 * Initialize this new transparent teleportation square to a 
+	 * transparent teleportation square with the given temperature, 
+	 * temperature limits, humidity and teleporter. 
      * 
      * @param temperature
-	 * The temperature for this new regular teleportation square.
+	 * The temperature for this new transparent teleportation square.
 	 * @param minTemp
-	 * The minimum temperature for this new regular teleportation square.
+	 * The minimum temperature for this new transparent teleportation square.
 	 * @param maxTemp
-	 * The maximum temperature for this new regular teleportation square.
+	 * The maximum temperature for this new transparent teleportation square.
 	 * @param humidity
-	 * The humidity for this new regular teleportation square.
-	 * @param hasSlipperyFloor
-	 * Whether or not this new regular teleportation square has a slippery 
+	 * The humidity for this new transparent teleportation square.
 	 * floor.
 	 * @param teleporter
-	 * The teleporter for this new regular teleportation square.
+	 * The teleporter for this new transparent teleportation square.
      * @effect
-     *   | super(temperature, minTemp, maxTemp, humidity, hasSlipperyFloor)
+     *   | super(temperature, minTemp, maxTemp, humidity)
 	 * @effect
 	 *   | setTeleporter(teleporter)
      */
     @Raw
-    public RegularTeleportationSquare(Temperature temperature,
+    public TransparentTeleportationSquare(Temperature temperature,
                     Temperature minTemp, Temperature maxTemp,
-                    int humidity, boolean hasSlipperyFloor,
-					Teleporter teleporter)
+                    int humidity, Teleporter teleporter)
                                             throws IllegalArgumentException {
-        super(temperature, minTemp, maxTemp, humidity, hasSlipperyFloor);
+        super(temperature, minTemp, maxTemp, humidity);
 		setTeleporter(teleporter);
     }
 
     /** 
-	 * Initialize this new regular teleportation square to a regular 
-	 * teleportation square with the given temperature, humidity and 
-	 * teleporter.
+	 * Initialize this new transparent teleportation square to a 
+	 * transparent teleportation square with the given temperature, 
+	 * humidity and teleporter.
      *
      * @param temperature
-     * The temperature for this new regular teleportation square.
+     * The temperature for this new transparent teleportation square.
      * @param humidity
-     * The humidity for this new regular teleportation square.
+     * The humidity for this new transparent teleportation square.
 	 * @param teleporter
-	 * The teleporter for this new regular teleportation square.
+	 * The teleporter for this new transparent teleportation square.
      * @effect
      *   | super(temperature, humidity)
 	 * @effect
 	 *   | setTeleporter(teleporter)
      */
     @Raw
-    public RegularTeleportationSquare(Temperature temperature, int humidity,
+    public TransparentTeleportationSquare(Temperature temperature, int humidity,
 									Teleporter teleporter) 
                                     throws IllegalArgumentException {
         super(temperature, humidity);
@@ -71,25 +68,25 @@ public class RegularTeleportationSquare
     }
 
     /** 
-	 * Initialize this new regular teleportation square to a default 
-	 * regular teleportation square with the given teleporter.
+	 * Initialize this new transparent teleportation square to a default 
+	 * transparent teleportation square with the given teleporter.
      *
 	 * @param teleporter
-	 * The teleporter for this new regular teleportation square.
+	 * The teleporter for this new transparent teleportation square.
      * @effect
      *   | super()
 	 * @effect
 	 *   | setTeleporter(teleporter)
      */
     @Raw
-    public RegularTeleportationSquare(Teleporter teleporter) {
+    public TransparentTeleportationSquare(Teleporter teleporter) {
         super();
 		setTeleporter(teleporter);
     }
 
 
 	/**
-	 * Return the teleporter for this regular teleportation square.
+	 * Return the teleporter for this transparent teleportation square.
 	 */
 	@Basic @Raw
 	public Teleporter getTeleporter() {
@@ -97,17 +94,17 @@ public class RegularTeleportationSquare
 	}
 	
 	/**
-	 * Set the teleporter for this regular teleportation square to the 
+	 * Set the teleporter for this transparent teleportation square to the 
 	 * given teleporter.
 	 *
 	 * @param teleporter
-	 * The new teleporter for this regular teleportation square.
+	 * The new teleporter for this transparent teleportation square.
 	 * @pre
-	 * The given teleporter must be a valid teleporter for this regular 
+	 * The given teleporter must be a valid teleporter for this transparent 
 	 * teleportation square.
 	 *   | canHaveAsTeleporter(teleporter)
 	 * @post
-	 * The new teleporter for this regular teleportation square is equal to 
+	 * The new teleporter for this transparent teleportation square is equal to 
 	 * the given teleporter.
 	 *   | new.getTeleporter() == teleporter
 	 */
@@ -118,7 +115,7 @@ public class RegularTeleportationSquare
 	}
 	
 	/**
-	 * Checks whether this regular teleportation square can have the given 
+	 * Checks whether this transparent teleportation square can have the given 
 	 * teleporter as its teleporter.
 	 *
 	 * @param teleporter
@@ -133,7 +130,7 @@ public class RegularTeleportationSquare
 	}
 	
     /** 
-     * Return a destination of this regular teleportation square.
+     * Return a destination of this transparent teleportation square.
 	 *
      * @return 
 	 *   | result == (getTeleporter().getDestination())
@@ -158,7 +155,7 @@ public class RegularTeleportationSquare
     }
 
 	/**
-	 * Variable registering the teleporter for this regular teleportation 
+	 * Variable registering the teleporter for this transparent teleportation 
 	 * square.
 	 */
 	private Teleporter teleporter;	

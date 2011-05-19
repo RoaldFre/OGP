@@ -10,6 +10,7 @@ import org.junit.runners.Suite;
     RegularSquareTest.class,
     RegularTeleportationSquareTest.class,
     TransparentSquareTest.class,
+    TransparentTeleportationSquareTest.class,
     RockTest.class,
     BorderTest.class,
     WallTest.class,

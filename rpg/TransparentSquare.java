@@ -60,7 +60,7 @@ public class TransparentSquare extends Square {
      */
     @Raw
     public TransparentSquare() {
-     super(new TransparentBorderInitializer(Direction.NORTH,
+        super(new TransparentBorderInitializer(Direction.NORTH,
                                             Direction.SOUTH));
     }
 

@@ -2,7 +2,6 @@ package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
 import rpg.exceptions.*;
-import java.util.Collection;
 import java.util.Map;
 //import java.util.HashMap;
 import java.util.EnumMap;
@@ -1041,15 +1040,15 @@ abstract public class Square {
     }
 
     /** 
-     * Return a collection of squares that can directly be navigated to 
+     * Return a set of squares that can directly be navigated to 
      * from this square in a single step in one way or another.
      * 
      * @return 
-     * A collection of squares that can directly be navigated to from this 
+     * A set of squares that can directly be navigated to from this 
      * square in a single step in one way or another.
      */
-    public Collection<Square> getNavigatableSquares() {
-        return getAccessibleNeighbours().values();
+    public Set<Square> getNavigatableSquares() {
+        return new HashSet<Square>(getAccessibleNeighbours().values());
     }
 
     /** 

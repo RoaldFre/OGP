@@ -49,7 +49,7 @@ public class RegularSquare extends Square {
      * @param humidity
      * The humidity for this new regular square.
      * @effect
-     *   | super(temperature, humidity, false)
+     *   | super(temperature, humidity, net RegularBorderInitializer(false))
      */
     @Raw
     public RegularSquare(Temperature temperature, int humidity) 
@@ -141,8 +141,6 @@ public class RegularSquare extends Square {
         }
         return (numWallsOrDoors >= 1  &&  numDoors <= 3);
     }
-
-
 }
 
 

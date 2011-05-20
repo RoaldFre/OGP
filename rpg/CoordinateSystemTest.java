@@ -118,11 +118,17 @@ public class CoordinateSystemTest {
         assertEquals(coordSyst_0_to_10.getLowerBound(), offset);
         assertEquals(coordSyst_0_to_10.getUpperBound(),
                                                 new Coordinate(11, 12, 13));
-
     }
     @Test (expected = IllegalArgumentException.class)
     public void translate_null() {
         coordSyst_0_to_10.translate(null);
+    }
+    
+    @Test
+    public void contains_test() {
+        assertTrue(coordSyst_n10_to_10.contains(coordSyst_n10_to_10));
+        assertTrue(coordSyst_n10_to_10.contains(coordSyst_0_to_10));
+        assertFalse(coordSyst_0_to_10.contains(coordSyst_n10_to_10));
     }
 }
 

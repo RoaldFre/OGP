@@ -321,6 +321,24 @@ public class CoordinateSystem implements Cloneable {
     }
 
     /** 
+     * Check whether this coordinate system fully contains the other 
+     * coordinate system.
+     * 
+     * @param other 
+     * The other coordinate system to check.
+     * @pre
+     *   | other != null
+     * @return 
+     *   | result == other.canHaveAsLowerBound(getLowerBound())
+     *   |           &amp;&amp; other.canHaveAsUpperBound(getUpperBound());
+     */
+    public boolean contains(CoordinateSystem other) {
+        assert other != null;
+        return other.canHaveAsLowerBound(getLowerBound())
+            && other.canHaveAsUpperBound(getUpperBound());
+    }
+
+    /** 
      * Check for equality between this coordinate system and a given object.
      *
      * @return

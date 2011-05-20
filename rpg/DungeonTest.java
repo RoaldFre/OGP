@@ -363,7 +363,7 @@ public class DungeonTest {
         assertEquals(square4, l10ws.getSquareAt(coordinate4.add(offset)));
         assertEquals(square5, l10ws.getSquareAt(coordinate5.add(offset)));
         assertEquals(square6, l10ws.getSquareAt(coordinate6.add(offset)));
-        assertEquals(new Coordinate(10, 10, 0).add(offset),
+        assertEquals(new Coordinate(9, 9, 0).add(offset),
                                                     l10ws.getFarCorner());
     }
     @Test (expected = IllegalArgumentException.class)
@@ -387,7 +387,7 @@ public class DungeonTest {
         assertEquals(square4, l10ws.getSquareAt(coordinate4));
         assertEquals(square5, l10ws.getSquareAt(coordinate5));
         assertEquals(square6, l10ws.getSquareAt(coordinate6));
-        assertEquals(new Coordinate(10, 10, 0), l10ws.getFarCorner());
+        assertEquals(new Coordinate(9, 9, 0), l10ws.getFarCorner());
     }
 }
 

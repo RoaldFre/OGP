@@ -5,19 +5,35 @@ import be.kuleuven.cs.som.annotate.*;
 public class Level<S extends Square> extends Dungeon<S> {
 
 	/** 
-	 * Create a new level with the given dimensions
+	 * Create a new level with the given origin and dimensions.
 	 * 
+     * @param origin
+     * The origin of this new level.
 	 * @param xSize
-	 * The size of the level in the x direction.
+	 * The size of this new level in the x direction.
 	 * @param ySize
-	 * The size of the level in the y direction.
+	 * The size of this new level in the y direction.
 	 * @effect
-	 *   | super(new Coordinate(xSize, ySize, 0))
+	 *   | super(origin, origin.add(new Coordinate(xSize - 1, ySize - 1, 0)));
 	 */
-	public Level(long xSize, long ySize) {
-		super(new Coordinate(xSize, ySize, 0));
+	public Level(Coordinate origin, long xSize, long ySize) 
+                                            throws IllegalArgumentException {
+		super(origin, origin.add(new Coordinate(xSize - 1, ySize - 1, 0)));
 	}
 
+	/** 
+	 * Create a new level with the given dimensions.
+	 * 
+	 * @param xSize
+	 * The size of this new level in the x direction.
+	 * @param ySize
+	 * The size of this new level in the y direction.
+	 * @effect
+	 *   | this(new Coordinate(0, 0, 0), xSize, ySize)
+	 */
+	public Level(long xSize, long ySize) {
+	    this(new Coordinate(0, 0, 0), xSize, ySize);
+	}
 
 
     /** 

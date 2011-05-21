@@ -764,6 +764,8 @@ abstract public class Square {
     @Basic @Raw
     public Border getBorderAt(Direction direction) {
         assert isValidDirection(direction);
+        if (borders == null)
+            return null;
         return borders.get(direction);
     }
 
@@ -1408,13 +1410,29 @@ abstract public class Square {
     private boolean isTerminated = false;
 
 
+    /** 
+     * Equilibrate the temperatures and humidities of the area that this 
+     * square is part of.
+     *
+     * @effect
+     *   | equilibrateAreaInternally(getArea())
+     *   | equilibrateBoundary(getBoundary(getArea()))
+     */
     protected void equilibrateMyArea() 
-        throws EquilibratingSquaresViolatesLimitsException {
+                        throws EquilibratingSquaresViolatesLimitsException {
         Set<Square> area = getArea();
         equilibrateAreaInternally(area);
         Set<Square> boundary = getBoundary(area);
         equilibrateBoundary(boundary);
     }
+
+
+
+
+
+    //TODO: proper tests of equilibration & specs
+
+
 
     /** 
      * ..................... 
@@ -1519,9 +1537,18 @@ abstract public class Square {
      * has changed its temperature and/or humidity. 
      * 
      * @param boundary 
-     * .............
+     * A set of squares that border a region of squares that have changed 
+     * their temperature or humidity. For more information, also see 
+     * neighbourHasChangedTemperatureOrHumidity(), equilibrateMyArea() and 
+     * setTemperature().
+     * @pre
+     *   | boundary != null
+     * @effect
+     *   | for each square in boundary:
+     *   |      square.neighbourHasChangedTemperatureOrHumidity()
      */
     protected static void equilibrateBoundary(@Raw Set<Square> boundary) {
+        assert boundary != null;
         for (Square square : boundary) {
             square.neighbourHasChangedTemperatureOrHumidity();
         }

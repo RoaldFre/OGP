@@ -86,25 +86,21 @@ public class CoordinateSystemTest {
     }
 
     @Test
-    public void isValidCoordinate_true() {
-        assertTrue(coordSyst_0_to_10.isValidCoordinate(
-                                            new Coordinate(1, 2, 3)));
-        assertTrue(coordSyst_n10_to_10.isValidCoordinate(
-                                            new Coordinate(-1, -2, -3)));
+    public void containsCoordinate_true() {
+        assertTrue(coordSyst_0_to_10.contains(new Coordinate(1, 2, 3)));
+        assertTrue(coordSyst_n10_to_10.contains(new Coordinate(-1, -2, -3)));
     }
     @Test
-    public void isValidCoordinate_false() {
-        assertFalse(coordSyst_0_to_10.isValidCoordinate(
-                                            new Coordinate(-1, -2, -3)));
-        assertFalse(coordSyst_n10_to_10.isValidCoordinate(
-                                            new Coordinate(11, 12, 13)));
+    public void containsCoordinate_false() {
+        assertFalse(coordSyst_0_to_10.contains(new Coordinate(-1, -2, -3)));
+        assertFalse(coordSyst_n10_to_10.contains(new Coordinate(11, 12, 13)));
     }
 
     @Test
     public void neighboursOf_legal() {
         for (Coordinate coord : coordSyst_0_to_10.neighboursOf(
                                     new Coordinate(1, 2, 3)).values())
-            assertTrue(coordSyst_0_to_10.isValidCoordinate(coord));
+            assertTrue(coordSyst_0_to_10.contains(coord));
     }
     @Test (expected = IllegalArgumentException.class)
     public void neighboursOf_null() {
@@ -125,7 +121,7 @@ public class CoordinateSystemTest {
     }
     
     @Test
-    public void contains_test() {
+    public void containsCoordSyst_test() {
         assertTrue(coordSyst_n10_to_10.contains(coordSyst_n10_to_10));
         assertTrue(coordSyst_n10_to_10.contains(coordSyst_0_to_10));
         assertFalse(coordSyst_0_to_10.contains(coordSyst_n10_to_10));

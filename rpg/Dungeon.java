@@ -3,8 +3,6 @@ package rpg;
 import rpg.exceptions.*;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
 import java.util.HashSet;
 
 /**
@@ -17,173 +15,120 @@ import java.util.HashSet;
  * @invar
  *   | hasProperBorderingSquares()
  * @invar
- *   | isValidCoordSyst(getCoordSyst())
+ *   | canHaveAsCoordSyst(getCoordSyst())
+ * @invar
+ *   | getSquareMapping() != null
+ * @invar
+ *   | canHaveAsRootDungeon(getRootDungeon())
  *
  * @author Roald Frederickx
  */
 public abstract class Dungeon<S extends Square> {
 
     /** 
-     * Create a new dungeon with the given coordinate system as its 
+     * Create a new empty dungeon with the given coordinate system as its 
      * coordinate system. 
      * 
      * @param coordinateSystem
      * The coordinate system of this new dungeon.
      * @effect
      *   | setCoordSyst(coordinateSystem)
+     * @effect
+     *   | setRootDungeon(null)
+     * @post
+     *   | getSquareMapping() != null
+     *   |      &amp;&amp; getSquareMapping().isEmpty()
+     * @post
+     *   | !isTerminated()
      */
     @Raw @Model
-    protected Dungeon(CoordinateSystem coordinateSystem)
-                                        throws IllegalArgumentException {
+        protected Dungeon(CoordinateSystem coordinateSystem)
+        throws IllegalArgumentException {
         setCoordSyst(coordinateSystem);
-    }
-
-    /** 
-     * Create a new dungeon with the given origin and far corner. 
-     * 
-     * @param origin
-     * The origin of this new dungeon.
-     * @param farCorner
-     * The far corner of this new dungeon.
-     * @effect
-     *   | this(new CoordinateSystem(origin, farCorner))
-     */
-    @Raw @Model
-    protected Dungeon(Coordinate origin, Coordinate farCorner)
-                                        throws IllegalArgumentException {
-        coordSyst = new CoordinateSystem(origin, farCorner);
-    }
-
-    /** 
-     * Create a new dungeon with the given far corner and an origin of
-     * (0, 0, 0). 
-     * 
-     * @param farCorner
-     * The far corner of this new dungeon.
-     * @effect
-     *   | this(new Coordinate(0, 0  0), farCorner)
-     */
-    @Raw @Model
-    protected Dungeon(Coordinate farCorner) throws IllegalArgumentException {
-        this(new Coordinate(0, 0, 0), farCorner);
-    }
-
-    /**
-     * Return the origin of this dungeon.
-     */
-    @Basic @Raw
-    public Coordinate getOrigin() {
-        return coordSyst.getLowerBound();
-    }
-    
-    /**
-     * Set the origin of this dungeon to the given origin.
-     *
-     * @param origin
-     * The new origin of this dungeon.
-     * @post
-     * The new origin of this dungeon is equal to the given origin.
-     *   | new.getOrigin().equals(origin)
-     * @throws IllegalArgumentException
-     * This dungeon cannot have the given origin as its origin. 
-     * This means it is either not effective, or it is a stricter bound 
-     * than the previous origin.
-     *   | origin == null
-     *   |      || ((old.getOrigin() != null) &amp;&amp; 
-     *   |              Coordinate.formsValidBoundingBox(old.getOrigin(),
-     *   |                                                      origin))
-     *   |      || !Coordinate.formsValidBoundingBox(ORIGIN, origin)
-     */
-    @Raw
-    public void setOrigin(Coordinate origin)
-                                        throws IllegalArgumentException {
-        if (!canHaveAsOrigin(origin))
-            throw new IllegalArgumentException();
-        coordSyst.setUpperBound(origin);
-        //TODO aan root vragen of dit niet overlapt!
-    }
-
-    /** 
-     * Check if this dungeon can have the given origin as its origin.
-     * 
-     * @param origin 
-     * The origin to check.
-     * @return
-     *   | if !getCoordSyst().canHaveAsLowerBound(origin)
-     *   |      then result == false
-     */
-    @Raw
-    public boolean canHaveAsOrigin(Coordinate origin) {
-        return coordSyst.canHaveAsLowerBound(origin);
-        //TODO aan root vragen of dit niet overlapt!
-    }
-
-
-    /**
-     * Return the far corner of this dungeon.
-     */
-    @Basic @Raw
-    public Coordinate getFarCorner() {
-        return coordSyst.getUpperBound();
-    }
-    
-    /**
-     * Set the far corner of this dungeon to the given far corner.
-     *
-     * @param farCorner
-     * The new far corner of this dungeon.
-     * @post
-     * The new far corner of this dungeon is equal to the given far corner.
-     *   | new.getFarCorner().equals(farCorner)
-     * @throws IllegalArgumentException
-     *   | !canHaveAsFarCorner(farCorner)
-     */
-    @Raw
-    public void setFarCorner(Coordinate farCorner)
-                                        throws IllegalArgumentException {
-        if (!canHaveAsFarCorner(farCorner))
-            throw new IllegalArgumentException();
-        coordSyst.setUpperBound(farCorner);
-    }
-    
-    /** 
-     * Check if this dungeon can have the given far corner as its far 
-     * corner. 
-     * 
-     * @param farCorner 
-     * The far corner to check.
-     * @return
-     *   | if !getCoordSyst().canHaveAsUpperBound(farCorner)
-     *   |      then result == false
-     */
-    @Raw
-    public boolean canHaveAsFarCorner(Coordinate farCorner) {
-        return coordSyst.canHaveAsUpperBound(farCorner);
-        //TODO aan root vragen of dit niet overlapt!
-    }
+        setRootDungeon(null);
+        }
 
 
     /**
      * Return the coordinate system for this dungeon.
      */
     @Basic @Raw
-    public CoordinateSystem getCoordSyst() {
-        return coordSyst.clone();
-    }
-    
+        public CoordinateSystem getCoordSyst() {
+            if (coordSyst == null)
+                return null;
+            return coordSyst.clone();
+        }
+
+
     /**
      * Checks whether the given coordinate system is a valid coordinate 
-     * system for all dungeons.
+     * system for this dungeon.
      *
      * @param coordSyst
      * The coordinate system to check.
      * @return
-     * True iff the given coordinate system is effective
-     *   | result == (coordSyst != null)
+     *   | if !canHaveAsPossibleCoordSyst(coordSyst)
+     *   |      then result == false
      */
     @Raw
-    public static boolean isValidCoordSyst(CoordinateSystem coordSyst) {
-        return (coordSyst != null);
+        public boolean canHaveAsCoordSyst(CoordinateSystem coordSyst) {
+            return canHaveAsCoordSyst(coordSyst);
+        }
+
+    /**
+     * Checks whether the given coordinate system is a possible valid 
+     * coordinate system for this dungeon.
+     *
+     * @param coordSyst
+     * The coordinate system to check.
+     * @return
+     *   | result == (coordSyst != null
+     *   |              &amp;&amp; (getCoordSyst() == null  
+     *   |                          || coordSyst.contains(getCoordSyst()))
+     *   |              &amp;&amp; (getRootDungeon() == null
+     *   |                          || getRootDungeon().canExpandSubDungeonTo(
+     *   |                                                   this, coordSyst)))
+     */
+    @Raw
+        public boolean canHaveAsPossibleCoordSyst(CoordinateSystem coordSyst) {
+            if (coordSyst == null)
+                return false;
+            if (this.coordSyst != null  
+                    && !coordSyst.contains(this.coordSyst))
+                return false;
+            if (getRootDungeon() == null)
+                return true;
+            return getRootDungeon().canExpandSubDungeonTo(this, coordSyst);
+        }
+
+    /** 
+     * Checks wheter this dungeon overlaps with the given coordinate 
+     * system.
+     * 
+     * @param coordSyst 
+     * The coordinate system to check.
+     * @pre
+     *   | coordSyst != null
+     * @return 
+     *   | result == getCoordSyst().overlaps(other.getCoordSyst())
+     */
+    public boolean overlaps(CoordinateSystem coordSyst) {
+        assert coordSyst != null;
+        return this.coordSyst.overlaps(coordSyst);
+    }
+    /** 
+     * Checks wheter this dungeon overlaps with the given dungeon.
+     * 
+     * @param other 
+     * The other dungeon to check.
+     * @pre
+     *   | other != null
+     * @return 
+     *   | result == overlaps(other.getCoordSyst())
+     */
+    public boolean overlaps(Dungeon<?> other) {
+        assert other != null;
+        return overlaps(other.coordSyst);
     }
 
     /**
@@ -199,22 +144,36 @@ public abstract class Dungeon<S extends Square> {
      * @throws IllegalArgumentException
      * This dungeon cannot have the given coordinate system as its 
      * coordinate system.
-     *   | !isValidCoordSyst(coordSyst)
+     *   | !canHaveAsCoordSyst(coordSyst)
      */
     @Raw @Model
-    private void setCoordSyst(CoordinateSystem coordSyst)
-                                        throws IllegalArgumentException {
-        if (!isValidCoordSyst(coordSyst))
+        private void setCoordSyst(CoordinateSystem coordSyst)
+        throws IllegalArgumentException {
+        if (!canHaveAsCoordSyst(coordSyst))
             throw new IllegalArgumentException();
         this.coordSyst = coordSyst;
-    }
-    
+        }
+
+    /**
+     * Translate the coordinate system of this dungeon.
+     *
+     * @pre
+     *   | canHaveAsCoordSyst(getCoordSyst())
+     * @param offset 
+     * The offset over which to translate the coordinate system of this 
+     * dungeon.
+     */
+    @Raw
+        protected void translateCoordSyst(Coordinate offset) {
+            assert canHaveAsCoordSyst(coordSyst);
+            coordSyst.translate(offset);
+        }
+
     /** 
      * Variable referencing the coordinate system that belongs to this 
      * dungeon.
      */
     private CoordinateSystem coordSyst;
-
 
     /** 
      * Translate this dungeon over the given offset.
@@ -228,20 +187,9 @@ public abstract class Dungeon<S extends Square> {
      * on the coordinates of squares in dungeons, as enforced by
      * canHaveAsSquareAt().
      */
-    public void translate(Coordinate offset) throws IllegalArgumentException,
-                                            CoordinateConstraintsException {
-        coordSyst.translate(offset);
-        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares())
-            if (!canHaveAsSquareAt(e.getKey().add(offset), e.getValue())){
-                coordSyst.translate(offset.mirror());
-                throw new CoordinateConstraintsException(e.getValue(), this);
-            }
-        Map<Coordinate, S> translatedSquares = new HashMap<Coordinate, S>();
-        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares()) {
-            translatedSquares.put(e.getKey().add(offset), e.getValue());
-        }
-        squares = translatedSquares;
-    }
+    abstract public void translate(Coordinate offset)
+        throws IllegalArgumentException, CoordinateConstraintsException;
+
 
     /** 
      * Checks whether the given coordinate is a valid coordinate in this 
@@ -250,11 +198,12 @@ public abstract class Dungeon<S extends Square> {
      * @param coordinate 
      * The coordinate to check.
      * @return 
-     * True iff the coordinate is effective, bounded by the origin and the 
-     * far corner, and the coordinate values in all directions are not 
-     * equal to each other.
+     * True iff the coordinate is a possible square coordinate for all 
+     * dungeons, is contained within the coordinate system of this dungeon, 
+     * and the coordinate values in all directions are not equal to each 
+     * other.
      *   | result == (isPossibleSquareCoordinate(coordinate)
-     *   |      &amp;&amp; coordinate.isBoundedBy(ORIGIN, getFarCorner())
+     *   |      &amp;&amp; getCoordSyst().contains(coordinate)
      *   |      &amp;&amp; (coordinate.x != coordinate.y
      *   |                  || coordinate.y != coordinate.z
      *   |                  || coordinate.z != coordinate.x))
@@ -262,14 +211,14 @@ public abstract class Dungeon<S extends Square> {
     public boolean isValidSquareCoordinate(Coordinate coordinate) {
         if (!isPossibleSquareCoordinate(coordinate))
             return false;
-        if (!coordSyst.isValidCoordinate(coordinate))
+        if (!coordSyst.contains(coordinate))
             return false;
         return coordinate.x != coordinate.y
             || coordinate.y != coordinate.z
             || coordinate.z != coordinate.x;
     }
 
-        
+
     /** 
      * Checks whether or not the given coordinate is a possible square 
      * coordinate for all dungeons.
@@ -290,11 +239,6 @@ public abstract class Dungeon<S extends Square> {
      * The coordinate to add the given square at.
      * @param square 
      * The square to add at the given coordinate.
-     * @effect
-     * The squares that border the given coordinate in this dungeon get 
-     * merged with the given square in the appropriate direction.
-     *   | for each e in getDirectionsAndNeighboursOf(coordinate).entrySet() :
-     *   |      square.mergeWith(e.getValue()), e.getKey()
      * @post
      *   | new.getSquareAt(coordinate) == square
      * @throws IllegalArgumentException
@@ -305,29 +249,10 @@ public abstract class Dungeon<S extends Square> {
      * Adding the given square at the given coordinate would violate the 
      * constrainst as specified by squaresSatisfyConstraints().
      */
-    public void addSquareAt(Coordinate coordinate, S square) 
-                                        throws IllegalArgumentException,
-                                                CoordinateOccupiedException,
-                                                DungeonConstraintsException {
-        if (!canHaveAsSquareAt(coordinate, square))
-            throw new IllegalArgumentException();
-        if (isOccupied(coordinate))
-            throw new CoordinateOccupiedException(coordinate, this);
-
-        squares.put(coordinate, square);
-
-        if (!squaresSatisfyConstraints()){
-            squares.remove(coordinate);
-            throw new DungeonConstraintsException(square, this);
-        }
-
-        for (Map.Entry<Direction, S> neighbourEntry :
-                        getDirectionsAndNeighboursOf(coordinate).entrySet()){
-            S neighbour = neighbourEntry.getValue();
-            Direction neighbourDirection = neighbourEntry.getKey();
-            square.mergeWith(neighbour, neighbourDirection);
-        }
-    }
+    abstract public void addSquareAt(Coordinate coordinate, S square) 
+        throws IllegalArgumentException,
+                          CoordinateOccupiedException,
+                          DungeonConstraintsException;
 
     /** 
      * Checks whether this dungeon can have the given square at the given 
@@ -343,44 +268,16 @@ public abstract class Dungeon<S extends Square> {
      *   |              &amp;&amp; isValidSquareCoordinate(coordinate)
      */
     @Raw
-    public boolean canHaveAsSquareAt(Coordinate coordinate, S square) {
-        return square != null
-                    && !square.isTerminated()
-                    && isValidSquareCoordinate(coordinate);
-    }
-
-    /** 
-     * Return a mapping of coordinates to squares that represent all 
-     * neighbouring squares of the given coordinate in this dungeon. 
-     * 
-     * @param coordinate 
-     * The coordinate whose neighbours to return.
-     * @return
-     * A mapping of coordinates to squares that represent all neighbouring 
-     * squares of the given coordinate in this dungeon. 
-     * @throws IllegalArgumentException
-     *   | coordinate == null
-     */
-    public Map<Coordinate, S> getCoordinatesAndNeighboursOf(
-                                                        Coordinate coordinate)
-                                            throws IllegalArgumentException {
-        if (coordinate == null)
-            throw new IllegalArgumentException();
-
-        HashMap<Coordinate, S> result =
-                                new HashMap<Coordinate, S>();
-
-        for (Coordinate neighbourCoordinate : 
-                                coordSyst.neighboursOf(coordinate).values()) {
-            if (!isOccupied(neighbourCoordinate))
-                continue;
-
-            S neighbour = getSquareAt(neighbourCoordinate);
-            result.put(neighbourCoordinate, neighbour);
+        public boolean canHaveAsSquareAt(Coordinate coordinate, S square) {
+            return square != null
+                && !square.isTerminated()
+                && isValidSquareCoordinate(coordinate);
         }
 
-        return result;
-    }
+
+
+
+
 
     /** 
      * Return a mapping of directions to squares that represent all 
@@ -396,56 +293,51 @@ public abstract class Dungeon<S extends Square> {
      * @throws IllegalArgumentException
      *   | coordinate == null
      */
-    public Map<Direction, S> getDirectionsAndNeighboursOf(
-                                                        Coordinate coordinate)
-                                            throws IllegalArgumentException {
-        if (coordinate == null)
-            throw new IllegalArgumentException();
-
-        EnumMap<Direction, S> result =
-                    new EnumMap<Direction, S>(Direction.class);
-
-        for (Map.Entry<Direction, Coordinate> neighbourEntry :
-                            coordSyst.neighboursOf(coordinate).entrySet()) {
-            Coordinate neighbourCoordinate = neighbourEntry.getValue();
-            Direction neighbourDirection = neighbourEntry.getKey();
-            S neighbour = squares.get(neighbourCoordinate);
-            if (neighbour != null)
-                result.put(neighbourDirection, neighbour);
-        }
-
-        return result;
-    }
+    @Raw
+        abstract public Map<Direction, S> getDirectionsAndNeighboursOf(
+                Coordinate coordinate)
+                throws IllegalArgumentException;
 
 
     /** 
      * Checks whether this dungeon has squares that properly border on 
-     * neighbouing squares. 
+     * neighbouring squares. 
      * 
      * @return
-     * True iff every square of this dungeon borders on its neighbours in 
-     * this dungeon in the correct direction.
+     * True iff every square of this dungeon borders on all its neighbours 
+     * (as given by the root dungeon) in the correct direction.
      *   | result == 
-     *   |      (for each e in 
-     *   |              getDirectionsAndNeighboursOf(Coordinate).entrySet() :
-     *   |          square.getBorderAt(e.getKey()).bordersOnSquare(
-     *   |                                                  e.getValue()))
+     *   |  (for each ps in getPositionsAndSquares() :
+     *   |      (for each dn in 
+     *   |              getRootDungeon().getDirectionsAndNeighboursOf(
+     *   |                                         Coordinate).entrySet() :
+     *   |          ps.getValue().getBorderAt(dn.getKey()).bordersOnSquare(
+     *   |                                               dn.getValue())))
+     * @throws IllegalStateException
+     *   | getPositionsAndSquares() == null
      */
-    public boolean hasProperBorderingSquares() {
-        for (Map.Entry<Coordinate, S> entry : getPositionsAndSquares()) {
-            S square = entry.getValue();
-            Coordinate coordinate = entry.getKey();
-            
-            for (Map.Entry<Direction, S> neighbourEntry :
-                        getDirectionsAndNeighboursOf(coordinate).entrySet()) {
-                S neighbour = neighbourEntry.getValue();
-                Direction direction = neighbourEntry.getKey();
-                if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
-                    return false;
+    @Raw
+        public boolean hasProperBorderingSquares() throws IllegalStateException {
+            Dungeon<? super S> root = getRootDungeon();
+            if (root == null)
+                root = this;
+            if (getPositionsAndSquares() == null)
+                throw new IllegalStateException(
+                        "Could not get positions and squares");
+            for (Map.Entry<Coordinate, S> entry : getPositionsAndSquares()) {
+                S square = entry.getValue();
+                Coordinate coordinate = entry.getKey();
+
+                for (Map.Entry<Direction, ? super S> neighbourEntry :
+                        root.getDirectionsAndNeighboursOf(coordinate).entrySet()) {
+                    Square neighbour = (Square) neighbourEntry.getValue();
+                    Direction direction = neighbourEntry.getKey();
+                    if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
+                        return false;
+                }
             }
+            return true;
         }
-        return true;
-    }
 
     /** 
      * Returns the square at the given coordinate in this dungeon.
@@ -457,19 +349,9 @@ public abstract class Dungeon<S extends Square> {
      * @throws CoordinateNotOccupiedException
      *   | !isOccupied(coordinate)
      */
-    @Basic @Raw
-    public S getSquareAt(Coordinate coordinate) 
-                                    throws IllegalArgumentException,
-                                            CoordinateNotOccupiedException {
-        if (!isPossibleSquareCoordinate(coordinate))
-            throw new IllegalArgumentException();
-
-        S result = squares.get(coordinate);
-        if (result == null)
-            throw new CoordinateNotOccupiedException(coordinate, this);
-
-        return result;
-    }
+    @Raw
+        abstract public S getSquareAt(Coordinate coordinate) 
+        throws IllegalArgumentException, CoordinateNotOccupiedException;
 
     /** 
      * Returns wheter or not this dungeon contains the given square.
@@ -477,10 +359,8 @@ public abstract class Dungeon<S extends Square> {
      * @param square 
      * The square to check.
      */
-    @Basic @Raw
-    public boolean hasSquare(S square) {
-        return squares.containsValue(square);
-    }
+    @Raw
+        abstract public boolean hasSquare(S square);
 
     /** 
      * Deletes the square at the given coordinate and terminates it.
@@ -489,16 +369,13 @@ public abstract class Dungeon<S extends Square> {
      * The coordinate to remove the square at.
      * @post
      *   | !isOccupied(coordinate)
-     * @effect
-     *   | old.getSquareAt(coordinate).terminate()
+     * @throws CoordinateNotOccupiedException
+     *   | !isOccupied(coordinate)
+     * @throws IllegalArgumentException
+     *   | !isPossibleSquareCoordinate(coordinate)
      */
-    public void deleteSquareAt(Coordinate coordinate) 
-                                    throws IllegalArgumentException,
-                                            CoordinateNotOccupiedException {
-        S square = getSquareAt(coordinate);
-        square.terminate(); //detatches all neighbouring squares too
-        squares.remove(coordinate);
-    }
+    abstract public void deleteSquareAt(Coordinate coordinate) 
+        throws IllegalArgumentException, CoordinateNotOccupiedException; 
 
     /** 
      * Returns whether or not the given coordinate is occupied in this 
@@ -509,12 +386,8 @@ public abstract class Dungeon<S extends Square> {
      * @throws IllegalArgumentException
      *   | !isPossibleSquareCoordinate(coordinate)
      */
-    @Basic
-    public boolean isOccupied(Coordinate coordinate) {
-        if (!isPossibleSquareCoordinate(coordinate))
-            throw new IllegalArgumentException();
-        return squares.containsKey(coordinate);
-    }
+    abstract public boolean isOccupied(Coordinate coordinate) 
+        throws IllegalArgumentException;
 
     /** 
      * Checks whether all squares of this dungeon have valid coordinates.
@@ -531,26 +404,26 @@ public abstract class Dungeon<S extends Square> {
         return true;
     }
 
-
     /** 
      * Checks whether the squares of this dungeon satisfy the constraints 
      * on squares of a dungeon.
      * 
      * @return
-     * True iff not more than 20% of the squares have a slippery floor.
-     *   |  result == (getNbSlipperySquares() * 5 &lt;= getNbSquares())
+     * True iff not more than 20% of the squares of this dungeon have a 
+     * slippery floor.
+     *   |  result == (getNbIntrinsicallySlipperySquares() * 5 &lt;= getNbSquares())
      */
     public boolean squaresSatisfyConstraints() {
-        return (getNbSlipperySquares() * 5 <= getNbSquares());
+        return (getNbIntrinsicallySlipperySquares() * 5 <= getNbSquares());
     }
 
     /** 
      * Return the number of squares in this dungeon.
+     *
+     * @return
+     *   result == {square in getSquares() | true : true}.size()
      */
-    @Basic
-    public int getNbSquares() {
-        return squares.size();
-    }
+    abstract public int getNbSquares();
 
     /** 
      * Return the number of squares in this dungeon that have a slippery 
@@ -560,9 +433,9 @@ public abstract class Dungeon<S extends Square> {
      * The number of squares in this dungeon that have a slippery 
      * floor.
      *   | ({ square in getSquares() | true :
-     *   |                  square.hasSlipperyFloor()}.size() == result)
+     *   |                  square.hasSlipperyFloor() }.size() == result)
      */
-    public int getNbSlipperySquares() {
+    public int getNbIntrinsicallySlipperySquares() {
         int nbSlipperySquares = 0;
         for (S square : getSquares())
             if (square.hasSlipperyFloor())
@@ -570,27 +443,110 @@ public abstract class Dungeon<S extends Square> {
         return nbSlipperySquares;
     }
 
+
+    /**
+     * Return a mapping of coordinates to squares of this dungeon.
+     */
+    @Raw
+    abstract public Map<Coordinate, S> getSquareMapping();
+
     /**
      * Return an iterable of the squares in this dungeon.
+     *
+     * @return
+     * An iterable over the elements of getSquareMapping().values().
      */
-    @Basic
-    public Iterable<S> getSquares() {
-        return squares.values();
-    }
+    abstract public Iterable<S> getSquares();
 
     /**
-     * Return an iterable of the squares and their position in this dungeon.
+     * Return an iterable of the squares and their position in this 
+     * dungeon.
+     *
+     * @return
+     * An iterable over the elements of getSquareMapping().entrySet().
      */
-    @Basic
-    public Iterable<Map.Entry<Coordinate, S>> getPositionsAndSquares() {
-        return squares.entrySet();
-    }
+    abstract public Iterable<Map.Entry<Coordinate, S>> getPositionsAndSquares();
+
 
     /**
-     * Variable referencing a map of the squares of this dungeon
+     * Return the root dungeon for this dungeon.
      */
-    private Map<Coordinate, S> squares = 
-                                        new HashMap<Coordinate, S>();
+    @Basic @Raw
+    public CompositeDungeon<? super S> getRootDungeon() {
+        return rootDungeon;
+    }
+    
+    /**
+     * Set the root dungeon for this dungeon to the given root dungeon.
+     *
+     * @param rootDungeon
+     * The new root dungeon for this dungeon.
+     * @post
+     * The new root dungeon for this dungeon is equal to the given root 
+     * dungeon.
+     *   | new.getRootDungeon() == rootDungeon
+     * @throws IllegalArgumentException
+     * This dungeon cannot have the given root dungeon as its root dungeon.
+     *   | ! canHaveAsRootDungeon(rootDungeon)
+     */
+    @Raw
+    public void setRootDungeon(CompositeDungeon<? super S> rootDungeon)
+                                            throws IllegalArgumentException {
+        if (!canHaveAsRootDungeon(rootDungeon))
+            throw new IllegalArgumentException();
+        this.rootDungeon = rootDungeon;
+    }
+    
+    /**
+     * Checks whether this dungeon can have the given root dungeon as its 
+     * root dungeon.
+     *
+     * @param rootDungeon
+     * The root dungeon to check.
+     * @return
+     *   | if (isTerminated())
+     *   |      then result == (rootDungeon == null)
+     *   | else if (rootDungeon != null
+     *   |              &amp;&amp; (!rootDungeon.isRootDungeon()
+     *   |                      || rootDungeon.isTerminated())
+     *   |      then result == false
+     *   | else if (old.getRootDungeon() == null)
+     *   |      then result == (rootDungeon == null
+     *   |                          || rootDungeon.containsDungeon(this))
+     *   | else result == (rootDungeon != null
+     *   |                  &amp;&amp; rootDungeon.containsDungeon(this))
+     */
+    @Raw
+    public boolean canHaveAsRootDungeon(@Raw CompositeDungeon<?> rootDungeon) {
+        if (isTerminated())
+            return rootDungeon == null;
+        if (rootDungeon != null
+                && (!rootDungeon.isRootDungeon()
+                        || rootDungeon.isTerminated()))
+            return false;
+        if (getRootDungeon() == null)
+            return rootDungeon == null
+                || rootDungeon.containsDungeon(this);
+        return rootDungeon != null
+            //&& rootDungeon.containsDungeon(getRootDungeon()); //probs als de rootdungeon moet worden geterminered!
+            && rootDungeon.containsDungeon(this);
+    }
+
+    /** 
+     * Checks whether this dungeon is its own root dungeon. 
+     * 
+     * @return 
+     *   | result == (getRootDungeon() == this)
+     */
+    public boolean isRootDungeon() {
+        return getRootDungeon() == this;
+    }
+    
+    /**
+     * Variable registering the root dungeon for this dungeon.
+     */
+    private CompositeDungeon<? super S> rootDungeon;
+
 
 
     /**
@@ -608,15 +564,28 @@ public abstract class Dungeon<S extends Square> {
      * This dungeon is terminated.
      *   | new.isTerminated()
      */
-    void terminate(){
+    @Model
+    protected void terminate(){
         isTerminated = true;
-        //TODO
+        //getRootDungeon().deleteDungeon(this); //DIT ROEPT MSS ZELF AL TERMINATE AAN? -> in that case, gewoon een assert zetten dat !containsSubDungeon(this)
+        setRootDungeon(null);
     }
 
     /**
      * Variable registering the termination status for this dungeon.
      */
     private boolean isTerminated = false;
+
+
+
+
+
+
+
+
+
+
+
 
 
 

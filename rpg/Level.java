@@ -2,7 +2,7 @@ package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
 
-public class Level<S extends Square> extends Dungeon<S> {
+public class Level<S extends Square> extends LeafDungeon<S> {
 
 	/** 
 	 * Create a new level with the given origin and dimensions.
@@ -14,15 +14,17 @@ public class Level<S extends Square> extends Dungeon<S> {
 	 * @param ySize
 	 * The size of this new level in the y direction.
 	 * @effect
-	 *   | super(origin, origin.add(new Coordinate(xSize - 1, ySize - 1, 0)));
+	 *   | super(new CoordinateSystem(origin,
+     *   |          origin.add(new Coordinate(xSize - 1, ySize - 1, 0))));
 	 */
 	public Level(Coordinate origin, long xSize, long ySize) 
                                             throws IllegalArgumentException {
-		super(origin, origin.add(new Coordinate(xSize - 1, ySize - 1, 0)));
+		super(new CoordinateSystem(origin, 
+                    origin.add(new Coordinate(xSize - 1, ySize - 1, 0))));
 	}
 
 	/** 
-	 * Create a new level with the given dimensions.
+     * Create a new level with the given dimensions and default origin.
 	 * 
 	 * @param xSize
 	 * The size of this new level in the x direction.
@@ -35,42 +37,33 @@ public class Level<S extends Square> extends Dungeon<S> {
 	    this(new Coordinate(0, 0, 0), xSize, ySize);
 	}
 
-
-    /** 
-     * Check if this level can have the given origin as its origin.
-     * 
-     * @param origin 
-     * The origin to check.
+    /**
+     * Checks whether the given coordinate system is a valid coordinate 
+     * system for this level.
+     *
+     * @param coordSyst
+     * The coordinate system to check.
      * @return
-     *   | result == (getCoordSyst().canHaveAsLowerBound(origin)
-	 *   |				&amp;&amp; (old.getOrigin() == null 
-	 *   |							|| old.getOrigin(),z == origin.z)
-     */
-    @Raw @Override
-    public boolean canHaveAsOrigin(Coordinate origin) {
-        return getCoordSyst().canHaveAsLowerBound(origin)
-				&& (getOrigin() == null || getOrigin().z == origin.z);
-        //TODO aan root vragen of dit niet overlapt!
-    }
-
-
-    /** 
-     * Check if this level can have the given far corner as its far 
-     * corner. 
-     * 
-     * @param farCorner 
-     * The far corner to check.
-     * @return
-     *   | if !getCoordSyst().canHaveAsUpperBound(farCorner)
-	 *   |				&amp;&amp; (old.getOrigin() == null 
-	 *   |							|| old.getFarCorner(),z == farCorner.z)
+     *   | result == (canHaveAsPossibleCoordSyst(coordSyst)
+     *   |      &amp;&amp; (coordSyst.getLowerBound().z ==
+     *   |                  coordSyst.getUpperBound().z)
+     *   |      &amp;&amp; (old.getCoordSyst() == null
+     *   |                  || coordSyst.getLowerBound().z
+     *   |                      == old.getCoordSyst().getLowerBound().z))
      */
     @Raw
-    public boolean canHaveAsFarCorner(Coordinate farCorner) {
-        return getCoordSyst().canHaveAsUpperBound(farCorner)
-				&& (getFarCorner() == null || getFarCorner().z == farCorner.z);
-        //TODO aan root vragen of dit niet overlapt!
+    public boolean canHaveAsCoordSyst(CoordinateSystem coordSyst) {
+        if (!canHaveAsPossibleCoordSyst(coordSyst))
+            return false;
+        if (coordSyst.getLowerBound().z != coordSyst.getUpperBound().z)
+            return false;
+        CoordinateSystem oldCoordSyst = getCoordSyst();
+        if (oldCoordSyst == null)
+            return true;
+        return coordSyst.getLowerBound().z == oldCoordSyst.getLowerBound().z;
     }
+
+
 
 }
 

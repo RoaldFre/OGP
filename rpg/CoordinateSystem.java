@@ -258,8 +258,7 @@ public class CoordinateSystem implements Cloneable {
 
 
     /** 
-     * Checks whether the given coordinate is a valid coordinate in this 
-     * coordinate system.
+     * Checks whether this coordinate system contains the given coordinate.
      *
      * @param coordinate 
      * The coordinate to check.
@@ -268,7 +267,7 @@ public class CoordinateSystem implements Cloneable {
      *   |      &amp;&amp; coordinate.isBoundedBy(getLowerBound(),
      *   |                                          getUpperBound()))
      */
-    public boolean isValidCoordinate(Coordinate coordinate) {
+    public boolean contains(Coordinate coordinate) {
         if (coordinate == null)
             return false;
         return coordinate.isBoundedBy(getLowerBound(), getUpperBound());
@@ -295,7 +294,7 @@ public class CoordinateSystem implements Cloneable {
                         new EnumMap<Direction, Coordinate>(Direction.class);
         for (Direction direction : Direction.values()) {
             Coordinate newCoord = coordinate.moveTo(direction);
-            if (isValidCoordinate(newCoord))
+            if (contains(newCoord))
                 result.put(direction, newCoord);
         }
         return result;
@@ -336,6 +335,26 @@ public class CoordinateSystem implements Cloneable {
         assert other != null;
         return other.canHaveAsLowerBound(getLowerBound())
             && other.canHaveAsUpperBound(getUpperBound());
+    }
+
+    /** 
+     * Checks wheter this coordinate system overlaps with the given 
+     * coordinate system.
+     * 
+     * @param other 
+     * The other coordinate system to check.
+     * @pre
+     *   | other != null;
+     * @return 
+     *   | result == (contains(other.getLowerBound())
+     *   |         || contains(other.getUpperBound())
+     *   |         || other.contains(getLowerBound())
+     *   |         || other.contains(getUpperBound()))
+     */
+    public boolean overlaps(CoordinateSystem other) {
+        assert other != null;
+        return contains(other.getLowerBound()) || contains(other.getUpperBound())
+            || other.contains(getLowerBound()) || other.contains(getUpperBound());
     }
 
     /** 

@@ -91,10 +91,12 @@ public class DungeonTest {
     }
 
     private void assertClassInvariants(Dungeon<?> dungeon) {
-        assertTrue(dungeon.squaresSatisfyConstraints());
         assertTrue(dungeon.canHaveSquaresAtTheirCoordinates());
+        assertTrue(dungeon.squaresSatisfyConstraints());
         assertTrue(dungeon.hasProperBorderingSquares());
-        assertTrue(Dungeon.isValidCoordSyst(dungeon.getCoordSyst()));
+        assertTrue(dungeon.canHaveAsCoordSyst(dungeon.getCoordSyst()));
+        assertTrue(dungeon.getSquareMapping() != null);
+        assertTrue(dungeon.canHaveAsRootDungeon(dungeon.getRootDungeon()));
     }
 
 /*
@@ -160,25 +162,6 @@ public class DungeonTest {
     }
     */
 
-    @Test
-    public void setFarCorner_legal() {
-        Coordinate farCorner = new Coordinate(20, 15, 0);
-        level_10.setFarCorner(farCorner);
-        assertEquals(farCorner, level_10.getFarCorner());
-        assertClassInvariants(level_10);
-    }
-    @Test (expected = IllegalArgumentException.class)
-    public void setFarCorner_null() {
-        level_10.setFarCorner(null);
-    }
-    @Test (expected = IllegalArgumentException.class)
-    public void setFarCorner_moreStrict() {
-        level_10.setFarCorner(new Coordinate(1, 1, 0));
-    }
-    @Test (expected = IllegalArgumentException.class)
-    public void setFarCorner_otherHeight() {
-        level_10.setFarCorner(new Coordinate(20, 20, 1));
-    }
 
     @Test
     public void isValidSquareCoordinate_test() {
@@ -204,7 +187,7 @@ public class DungeonTest {
         assertEquals(square, level_10.getSquareAt(coordinate));
         assertClassInvariants(level_10);
         assertEquals(1, level_10.getNbSquares());
-        assertEquals(0, level_10.getNbSlipperySquares());
+        assertEquals(0, level_10.getNbIntrinsicallySlipperySquares());
     }
     @Test
     public void addSquareAt_multipleSquares() {
@@ -351,44 +334,6 @@ public class DungeonTest {
         dungeonDemo.canReach(null, null);
     }
 
-    @Test
-    public void translate_legal() {
-        Dungeon<?> l10ws = level_10_withSquares; //shorten name for 80 col
-        Coordinate offset = new Coordinate(0, 0, 10);
-        l10ws.translate(offset);
-        assertClassInvariants(l10ws);
-        assertEquals(square1, l10ws.getSquareAt(coordinate1.add(offset)));
-        assertEquals(square2, l10ws.getSquareAt(coordinate2.add(offset)));
-        assertEquals(square3, l10ws.getSquareAt(coordinate3.add(offset)));
-        assertEquals(square4, l10ws.getSquareAt(coordinate4.add(offset)));
-        assertEquals(square5, l10ws.getSquareAt(coordinate5.add(offset)));
-        assertEquals(square6, l10ws.getSquareAt(coordinate6.add(offset)));
-        assertEquals(new Coordinate(9, 9, 0).add(offset),
-                                                    l10ws.getFarCorner());
-    }
-    @Test (expected = IllegalArgumentException.class)
-    public void translate_null() {
-        level_10_withSquares.translate(null);
-    }
-    @Test
-    public void translate_coordinateConstraint_properRollBack() {
-        Dungeon<?> l10ws = level_10_withSquares; //shorten name for 80 col
-        Coordinate offset = new Coordinate(0, 0, 2);
-        try {
-            l10ws.translate(offset);
-            assertTrue(false); //if we got here: we failed...
-        } catch (CoordinateConstraintsException e) {
-            //nop
-        }
-        assertClassInvariants(l10ws);
-        assertEquals(square1, l10ws.getSquareAt(coordinate1));
-        assertEquals(square2, l10ws.getSquareAt(coordinate2));
-        assertEquals(square3, l10ws.getSquareAt(coordinate3));
-        assertEquals(square4, l10ws.getSquareAt(coordinate4));
-        assertEquals(square5, l10ws.getSquareAt(coordinate5));
-        assertEquals(square6, l10ws.getSquareAt(coordinate6));
-        assertEquals(new Coordinate(9, 9, 0), l10ws.getFarCorner());
-    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

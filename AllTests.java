@@ -20,6 +20,7 @@ import org.junit.runners.Suite;
     CoordinateTest.class,
     CoordinateSystemTest.class,
     DungeonTest.class,
+    LeafDungeonTest.class,
     LevelTest.class,
     CoupleTest.class,
 })

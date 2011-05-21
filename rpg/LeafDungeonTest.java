@@ -56,11 +56,6 @@ public class LeafDungeonTest {
         assertTrue(ld.canHaveAsRootDungeon(ld.getRootDungeon()));
     }
 
-
-
-
-
-
     @Test
     public void translate_legal() {
         LeafDungeon<?> l10ws = level_10_withSquares; //shorten name for 80 col
@@ -103,6 +98,12 @@ public class LeafDungeonTest {
         assertEquals(square6, l10ws.getSquareAt(coordinate6));
 		assertEquals(oldLower, l10ws.getCoordSyst().getLowerBound());
         assertEquals(oldUpper, l10ws.getCoordSyst().getUpperBound());
+    }
+
+
+    @Test (expected = IllegalArgumentException.class)
+    public void getDirectionsAndNeighboursOf_null() {
+        level_10_withSquares.getDirectionsAndNeighboursOf(null);
     }
 }
 

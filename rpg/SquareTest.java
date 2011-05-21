@@ -28,6 +28,9 @@ public class SquareTest {
     private Square squareTemp50;
     private Square square_T20_Tmin0_Tmax100_H20;
 
+    private Square connectedSquare1; //max temperature 1000C
+    private Square connectedSquare2; //max temperature 100C
+
 
     /**
      * Set up a mutable test fixture.
@@ -54,6 +57,19 @@ public class SquareTest {
                     new Temperature(-10), new Temperature(200),
                     3000,
                     true);
+
+
+        connectedSquare1 = new RegularSquare(
+                    new Temperature(0),
+                    new Temperature(0), new Temperature(1000),
+                    5000,
+                    true);
+        connectedSquare2 = new RegularSquare(
+                    new Temperature(0),
+                    new Temperature(0), new Temperature(100),
+                    5000,
+                    true);
+        connectedSquare1.mergeWith(connectedSquare2, Direction.NORTH);
     }
 
     /** 
@@ -81,7 +97,7 @@ public class SquareTest {
     @Test
     public void setTemperature_LegalCase() {
         square_T100_H50.setTemperature(new Temperature(200));
-        assertEquals(200, square_T100_H50.getTemperature().temperature(), 0);
+        assertEquals(new Temperature(200), square_T100_H50.getTemperature());
         assertClassInvariants(square_T100_H50);
     }
 
@@ -104,16 +120,40 @@ public class SquareTest {
     }
 
     @Test
+    public void setTemperature_properEquilibration() {
+        Temperature T100 = new Temperature(100);
+        Temperature T50 = new Temperature(50);
+        connectedSquare1.setTemperature(T100);
+        assertEquals(T50, connectedSquare1.getTemperature());
+        assertEquals(T50, connectedSquare2.getTemperature());
+    }
+    @Test 
+    public void setTemperature_equilibrationViolatesLimits() {
+        Temperature T1000 = new Temperature(1000);
+        Temperature T0 = new Temperature(0);
+        try {
+            connectedSquare1.setTemperature(T1000);
+            assertTrue(false);
+        } catch (EquilibratingSquaresViolatesLimitsException e) {
+            assertEquals(T0, connectedSquare1.getTemperature());
+            assertEquals(T0, connectedSquare2.getTemperature());
+        }
+    }
+
+
+    @Test
     public void setMaxTemperature_LegalCase() {
-        square_T100_H50.setMaxTemperature(new Temperature(1000));
-        assertEquals( 1000, square_T100_H50.getMaxTemperature().temperature(), 0);
+        Temperature temperature = new Temperature(1000);
+        square_T100_H50.setMaxTemperature(temperature);
+        assertEquals(temperature, square_T100_H50.getMaxTemperature());
         assertClassInvariants(square_T100_H50);
     }
 
     @Test
     public void setMinTemperature_LegalCase() {
-        square_T100_H50.setMinTemperature(new Temperature(-1000));
-        assertEquals(-1000, square_T100_H50.getMinTemperature().temperature(), 0);
+        Temperature temperature = new Temperature(-1000);
+        square_T100_H50.setMinTemperature(temperature);
+        assertEquals(temperature, square_T100_H50.getMinTemperature());
         assertClassInvariants(square_T100_H50);
     }
 
@@ -251,6 +291,22 @@ public class SquareTest {
                 squareDefault.getDirectionOfBorder(newBorder));
     }
 
+    @Test (expected = IllegalArgumentException.class)
+    public void getDirectionOfBorder_null() {
+        squareDefault.getDirectionOfBorder(null);
+    }
+    @Test (expected = IllegalArgumentException.class)
+    public void getDirectionOfBorder_notBordering() {
+        squareDefault.getDirectionOfBorder(
+                square_T100_H50.getBorderAt(Direction.NORTH));
+    }
+    @Test (expected = IllegalStateException.class)
+    public void getDirectionOfBorder_isTerminated() {
+        Border border = squareDefault.getBorderAt(Direction.NORTH);
+        squareDefault.terminate();
+        squareDefault.getDirectionOfBorder(border);
+    }
+
     @Test
     public void hasBorder_Legal() {
         for (Direction direction : Direction.values())
@@ -363,8 +419,9 @@ public class SquareTest {
 
 
     public void setHeatDamageThreshold_LegalCase() {
-        Square.setHeatDamageThreshold(new Temperature(100));
-        assertEquals(100, Square.getHeatDamageThreshold().temperature(), 0);
+        Temperature temperature = new Temperature(100);
+        Square.setHeatDamageThreshold(temperature);
+        assertEquals(temperature, Square.getHeatDamageThreshold());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -396,6 +453,15 @@ public class SquareTest {
     @Test(expected = IllegalArgumentException.class)
     public void setMergeTemperatureWeight_IllegalCase() {
         Square.setMergeTemperatureWeight(-1);
+    }
+
+    @Test
+    public void terminate_test() {
+        squareDefault.terminate();
+        assertClassInvariants(squareDefault);
+        assertTrue(squareDefault.isTerminated());
+        for (Direction direction : Direction.values())
+            assertEquals(null, squareDefault.getBorderAt(direction));
     }
 }
 

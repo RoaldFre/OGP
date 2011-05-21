@@ -6,23 +6,29 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+    TemperatureTest.class,
+
     SquareTest.class,
     RegularSquareTest.class,
     RegularTeleportationSquareTest.class,
     TransparentSquareTest.class,
     TransparentTeleportationSquareTest.class,
     RockTest.class,
+
+    CoupleTest.class,
+
     BorderTest.class,
     WallTest.class,
     DoorTest.class,
     OpenBorderTest.class,
-    TemperatureTest.class,
+
     CoordinateTest.class,
     CoordinateSystemTest.class,
+
     DungeonTest.class,
     LeafDungeonTest.class,
     LevelTest.class,
-    CoupleTest.class,
+    ShaftTest.class,
 })
 public class AllTests {
 }

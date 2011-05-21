@@ -15,7 +15,7 @@ public class Level<S extends Square> extends LeafDungeon<S> {
 	 * The size of this new level in the y direction.
 	 * @effect
 	 *   | super(new CoordinateSystem(origin,
-     *   |          origin.add(new Coordinate(xSize - 1, ySize - 1, 0))));
+     *   |          origin.add(new Coordinate(xSize - 1, ySize - 1, 0))))
 	 */
 	public Level(Coordinate origin, long xSize, long ySize) 
                                             throws IllegalArgumentException {
@@ -45,11 +45,8 @@ public class Level<S extends Square> extends LeafDungeon<S> {
      * The coordinate system to check.
      * @return
      *   | result == (canHaveAsPossibleCoordSyst(coordSyst)
-     *   |      &amp;&amp; (coordSyst.getLowerBound().z ==
-     *   |                  coordSyst.getUpperBound().z)
-     *   |      &amp;&amp; (old.getCoordSyst() == null
-     *   |                  || coordSyst.getLowerBound().z
-     *   |                      == old.getCoordSyst().getLowerBound().z))
+     *   |                  &amp;&amp; (coordSyst.getLowerBound().z ==
+     *   |                              coordSyst.getUpperBound().z))
      */
     @Raw
     public boolean canHaveAsCoordSyst(CoordinateSystem coordSyst) {
@@ -57,14 +54,8 @@ public class Level<S extends Square> extends LeafDungeon<S> {
             return false;
         if (coordSyst.getLowerBound().z != coordSyst.getUpperBound().z)
             return false;
-        CoordinateSystem oldCoordSyst = getCoordSyst();
-        if (oldCoordSyst == null)
-            return true;
-        return coordSyst.getLowerBound().z == oldCoordSyst.getLowerBound().z;
+        return true;
     }
-
-
-
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

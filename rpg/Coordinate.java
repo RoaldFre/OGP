@@ -98,32 +98,13 @@ public class Coordinate {
      * The coordiante resulting in moving this coordinate in the given 
      * direction for the given number of steps.
      * @throws IllegalArgumentException 
-     * The given direction is unknown or not effective.
+     *   | direction == null
      */
-    public Coordinate moveTo(Direction direction, int steps)
+    public Coordinate moveTo(Direction direction, long steps)
                                         throws IllegalArgumentException {
         if (direction == null)
             throw new IllegalArgumentException();
-        long new_x = x;
-        long new_y = y;
-        long new_z = z;
-        switch (direction) {
-            case EAST:
-                new_x += steps; break;
-            case WEST:
-                new_x -= steps; break;
-            case NORTH:
-                new_y += steps; break;
-            case SOUTH:
-                new_y -= steps; break;
-            case UP:
-                new_z += steps; break;
-            case DOWN:
-                new_z -= steps; break;
-            default:
-                throw new IllegalArgumentException();
-        }
-        return new Coordinate(new_x, new_y, new_z);
+        return direction.moveCoordinate(this, steps);
     }
 
     /** 

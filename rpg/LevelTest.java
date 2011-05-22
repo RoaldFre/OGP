@@ -4,6 +4,10 @@ import static org.junit.Assert.*;
 import org.junit.*;
 //import rpg.exceptions.*;
 
+import rpg.util.Coordinate;
+import rpg.util.CoordinateSystem;
+
+
 public class LevelTest {
 
     private Level<Square> level_10;

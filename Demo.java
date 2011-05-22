@@ -1,4 +1,4 @@
-package rpg;
+
 
 /**
  * A class demonstrating the Dungeon class.

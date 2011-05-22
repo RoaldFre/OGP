@@ -3,6 +3,9 @@ package rpg;
 import static org.junit.Assert.*;
 import org.junit.*;
 
+import rpg.util.Direction;
+
+
 /**
  * A class collecting tests for the class of open borders.
  *

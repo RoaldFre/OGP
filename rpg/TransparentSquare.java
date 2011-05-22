@@ -3,6 +3,10 @@ package rpg;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.Arrays;
 
+import rpg.util.Direction;
+import rpg.util.Temperature;
+
+
 public class TransparentSquare extends Square {
     /** Initialize this new transparent square to a transparent square with 
      * the given temperature, temperature limits and humidity.

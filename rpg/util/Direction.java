@@ -1,4 +1,4 @@
-package rpg;
+package rpg.util;
 
 import be.kuleuven.cs.som.annotate.*;
 

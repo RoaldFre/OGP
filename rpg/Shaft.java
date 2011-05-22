@@ -1,5 +1,8 @@
 package rpg;
 
+import rpg.util.Coordinate;
+import rpg.util.CoordinateSystem;
+import rpg.util.Direction;
 import be.kuleuven.cs.som.annotate.*;
 
 public class Shaft<S extends Square> extends LeafDungeon<S> {

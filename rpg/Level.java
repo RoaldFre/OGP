@@ -1,5 +1,7 @@
 package rpg;
 
+import rpg.util.Coordinate;
+import rpg.util.CoordinateSystem;
 import be.kuleuven.cs.som.annotate.*;
 
 public class Level<S extends Square> extends LeafDungeon<S> {

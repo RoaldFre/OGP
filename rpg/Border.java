@@ -1,7 +1,7 @@
 package rpg;
 
-import rpg.util.Couple;
 import rpg.exceptions.*;
+import rpg.util.Couple;
 import be.kuleuven.cs.som.annotate.*;
 
 /**

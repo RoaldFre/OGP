@@ -4,6 +4,11 @@ import static org.junit.Assert.*;
 import org.junit.*;
 //import rpg.exceptions.*;
 
+import rpg.util.Coordinate;
+import rpg.util.CoordinateSystem;
+import rpg.util.Direction;
+
+
 public class ShaftTest {
 
     private Shaft<Square> shaft_10N;

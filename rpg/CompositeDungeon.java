@@ -5,6 +5,11 @@ import be.kuleuven.cs.som.annotate.*;
 import java.util.Map;
 import java.util.EnumMap;
 
+import rpg.util.Coordinate;
+import rpg.util.CoordinateSystem;
+import rpg.util.Direction;
+
+
 /**
  * A class representing a composite dungeon composed of other dungeons.
  *

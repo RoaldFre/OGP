@@ -3,6 +3,10 @@ package rpg;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.Collection;
 
+import rpg.util.Direction;
+import rpg.util.Temperature;
+
+
 public class Rock extends Square {
 
     /** 

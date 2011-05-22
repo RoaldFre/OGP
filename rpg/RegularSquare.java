@@ -1,5 +1,7 @@
 package rpg;
 
+import rpg.util.Direction;
+import rpg.util.Temperature;
 import be.kuleuven.cs.som.annotate.*;
 
 /**

@@ -3,6 +3,8 @@ package rpg;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.Set;
 
+import rpg.util.Temperature;
+
 /**
  * @invar
  * Each transparent teleportation square can have its teleporter as its teleporter.

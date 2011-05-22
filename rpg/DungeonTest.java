@@ -3,6 +3,9 @@ package rpg;
 import static org.junit.Assert.*;
 import org.junit.*;
 import rpg.exceptions.*;
+import rpg.util.Coordinate;
+import rpg.util.Direction;
+import rpg.util.Temperature;
 
 public class DungeonTest {
 

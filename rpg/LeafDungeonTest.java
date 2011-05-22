@@ -3,6 +3,8 @@ package rpg;
 import static org.junit.Assert.*;
 import org.junit.*;
 import rpg.exceptions.*;
+import rpg.util.Coordinate;
+import rpg.util.CoordinateSystem;
 
 public class LeafDungeonTest {
 

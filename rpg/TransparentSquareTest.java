@@ -2,7 +2,10 @@ package rpg;
 
 import static org.junit.Assert.*;
 import org.junit.*;
+
 import rpg.exceptions.*;
+import rpg.util.Direction;
+import rpg.util.Temperature;
 
 /**
  * A class collecting tests for the class of transparent squares.

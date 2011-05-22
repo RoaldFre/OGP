@@ -24,7 +24,7 @@ public class ShaftTest {
         assertTrue(shaft.hasProperBorderingSquares());
         assertTrue(shaft.canHaveAsCoordSyst(shaft.getCoordSyst()));
         assertTrue(shaft.getSquareMapping() != null);
-        assertTrue(shaft.canHaveAsRootDungeon(shaft.getRootDungeon()));
+        assertTrue(shaft.canHaveAsParentDungeon(shaft.getParentDungeon()));
     }
 
     @Test

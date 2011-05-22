@@ -55,7 +55,7 @@ public class LeafDungeonTest {
         assertTrue(ld.hasProperBorderingSquares());
         assertTrue(ld.canHaveAsCoordSyst(ld.getCoordSyst()));
         assertTrue(ld.getSquareMapping() != null);
-        assertTrue(ld.canHaveAsRootDungeon(ld.getRootDungeon()));
+        assertTrue(ld.canHaveAsParentDungeon(ld.getParentDungeon()));
     }
 
     @Test

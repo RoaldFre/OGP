@@ -99,7 +99,7 @@ public class DungeonTest {
         assertTrue(dungeon.hasProperBorderingSquares());
         assertTrue(dungeon.canHaveAsCoordSyst(dungeon.getCoordSyst()));
         assertTrue(dungeon.getSquareMapping() != null);
-        assertTrue(dungeon.canHaveAsRootDungeon(dungeon.getRootDungeon()));
+        assertTrue(dungeon.canHaveAsParentDungeon(dungeon.getParentDungeon()));
     }
 
 

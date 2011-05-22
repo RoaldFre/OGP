@@ -22,7 +22,7 @@ import java.util.HashSet;
  * @invar
  *   | getSquareMapping() != null
  * @invar
- *   | canHaveAsRootDungeon(getRootDungeon())
+ *   | canHaveAsParentDungeon(getParentDungeon())
  *
  * @author Roald Frederickx
  */
@@ -37,7 +37,7 @@ public abstract class Dungeon<S extends Square> {
      * @effect
      *   | setCoordSyst(coordinateSystem)
      * @effect
-     *   | setRootDungeon(null)
+     *   | setParentDungeon(null)
      * @post
      *   | getSquareMapping() != null
      *   |      &amp;&amp; getSquareMapping().isEmpty()
@@ -48,7 +48,7 @@ public abstract class Dungeon<S extends Square> {
     protected Dungeon(CoordinateSystem coordinateSystem)
                                     throws IllegalArgumentException {
         setCoordSyst(coordinateSystem);
-        setRootDungeon(null);
+        setParentDungeon(null);
     }
 
 
@@ -88,8 +88,8 @@ public abstract class Dungeon<S extends Square> {
      *   | result == (coordSyst != null
      *   |              &amp;&amp; (getCoordSyst() == null  
      *   |                          || coordSyst.contains(getCoordSyst()))
-     *   |              &amp;&amp; (getRootDungeon() == null
-     *   |                          || getRootDungeon().canExpandSubDungeonTo(
+     *   |              &amp;&amp; (getParentDungeon() == null
+     *   |                          || getParentDungeon().canExpandSubDungeonTo(
      *   |                                                   this, coordSyst)))
      */
     @Raw
@@ -99,9 +99,9 @@ public abstract class Dungeon<S extends Square> {
         if (this.coordSyst != null  
                 && !coordSyst.contains(this.coordSyst))
             return false;
-        if (getRootDungeon() == null)
+        if (getParentDungeon() == null)
             return true;
-        return getRootDungeon().canExpandSubDungeonTo(this, coordSyst);
+        return getParentDungeon().canExpandSubDungeonTo(this, coordSyst);
     }
 
     /** 
@@ -309,7 +309,7 @@ public abstract class Dungeon<S extends Square> {
      * 
      * @return
      * True iff every square of this dungeon borders on all its neighbours 
-     * (as given by the root dungeon) in the correct direction.
+     * (as given by the parent dungeon) in the correct direction.
      *   | result == 
      *   |  (for each ps in getPositionsAndSquares() :
      *   |      (for each dn in 
@@ -338,7 +338,7 @@ public abstract class Dungeon<S extends Square> {
                 Direction direction = neighbourEntry.getKey();
                 if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
                     return false;
-            }
+                    }
         }
         return true;
     }
@@ -354,8 +354,8 @@ public abstract class Dungeon<S extends Square> {
      *   | !isOccupied(coordinate)
      */
     @Raw
-    abstract public S getSquareAt(Coordinate coordinate) 
-            throws IllegalArgumentException, CoordinateNotOccupiedException;
+        abstract public S getSquareAt(Coordinate coordinate) 
+        throws IllegalArgumentException, CoordinateNotOccupiedException;
 
     /** 
      * Returns wheter or not this dungeon contains the given square.
@@ -364,7 +364,7 @@ public abstract class Dungeon<S extends Square> {
      * The square to check.
      */
     @Raw
-    abstract public boolean hasSquare(S square);
+        abstract public boolean hasSquare(S square);
 
     /** 
      * Deletes the square at the given coordinate and terminates it.
@@ -391,7 +391,7 @@ public abstract class Dungeon<S extends Square> {
      *   | !isPossibleSquareCoordinate(coordinate)
      */
     abstract public boolean isOccupied(Coordinate coordinate) 
-                                        throws IllegalArgumentException;
+        throws IllegalArgumentException;
 
     /** 
      * Checks whether all squares of this dungeon have valid coordinates.
@@ -452,7 +452,7 @@ public abstract class Dungeon<S extends Square> {
      * Return a mapping of coordinates to squares of this dungeon.
      */
     @Raw
-    abstract public Map<Coordinate, S> getSquareMapping();
+        abstract public Map<Coordinate, S> getSquareMapping();
 
     /**
      * Return an iterable of the squares in this dungeon.
@@ -473,83 +473,95 @@ public abstract class Dungeon<S extends Square> {
 
 
     /**
-     * Return the root dungeon for this dungeon.
+     * Return the parent dungeon for this dungeon.
      */
     @Basic @Raw
-    public CompositeDungeon<? super S> getRootDungeon() {
-        return rootDungeon;
+    public CompositeDungeon<? super S> getParentDungeon() {
+        return parentDungeon;
     }
-    
+
     /**
-     * Set the root dungeon for this dungeon to the given root dungeon.
+     * Set the parent dungeon for this dungeon to the given parent dungeon.
      *
-     * @param rootDungeon
-     * The new root dungeon for this dungeon.
+     * @param parentDungeon
+     * The new parent dungeon for this dungeon.
      * @post
-     * The new root dungeon for this dungeon is equal to the given root 
+     * The new parent dungeon for this dungeon is equal to the given parent 
      * dungeon.
-     *   | new.getRootDungeon() == rootDungeon
+     *   | new.getParentDungeon() == parentDungeon
      * @throws IllegalArgumentException
-     * This dungeon cannot have the given root dungeon as its root dungeon.
-     *   | ! canHaveAsRootDungeon(rootDungeon)
+     * This dungeon cannot have the given parent dungeon as its parent dungeon.
+     *   | ! canHaveAsParentDungeon(parentDungeon)
      */
     @Raw
-    public void setRootDungeon(CompositeDungeon<? super S> rootDungeon)
+    protected void setParentDungeon(
+                            @Raw CompositeDungeon<? super S> parentDungeon)
                                             throws IllegalArgumentException {
-        if (!canHaveAsRootDungeon(rootDungeon))
+        if (!canHaveAsParentDungeon(parentDungeon))
             throw new IllegalArgumentException();
-        this.rootDungeon = rootDungeon;
+        this.parentDungeon = parentDungeon;
     }
     
     /**
-     * Checks whether this dungeon can have the given root dungeon as its 
-     * root dungeon.
+     * Checks whether this dungeon can have the given parent dungeon as its 
+     * parent dungeon.
      *
-     * @param rootDungeon
-     * The root dungeon to check.
+     * @param parentDungeon
+     * The parent dungeon to check.
      * @return
      *   | if (isTerminated())
-     *   |      then result == (rootDungeon == null)
-     *   | else if (rootDungeon != null
-     *   |              &amp;&amp; (!rootDungeon.isRootDungeon()
-     *   |                      || rootDungeon.isTerminated())
+     *   |      then result == (parentDungeon == null)
+     *   | else if (parentDungeon == null)
+     *   |      then result == (old.getParentDungeon() == null
+     *   |                    || !old.getParentDungeon.hasAsSubDungeon(this))
+     *   | else if (parentDungeon.isTerminated())
      *   |      then result == false
-     *   | else if (old.getRootDungeon() == null)
-     *   |      then result == (rootDungeon == null
-     *   |                          || rootDungeon.containsDungeon(this))
-     *   | else result == (rootDungeon != null
-     *   |                  &amp;&amp; rootDungeon.containsDungeon(this))
+     *   | else result == parentDungeon.hasAsSubDungeon(this)
      */
     @Raw
-    public boolean canHaveAsRootDungeon(@Raw CompositeDungeon<?> rootDungeon) {
+    public boolean canHaveAsParentDungeon(
+                                    @Raw CompositeDungeon<?> parentDungeon) {
         if (isTerminated())
-            return rootDungeon == null;
-        if (rootDungeon != null
-                && (!rootDungeon.isRootDungeon()
-                        || rootDungeon.isTerminated()))
+            return parentDungeon == null;
+        if (parentDungeon == null)
+            return getParentDungeon() == null
+                    || !getParentDungeon().hasAsSubDungeon(this);
+        if (parentDungeon.isTerminated())
             return false;
-        if (getRootDungeon() == null)
-            return rootDungeon == null
-                || rootDungeon.containsDungeon(this);
-        return rootDungeon != null
-            //&& rootDungeon.containsDungeon(getRootDungeon()); //probs als de rootdungeon moet worden geterminered!
-            && rootDungeon.containsDungeon(this);
+        return parentDungeon.hasAsSubDungeon(this);
     }
 
     /** 
-     * Checks whether this dungeon is its own root dungeon. 
+     * Checks whether this dungeon has a parent dungeon.
      * 
      * @return 
-     *   | result == (getRootDungeon() == this)
+     *   | result == (getParentDungeon() != null)
      */
-    public boolean isRootDungeon() {
-        return getRootDungeon() == this;
+    public boolean hasParentDungeon() {
+        return getParentDungeon() != null;
     }
-    
-    /**
-     * Variable registering the root dungeon for this dungeon.
+
+    /** 
+     * Returns the root composite dungeon of this dungeon. 
+     * 
+     * @return 
+     * Null if this dungeon has no parents, or the root composite dungen 
+     * otherwise.
      */
-    private CompositeDungeon<? super S> rootDungeon;
+    public CompositeDungeon<? super S> getRootDungeon() {
+        CompositeDungeon<? super S> parent = getParentDungeon();
+        if (parent == null)
+            return null;
+        while (parent.hasParentDungeon())
+            parent = getParentDungeon();
+        return parent;
+    }
+
+    /**
+     * Variable registering the parent dungeon for this dungeon.
+     */
+    private CompositeDungeon<? super S> parentDungeon;
+
 
 
 
@@ -572,7 +584,7 @@ public abstract class Dungeon<S extends Square> {
     protected void terminate(){
         isTerminated = true;
         //getRootDungeon().deleteDungeon(this); //DIT ROEPT MSS ZELF AL TERMINATE AAN? -> in that case, gewoon een assert zetten dat !containsSubDungeon(this)
-        setRootDungeon(null);
+        setParentDungeon(null);
     }
 
     /**

@@ -23,7 +23,7 @@ public class LevelTest {
         assertTrue(level.hasProperBorderingSquares());
         assertTrue(level.canHaveAsCoordSyst(level.getCoordSyst()));
         assertTrue(level.getSquareMapping() != null);
-        assertTrue(level.canHaveAsRootDungeon(level.getRootDungeon()));
+        assertTrue(level.canHaveAsParentDungeon(level.getParentDungeon()));
     }
 
     @Test

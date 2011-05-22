@@ -6,7 +6,9 @@ import rpg.util.CoordinateSystem;
 import rpg.util.Direction;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * A class representing a dungeon of squares.
@@ -161,15 +163,14 @@ public abstract class Dungeon<S extends Square> {
     /**
      * Translate the coordinate system of this dungeon.
      *
-     * @pre
-     *   | canHaveAsCoordSyst(getCoordSyst())
+     * @effect
+     *   | setCoordSyst(getCoordSyst.translate(offset))
      * @param offset 
      * The offset over which to translate the coordinate system of this 
      * dungeon.
      */
-    @Raw
-    protected void translateCoordSyst(Coordinate offset) {
-        assert canHaveAsCoordSyst(coordSyst);
+    protected void translateCoordSyst(Coordinate offset) 
+                                        throws IllegalArgumentException {
         coordSyst.translate(offset);
     }
 
@@ -181,102 +182,32 @@ public abstract class Dungeon<S extends Square> {
 
     /** 
      * Translate this dungeon over the given offset.
+     * This only affects the mapping of coordinates to squares. It will not 
+     * affect the squares of this dungeon itself, nor wil it affect their 
+     * borderes.
      * 
      * @param offset 
      * The offset over which to translate this dungeon.
-     * @throws IllegalArgumentException 
-     * The given offset is not effective.
+     * @effect
+     *   | translateCoordSyst(offset)
      * @throws CoordinateConstraintsException
      * Translating this dungeon would cause a violation of the constraints 
      * on the coordinates of squares in dungeons, as enforced by
      * canHaveAsSquareAt().
      */
-    abstract public void translate(Coordinate offset)
+    abstract protected void translate(Coordinate offset)
         throws IllegalArgumentException, CoordinateConstraintsException;
 
 
-    /** 
-     * Checks whether the given coordinate is a valid coordinate in this 
-     * dungeon.
-     *
-     * @param coordinate 
-     * The coordinate to check.
-     * @return 
-     * True iff the coordinate is a possible square coordinate for all 
-     * dungeons, is contained within the coordinate system of this dungeon, 
-     * and the coordinate values in all directions are not equal to each 
-     * other.
-     *   | result == (isPossibleSquareCoordinate(coordinate)
-     *   |      &amp;&amp; getCoordSyst().contains(coordinate)
-     *   |      &amp;&amp; (coordinate.x != coordinate.y
-     *   |                  || coordinate.y != coordinate.z
-     *   |                  || coordinate.z != coordinate.x))
-     */
-    public boolean isValidSquareCoordinate(Coordinate coordinate) {
-        if (!isPossibleSquareCoordinate(coordinate))
-            return false;
-        if (!coordSyst.contains(coordinate))
-            return false;
-        return coordinate.x != coordinate.y
-            || coordinate.y != coordinate.z
-            || coordinate.z != coordinate.x;
-    }
+
 
 
     /** 
-     * Checks whether or not the given coordinate is a possible square 
-     * coordinate for all dungeons.
-     * 
-     * @param coordinate
-     * The coordinate to check.
-     * @return
-     *   | result == (coordinate != null)
+     * Check whether the given coordinate lies within this dungeon.
      */
-    public static boolean isPossibleSquareCoordinate(Coordinate coordinate) {
-        return coordinate != null;
-    }
-
-    /** 
-     * Add the given square to this dungeon at the given coordinate.
-     *
-     * @param coordinate 
-     * The coordinate to add the given square at.
-     * @param square 
-     * The square to add at the given coordinate.
-     * @post
-     *   | new.getSquareAt(coordinate) == square
-     * @throws IllegalArgumentException
-     *   | !canHaveAsSquareAt(coordinate, square)
-     * @throws CoordinateOccupiedException
-     *   | isOccupied(coordinate)
-     * @throws DungeonConstraintsException
-     * Adding the given square at the given coordinate would violate the 
-     * constrainst as specified by squaresSatisfyConstraints().
-     */
-    abstract public void addSquareAt(Coordinate coordinate, S square) 
-        throws IllegalArgumentException,
-                          CoordinateOccupiedException,
-                          DungeonConstraintsException;
-
-    /** 
-     * Checks whether this dungeon can have the given square at the given 
-     * coordinate.
-     * 
-     * @param coordinate 
-     * The coordinate to check.
-     * @param square 
-     * The square to check.
-     * @return 
-     *   | result == (square != null
-     *   |              &amp;&amp; !square.isTerminated()
-     *   |              &amp;&amp; isValidSquareCoordinate(coordinate)
-     */
-    @Raw
-    public boolean canHaveAsSquareAt(Coordinate coordinate, S square) {
-        return square != null
-            && !square.isTerminated()
-            && isValidSquareCoordinate(coordinate);
-    }
+    //XXX niet meer nodig na verschuiven van addSquareAt naar leaf level 
+    //only?
+    abstract public boolean containsCoordinate(Coordinate coordinate);
 
 
 
@@ -323,8 +254,6 @@ public abstract class Dungeon<S extends Square> {
     @Raw
     public boolean hasProperBorderingSquares() throws IllegalStateException {
         Dungeon<? super S> root = getRootDungeon();
-        if (root == null)
-            root = this;
         if (getPositionsAndSquares() == null)
             throw new IllegalStateException(
                     "Could not get positions and squares");
@@ -354,8 +283,8 @@ public abstract class Dungeon<S extends Square> {
      *   | !isOccupied(coordinate)
      */
     @Raw
-        abstract public S getSquareAt(Coordinate coordinate) 
-        throws IllegalArgumentException, CoordinateNotOccupiedException;
+    abstract public S getSquareAt(Coordinate coordinate) 
+            throws IllegalArgumentException, CoordinateNotOccupiedException;
 
     /** 
      * Returns wheter or not this dungeon contains the given square.
@@ -364,7 +293,7 @@ public abstract class Dungeon<S extends Square> {
      * The square to check.
      */
     @Raw
-        abstract public boolean hasSquare(S square);
+    abstract public boolean hasSquare(S square);
 
     /** 
      * Deletes the square at the given coordinate and terminates it.
@@ -451,16 +380,31 @@ public abstract class Dungeon<S extends Square> {
     /**
      * Return a mapping of coordinates to squares of this dungeon.
      */
-    @Raw
-        abstract public Map<Coordinate, S> getSquareMapping();
+    @Basic @Raw
+    public Map<Coordinate, S> getSquareMapping() {
+        Map<Coordinate, S> result = new HashMap<Coordinate, S>();
+        try {
+            addSquareMappingTo(result);
+        } catch (IllegalStateException e) {
+            return null;
+        }
+        return result;
+    }
 
-    /**
-     * Return an iterable of the squares in this dungeon.
-     *
-     * @return
-     * An iterable over the elements of getSquareMapping().values().
+
+    /** 
+     * Add the mapping of coordinates to squares of this dungeon to the 
+     * given map.
+     * 
+     * @param map 
+     * The map of coordinates to squares to add the mapping of coordinates 
+     * to squares of this dungeon to.
+     * @throws IllegalStateException
+     * This dungeon is not in a valid state for this operation.
      */
-    abstract public Iterable<S> getSquares();
+    @Basic @Raw
+    abstract protected void addSquareMappingTo(Map<Coordinate, ? super S> map)
+                                                throws IllegalStateException;
 
     /**
      * Return an iterable of the squares and their position in this 
@@ -469,7 +413,83 @@ public abstract class Dungeon<S extends Square> {
      * @return
      * An iterable over the elements of getSquareMapping().entrySet().
      */
-    abstract public Iterable<Map.Entry<Coordinate, S>> getPositionsAndSquares();
+    abstract public Iterable<Map.Entry<Coordinate,S>> getPositionsAndSquares();
+
+    /**
+     * Return an iterable of the squares in this dungeon that satisfy the 
+     * condition as imposed by the given filter.
+     *
+     * @param squareFilter
+     * The filter used to select which squares of this dungeon to return.
+     * @return
+     * An iterable that has getSquareIterator(squareFilter) as its 
+     * iterator.
+     */
+    public Iterable<S> getFilteredSquares(final SquareFilter squareFilter) {
+        return new Iterable<S>() {
+            public Iterator<S> iterator() {
+                return getFilteredSquareIterator(squareFilter);
+            }
+        };
+    }
+
+    /**
+     * Return an iterable of the squares in this dungeon.
+     *
+     * @return
+     *   result == getFilteredSquares(acceptAllSquaresFilter)
+     */
+    public Iterable<S> getSquares() {
+        return getFilteredSquares(acceptAllSquaresFilter);
+    }
+
+    /**
+     * Return an iterator of the squares in this dungeon that satisfy the 
+     * conditions as imposed by the given filter.
+     *
+     * @param squareFilter
+     * The filter used to select which squares of this dungeon to return.
+     * @return
+     * An iterator over the elements of getSquareMapping().values() that 
+     * satisfy the given square filter.
+     */
+    abstract public Iterator<S> getFilteredSquareIterator(
+                                            SquareFilter squareFilter);
+
+    /**
+     * Return an iterator of the squares in this dungeon.
+     *
+     * @return
+     *   | result == getFilteredSquareIterator(acceptAllSquaresFilter)
+     */
+    public Iterator<S> getSquareIterator() {
+        return getFilteredSquareIterator(acceptAllSquaresFilter);
+    }
+
+    public interface SquareFilter {
+        public boolean filter(LeafDungeon<? extends Square> dungeon, Square square);
+    }
+
+    public final SquareFilter acceptAllSquaresFilter =
+            new SquareFilter() {
+                public boolean filter(LeafDungeon<? extends Square> d, Square s) {
+                    return true;
+                }
+            };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -548,7 +568,7 @@ public abstract class Dungeon<S extends Square> {
      * Null if this dungeon has no parents, or the root composite dungen 
      * otherwise.
      */
-    public CompositeDungeon<? super S> getRootDungeon() {
+    public CompositeDungeon<? super S> getRootCompositeDungeon() {
         CompositeDungeon<? super S> parent = getParentDungeon();
         if (parent == null)
             return null;
@@ -556,6 +576,22 @@ public abstract class Dungeon<S extends Square> {
             parent = getParentDungeon();
         return parent;
     }
+
+    /** 
+     * Returns the root dungeon of this dungeon. 
+     * 
+     * @return 
+     *   | if getRootCompositeDungeon() != null
+     *   |      then result == getRootCompositeDungeon()
+     *   |      else result == this
+     */
+    public Dungeon<? super S> getRootDungeon() {
+        Dungeon<? super S> rootComposite = getRootCompositeDungeon();
+        if (rootComposite != null)
+            return rootComposite;
+        return this;
+    }
+
 
     /**
      * Variable registering the parent dungeon for this dungeon.

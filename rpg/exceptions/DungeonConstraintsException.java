@@ -20,7 +20,7 @@ public class DungeonConstraintsException extends RuntimeException {
      * @post
      * The offending dungeon for this new dungeon constraints exception is 
      * equal to the given offending dungeon.
-     *   | new.getBorder() == dungeon
+     *   | new.getDungeon() == dungeon
      * @post
      * The offending square for this new dungeon constraints exception is 
      * equal to the given offending square.

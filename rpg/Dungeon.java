@@ -359,7 +359,9 @@ public abstract class Dungeon<S extends Square> {
      * @return
      * An iterable over the elements of getSquareMapping().entrySet().
      */
-    abstract public Iterable<Map.Entry<Coordinate,S>> getPositionsAndSquares();
+    @Raw
+    abstract public Iterable<Map.Entry<Coordinate,S>> getPositionsAndSquares()
+                                                throws IllegalStateException;
 
     /**
      * Return an iterable of the squares in this dungeon that satisfy the 
@@ -459,7 +461,7 @@ public abstract class Dungeon<S extends Square> {
      * This dungeon cannot have the given parent dungeon as its parent dungeon.
      *   | ! canHaveAsParentDungeon(parentDungeon)
      */
-    @Raw
+    @Raw @Model
     protected void setParentDungeon(
                             @Raw CompositeDungeon<? super S> parentDungeon)
                                             throws IllegalArgumentException {

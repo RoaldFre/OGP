@@ -308,8 +308,14 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      *
      * @return
      * An iterable over the elements of getSquareMapping().entrySet().
+     * @throws IllegalStateException
+     *   | getSquareMapping == null();
      */
-    public Iterable<Map.Entry<Coordinate, S>> getPositionsAndSquares() {
+    @Override @Raw
+    public Iterable<Map.Entry<Coordinate, S>> getPositionsAndSquares() 
+                                            throws IllegalStateException {
+        if (squares == null)
+            throw new IllegalStateException();
         return squares.entrySet();
     }
 
@@ -415,9 +421,6 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     @Raw
     public boolean hasProperBorderingSquares() throws IllegalStateException {
         Dungeon<? super S> root = getRootDungeon();
-        if (getPositionsAndSquares() == null)
-            throw new IllegalStateException(
-                    "Could not get positions and squares");
         for (Map.Entry<Coordinate, S> entry : getPositionsAndSquares()) {
             S square = entry.getValue();
             Coordinate coordinate = entry.getKey();

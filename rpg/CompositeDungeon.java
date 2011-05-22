@@ -16,6 +16,9 @@ import rpg.util.*;
 /**
  * A class representing a composite dungeon composed of other dungeons.
  *
+ * @invar
+ *   | hasProperSubDungeons()
+ *
  * @author Roald Frederickx
  */
 public class CompositeDungeon<S extends Square> extends Dungeon<S>{
@@ -98,27 +101,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     }
 
 
-    /** 
-     * Check wheter this composite dungeon has the given dungeon as its 
-     * subdungeon.
-     *
-     * @param dungeon 
-     * The dungeon to check.
-     * @return 
-     *   | result == (for some subDungeon in getSubDungeons():
-     *   |              subDungeon == dungeon)
-     */
-    public boolean hasAsSubDungeon(Dungeon<?> dungeon) {
-        for (Dungeon<?> subDungeon : getSubDungeons())
-            if (subDungeon == dungeon)
-                return true;
-        return false;
-    }
-
-    public Set<Dungeon<? extends S>> getSubDungeons() {
-        throw new UnsupportedOperationException();
-        //lege iterator als nog geen dungeons!
-    }
 
 
     /** 
@@ -208,7 +190,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 	}
 
     /** 
-     * Returns wheter or not this composite dungeon contains the given 
+     * Returns whether or not this composite dungeon contains the given 
      * square.
      * 
      * @param square 
@@ -355,14 +337,132 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 	/* (non-Javadoc)
 	 * @see rpg.Dungeon#getPositionsAndSquares()
 	 */
-	@Override
-	public Iterable<Entry<Coordinate, S>> getPositionsAndSquares() {
+	@Override @Raw
+	public Iterable<Entry<Coordinate, S>> getPositionsAndSquares()
+                                            throws IllegalStateException {
         throw new UnsupportedOperationException();
 	}
 
 
 
-    //dungeons: Dungeon<? extends S> !!!
+
+
+
+    
+    /**
+     * Return the set of direct subdungeons for this composite dungeon.
+     */
+    @Basic @Raw
+    public Set<Dungeon<? extends S>> getSubDungeons() {
+        return subDungeons;
+    }
+
+    /** 
+     * Check whether this composite dungeon has the given dungeon as its 
+     * direct subdungeon.
+     *
+     * @param dungeon 
+     * The dungeon to check.
+     * @return 
+     *   | result == (for some subDungeon in getSubDungeons():
+     *   |              subDungeon == dungeon)
+     */
+    public boolean hasAsSubDungeon(Dungeon<?> dungeon) {
+        for (Dungeon<?> subDungeon : getSubDungeons())
+            if (subDungeon == dungeon)
+                return true;
+        return false;
+    }
+
+
+    /** 
+     * Add the given dungeon as a subdungeon in this composite dungeon at 
+     * the given offset. 
+     * 
+     * @param subDungeon 
+     * The dungeon to add as a subdungeon.
+     * @param offset 
+     * The offset at which to add the subdungeon.
+     * @post
+     *   | new.hasAsSubDungeon(subDungeon)
+     * @effect
+     *   | subDungeon.setParentDungeon(this)
+     * @throws IllegalArgumentException
+     *   | !isEffectiveCoordinate(offset) || subDungeon == null
+     * @throws IllegalStateException
+     *   | isTerminated() || subDungeon.isTerminated()
+     * @throws DungeonAlreadyAssociatedException
+     *   | subDungeon.getParentDungeon() != null
+     * @throws SubDungeonDoesNotFitException
+     * The given subdungeon does not fit in this composite dungeon at the 
+     * given offset, or it overlaps other subdungeons of this composite 
+     * dungeon.
+     */
+    public void addSubDungeonAt(Dungeon<? extends S> subDungeon,
+                                Coordinate offset)
+                    throws IllegalArgumentException,
+                           IllegalStateException,
+                           DungeonAlreadyAssociatedException,
+                           SubDungeonDoesNotFitException {
+        if (!isEffectiveCoordinate(offset))
+            throw new IllegalArgumentException("Non-effective coordinate");
+        if (subDungeon == null)
+            throw new IllegalArgumentException("Non-effective subDungeon");
+        if (isTerminated() || subDungeon.isTerminated())
+            throw new IllegalStateException();
+        if (subDungeon.getParentDungeon() != null)
+            throw new DungeonAlreadyAssociatedException(subDungeon, this);
+        CoordinateSystem translatedCoordSyst = subDungeon.getCoordSyst();
+        translatedCoordSyst.translate(offset);
+        if (!canExpandSubDungeonTo(null, translatedCoordSyst))
+            throw new SubDungeonDoesNotFitException(subDungeon, this);
+
+        subDungeons.add(subDungeon);
+        subDungeon.setParentDungeon(this);
+    }
+
+
+    
+    /**
+     * Checks whether this composite dungeon has proper subdungeons.
+     *
+     * @return
+     *   | result == (for each subDungeon in getSubDungeons() :
+     *   |                  isProperSubDungeon(subDungeon)
+     */
+    @Raw
+    public boolean hasProperSubDungeons() {
+        for (Dungeon<? extends S> subDungeon : getSubDungeons())
+            if (!isProperSubDungeon(subDungeon))
+                return false;
+        return true;
+    }
+
+    
+    /** 
+     * Checks if the given subdungeon is or would be a proper subdungeon 
+     * for this composite dungeon.
+     * 
+     * @param subDungeon 
+     * The subdugeon to check.
+     * @return 
+     *   | (subDungeon != null
+     *   |          &amp;&amp; subDungeon.getParentDungeon() == this)
+     */
+    @Raw
+    public boolean isProperSubDungeon(@Raw Dungeon<? extends S> subDungeon) {
+        if (subDungeon == null)
+            return false;
+        return subDungeon.getParentDungeon() == this;
+    }
+
+    
+    /**
+     * Variable registering the set of subdungeons for this composite dungeon.
+     */
+    private Set<Dungeon<? extends S>> subDungeons;
+
+
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

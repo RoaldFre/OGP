@@ -66,7 +66,7 @@ public class BorderConstraintsException extends RuntimeException {
      * Variable registering the offending border for this border 
      * constraints exception.
      */
-    private Border border;
+    private final Border border;
 
     /**
      * Return the offending direction for this border constraints 
@@ -81,7 +81,7 @@ public class BorderConstraintsException extends RuntimeException {
      * Variable registering the offending direction for this border 
      * constraints exception.
      */
-    private Direction direction;
+    private final Direction direction;
 
 
     static final long serialVersionUID = 1;

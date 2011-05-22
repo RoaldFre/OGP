@@ -41,7 +41,7 @@ public class BorderMergeException extends RuntimeException {
      * Variable registering the offending borders for this border merge 
      * exception.
      */
-    private Couple<Border> borders;
+    private final Couple<Border> borders;
 
     static final long serialVersionUID = 1;
 }

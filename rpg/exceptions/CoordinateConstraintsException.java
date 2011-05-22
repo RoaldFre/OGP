@@ -44,7 +44,7 @@ public class CoordinateConstraintsException extends RuntimeException {
      * Variable registering the offending square for this dungeon 
      * constraints exception.
      */
-    private Square square;
+    private final Square square;
 
     /**
      * Return the offending dungeon for this dungeon constraints exception.
@@ -58,7 +58,7 @@ public class CoordinateConstraintsException extends RuntimeException {
      * Variable registering the offending dungeon for this dungeon 
      * constraints exception.
      */
-    private Dungeon<?> dungeon;
+    private final Dungeon<?> dungeon;
 
     static final long serialVersionUID = 1;
 }

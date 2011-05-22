@@ -41,7 +41,7 @@ public class CoordinateOccupiedException extends RuntimeException {
      * Variable referencing the offending coordinate for this coordinate 
      * occupied exception.
      */
-    private Coordinate coordinate;
+    private final Coordinate coordinate;
 
     /**
      * Return the offending dungeon for this coordinate occupied exception.
@@ -55,7 +55,7 @@ public class CoordinateOccupiedException extends RuntimeException {
      * Variable referencing the offending dungeon for this coordinate 
      * occupied exception.
      */
-    private Dungeon dungeon;
+    private final Dungeon dungeon;
 
     static final long serialVersionUID = 1;
 }

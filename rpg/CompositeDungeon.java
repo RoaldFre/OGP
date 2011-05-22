@@ -2,6 +2,7 @@ package rpg;
 
 //import rpg.exceptions.*;
 import be.kuleuven.cs.som.annotate.*;
+import java.util.Set;
 import java.util.Map;
 import java.util.EnumMap;
 import java.util.Map.Entry;
@@ -19,13 +20,6 @@ import rpg.util.*;
  */
 public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 
-
-    public void test(Dungeon<? extends S> d) {
-        Dungeon<S> d2 = d;
-    }
-
-
-    
     /** 
      * Create a new composite dungeon with the given coordinate system as 
      * its coordinate system.
@@ -121,7 +115,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
         return false;
     }
 
-    public Iterable<Dungeon<? extends S>> getSubDungeons() {
+    public Set<Dungeon<? extends S>> getSubDungeons() {
         throw new UnsupportedOperationException();
         //lege iterator als nog geen dungeons!
     }
@@ -194,42 +188,19 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 
 
     /** 
-     * Add the given square to this composite dungeon at the given coordinate.
-     *
-     * @param coordinate 
-     * The coordinate to add the given square at.
-     * @param square 
-     * The square to add at the given coordinate.
-     * @effect
-     *   | getDungeonContaining(coordinate).addSquareAt(coordinate, square);
-     * @throws IllegalArgumentException
-     *   | !canHaveAsSquareAt(coordinate, square)
-     */
-	@Override
-	public void addSquareAt(Coordinate coordinate, S square)
-                                            throws IllegalArgumentException,
-                                                CoordinateOccupiedException,
-                                                DungeonConstraintsException {
-        if (!canHaveAsSquareAt(coordinate, square))
-            throw new IllegalArgumentException();
-        getDungeonContaining(coordinate).addSquareAt(coordinate, square);
-	}
-
-
-    /** 
      * Returns the square at the given coordinate in this composite dungeon.
      * 
      * @param coordinate 
      * The coordinate of the square to return.
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(coordinate)
+     *   | !isEffectiveCoordinate(coordinate)
      * @throws CoordinateNotOccupiedException
      *   | !isOccupied(coordinate)
      */
 	@Override
 	public S getSquareAt(Coordinate coordinate)
             throws IllegalArgumentException, CoordinateNotOccupiedException {
-        if (!isPossibleSquareCoordinate(coordinate))
+        if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
         if (getDungeonContaining(coordinate) == null)
             throw new CoordinateNotOccupiedException(coordinate, this);
@@ -247,7 +218,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      *   |                              subDungeon.hasSquare(square))
      */
 	@Override
-	public boolean hasSquare(S square) {
+	public boolean hasSquare(Square square) {
         for (Dungeon<? extends S> subDungeon : getSubDungeons())
             if (subDungeon.hasSquare(square))
                 return true;
@@ -265,14 +236,13 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * @throws CoordinateNotOccupiedException
      *   | !getDungeonContaining(coordinate) == null
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(coordinate)
+     *   | !isEffectiveCoordinate(coordinate)
      */
 	@Override
 	public void deleteSquareAt(Coordinate coordinate)
 			throws IllegalArgumentException, CoordinateNotOccupiedException {
-            //XXX
-//        if (!isPossibleSquareCoordinate(coordinate))
-//            throw new IllegalArgumentException();
+        if (!isEffectiveCoordinate(coordinate))
+            throw new IllegalArgumentException();
         if (getDungeonContaining(coordinate) == null)
             throw new CoordinateNotOccupiedException(coordinate, this);
         getDungeonContaining(coordinate).deleteSquareAt(coordinate);
@@ -286,19 +256,17 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * @param coordinate 
      * The coordinate to check.
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(coordinate)
+     *   | !isEffectiveCoordinate(coordinate)
      */
-    /*
 	@Override
 	public boolean isOccupied(Coordinate coordinate)
 			throws IllegalArgumentException {
-        if (!isPossibleSquareCoordinate(coordinate))
+        if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
         if (getDungeonContaining(coordinate) == null)
             return false;
         return getDungeonContaining(coordinate).isOccupied(coordinate);
 	}
-    */
 
 
 	

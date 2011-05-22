@@ -15,7 +15,9 @@ import java.util.NoSuchElementException;
  * A class representing a 'leaf' dungeon that consists of squares.
  *
  * @invar
- *   .............................
+ *   | canHaveSquaresAtTheirCoordinates()
+ * @invar
+ *   | hasProperBorderingSquares()
  *
  * @author Roald Frederickx
  */
@@ -133,13 +135,13 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      *   | for each e in result.entrySet() :
      *   |      e.getValue() == getSquareAt(coordinate.moveTo(e.getKey()))
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(coordinate)
+     *   | !isEffectiveCoordinate(coordinate)
      */
     @Raw
     public Map<Direction, S> getDirectionsAndNeighboursOf(
                                                         Coordinate coordinate)
                                             throws IllegalArgumentException {
-        if (!isPossibleSquareCoordinate(coordinate))
+        if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
 
         EnumMap<Direction, S> result =
@@ -164,7 +166,7 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      * @param coordinate 
      * The coordinate of the square to return.
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(coordinate)
+     *   | !isEffectiveCoordinate(coordinate)
      * @throws CoordinateNotOccupiedException
      *   | !isOccupied(coordinate)
      */
@@ -172,7 +174,7 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     public S getSquareAt(Coordinate coordinate) 
                                     throws IllegalArgumentException,
                                             CoordinateNotOccupiedException {
-        if (!isPossibleSquareCoordinate(coordinate))
+        if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
 
         S result = squares.get(coordinate);
@@ -189,7 +191,7 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      * The square to check.
      */
     @Basic @Raw
-    public boolean hasSquare(S square) {
+    public boolean hasSquare(Square square) {
         return squares.containsValue(square);
     }
 
@@ -218,12 +220,12 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      * @param coordinate 
      * The coordinate to check.
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(coordinate)
+     *   | !isEffectiveCoordinate(coordinate)
      */
     @Basic
     public boolean isOccupied(Coordinate coordinate)
                                         throws IllegalArgumentException {
-        if (!isPossibleSquareCoordinate(coordinate))
+        if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
         return squares.containsKey(coordinate);
     }
@@ -337,14 +339,14 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      * dungeons, is contained within the coordinate system of this dungeon, 
      * and the coordinate values in all directions are not equal to each 
      * other.
-     *   | result == (isPossibleSquareCoordinate(coordinate)
+     *   | result == (isEffectiveCoordinate(coordinate)
      *   |      &amp;&amp; containsCoordinate(coordinate)
      *   |      &amp;&amp; (coordinate.x != coordinate.y
      *   |                  || coordinate.y != coordinate.z
      *   |                  || coordinate.z != coordinate.x))
      */
     public boolean isValidSquareCoordinate(Coordinate coordinate) {
-        if (!isPossibleSquareCoordinate(coordinate))
+        if (!isEffectiveCoordinate(coordinate))
             return false;
         if (!containsCoordinate(coordinate))
             return false;
@@ -356,17 +358,20 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 
 
     /** 
-     * Checks whether or not the given coordinate is a possible square 
-     * coordinate for all dungeons.
+     * Checks whether all squares of this dungeon have valid coordinates.
      * 
-     * @param coordinate
-     * The coordinate to check.
-     * @return
-     *   | result == (coordinate != null)
+     * @return 
+     * True iff all squares of this dungeon have valid coordinates.
+     *   | result == (for each e in getPositionsAndSquares() :
+     *   |                  canHaveAsSquareAt(e.getKey(), e.getValue()))
      */
-    public static boolean isPossibleSquareCoordinate(Coordinate coordinate) {
-        return coordinate != null;
+    public boolean canHaveSquaresAtTheirCoordinates() {
+        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares())
+            if (!canHaveAsSquareAt(e.getKey(), e.getValue()))
+                return false;
+        return true;
     }
+
 
 
     /** 
@@ -390,6 +395,43 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     }
 
 
+    /** 
+     * Checks whether this dungeon has squares that properly border on 
+     * neighbouring squares. 
+     * 
+     * @return
+     * True iff every square of this dungeon borders on all its neighbours 
+     * (as given by the parent dungeon) in the correct direction.
+     *   | result == 
+     *   |  (for each ps in getPositionsAndSquares() :
+     *   |      (for each dn in 
+     *   |              getRootDungeon().getDirectionsAndNeighboursOf(
+     *   |                                         Coordinate).entrySet() :
+     *   |          ps.getValue().getBorderAt(dn.getKey()).bordersOnSquare(
+     *   |                                               dn.getValue())))
+     * @throws IllegalStateException
+     *   | getPositionsAndSquares() == null
+     */
+    @Raw
+    public boolean hasProperBorderingSquares() throws IllegalStateException {
+        Dungeon<? super S> root = getRootDungeon();
+        if (getPositionsAndSquares() == null)
+            throw new IllegalStateException(
+                    "Could not get positions and squares");
+        for (Map.Entry<Coordinate, S> entry : getPositionsAndSquares()) {
+            S square = entry.getValue();
+            Coordinate coordinate = entry.getKey();
+
+            for (Map.Entry<Direction, ? super S> neighbourEntry :
+                    root.getDirectionsAndNeighboursOf(coordinate).entrySet()) {
+                Square neighbour = (Square) neighbourEntry.getValue();
+                Direction direction = neighbourEntry.getKey();
+                if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
+                    return false;
+                    }
+        }
+        return true;
+    }
 
 
 

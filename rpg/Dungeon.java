@@ -1,10 +1,10 @@
 package rpg;
 
 import rpg.exceptions.*;
-import rpg.util.Coordinate;
-import rpg.util.CoordinateSystem;
-import rpg.util.Direction;
+import rpg.util.*;
+
 import be.kuleuven.cs.som.annotate.*;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,11 +14,7 @@ import java.util.Iterator;
  * A class representing a dungeon of squares.
  *
  * @invar
- *   | canHaveSquaresAtTheirCoordinates()
- * @invar
  *   | squaresSatisfyConstraints()
- * @invar
- *   | hasProperBorderingSquares()
  * @invar
  *   | canHaveAsCoordSyst(getCoordSyst())
  * @invar
@@ -205,8 +201,6 @@ public abstract class Dungeon<S extends Square> {
     /** 
      * Check whether the given coordinate lies within this dungeon.
      */
-    //XXX niet meer nodig na verschuiven van addSquareAt naar leaf level 
-    //only?
     abstract public boolean containsCoordinate(Coordinate coordinate);
 
 
@@ -234,43 +228,6 @@ public abstract class Dungeon<S extends Square> {
                                             throws IllegalArgumentException;
 
 
-    /** 
-     * Checks whether this dungeon has squares that properly border on 
-     * neighbouring squares. 
-     * 
-     * @return
-     * True iff every square of this dungeon borders on all its neighbours 
-     * (as given by the parent dungeon) in the correct direction.
-     *   | result == 
-     *   |  (for each ps in getPositionsAndSquares() :
-     *   |      (for each dn in 
-     *   |              getRootDungeon().getDirectionsAndNeighboursOf(
-     *   |                                         Coordinate).entrySet() :
-     *   |          ps.getValue().getBorderAt(dn.getKey()).bordersOnSquare(
-     *   |                                               dn.getValue())))
-     * @throws IllegalStateException
-     *   | getPositionsAndSquares() == null
-     */
-    @Raw
-    public boolean hasProperBorderingSquares() throws IllegalStateException {
-        Dungeon<? super S> root = getRootDungeon();
-        if (getPositionsAndSquares() == null)
-            throw new IllegalStateException(
-                    "Could not get positions and squares");
-        for (Map.Entry<Coordinate, S> entry : getPositionsAndSquares()) {
-            S square = entry.getValue();
-            Coordinate coordinate = entry.getKey();
-
-            for (Map.Entry<Direction, ? super S> neighbourEntry :
-                    root.getDirectionsAndNeighboursOf(coordinate).entrySet()) {
-                Square neighbour = (Square) neighbourEntry.getValue();
-                Direction direction = neighbourEntry.getKey();
-                if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
-                    return false;
-                    }
-        }
-        return true;
-    }
 
     /** 
      * Returns the square at the given coordinate in this dungeon.
@@ -278,7 +235,7 @@ public abstract class Dungeon<S extends Square> {
      * @param coordinate 
      * The coordinate of the square to return.
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(coordinate)
+     *   | !isEffectiveCoordinate(coordinate)
      * @throws CoordinateNotOccupiedException
      *   | !isOccupied(coordinate)
      */
@@ -293,7 +250,7 @@ public abstract class Dungeon<S extends Square> {
      * The square to check.
      */
     @Raw
-    abstract public boolean hasSquare(S square);
+    abstract public boolean hasSquare(Square square);
 
     /** 
      * Deletes the square at the given coordinate and terminates it.
@@ -305,7 +262,7 @@ public abstract class Dungeon<S extends Square> {
      * @throws CoordinateNotOccupiedException
      *   | !isOccupied(coordinate)
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(coordinate)
+     *   | !isEffectiveCoordinate(coordinate)
      */
     abstract public void deleteSquareAt(Coordinate coordinate) 
         throws IllegalArgumentException, CoordinateNotOccupiedException; 
@@ -317,26 +274,15 @@ public abstract class Dungeon<S extends Square> {
      * @param coordinate 
      * The coordinate to check.
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(coordinate)
+     *   | !isEffectiveCoordinate(coordinate)
      */
     abstract public boolean isOccupied(Coordinate coordinate) 
         throws IllegalArgumentException;
 
-    /** 
-     * Checks whether all squares of this dungeon have valid coordinates.
-     * 
-     * @return 
-     * True iff all squares of this dungeon have valid coordinates.
-     *   | result == (for each e in getPositionsAndSquares() :
-     *   |                  canHaveAsSquareAt(e.getKey(), e.getValue()))
-     */
-    public boolean canHaveSquaresAtTheirCoordinates() {
-        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares())
-            if (!canHaveAsSquareAt(e.getKey(), e.getValue()))
-                return false;
-        return true;
-    }
-
+    
+    
+    
+    
     /** 
      * Checks whether the squares of this dungeon satisfy the constraints 
      * on squares of a dungeon.
@@ -677,8 +623,8 @@ public abstract class Dungeon<S extends Square> {
      * Whether or not the given destination coordinate can be reached from 
      * the given source coordinate, passing only through open borders.
      * @throws IllegalArgumentException
-     *   | !isPossibleSquareCoordinate(source)
-     *   |          || !isPossibleSquareCoordinate(destination)
+     *   | !isEffectiveCoordinate(source)
+     *   |          || !isEffectiveCoordinate(destination)
      */
     public boolean canReach(Coordinate source, Coordinate destination) 
                                             throws IllegalArgumentException {
@@ -751,6 +697,30 @@ public abstract class Dungeon<S extends Square> {
 
         return false;
     }
+
+
+
+
+
+
+
+
+
+
+
+    /** 
+     * Checks whether or not the given coordinate is a possible square 
+     * coordinate for all dungeons.
+     * 
+     * @param coordinate
+     * The coordinate to check.
+     * @return
+     *   | result == (coordinate != null)
+     */
+    public static boolean isEffectiveCoordinate(Coordinate coordinate) {
+        return coordinate != null;
+    }
+
 } 
 
 // vim: ts=4:sw=4:expandtab:smarttab

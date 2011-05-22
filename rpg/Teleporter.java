@@ -19,11 +19,15 @@ public class Teleporter {
 	 * 
 	 * @param destination 
 	 * The destination for this new teleporter.
-	 * @effect
-	 *   | setDestination(destination)
+	 * @post
+	 *   | new.getDestination().equals(destination)
+	 * @throws IllegalArgumentException
+	 *   | !isValidDestination(destination)
 	 */
-	public Teleporter(Square destination) {
-		setDestination(destination);
+	public Teleporter(Square destination) throws IllegalArgumentException {
+		if (!isValidDestination(destination))
+			throw new IllegalArgumentException();
+		this.destination = destination;
 	}
 	
 	/**
@@ -35,28 +39,8 @@ public class Teleporter {
 	}
 	
 	/**
-	 * Set the destination for this teleporter to the given destination.
-	 *
-	 * @param destination
-	 * The new destination for this teleporter.
-	 * @pre
-	 * The given destination must be a valid destination for this 
-	 * teleporter.
-	 *   | canHaveAsDestination(destination)
-	 * @post
-	 * The new destination for this teleporter is equal to the given 
-	 * destination.
-	 *   | new.getDestination() == destination
-	 */
-	@Raw @Model
-	public void setDestination(Square destination) {
-		assert canHaveAsDestination(destination);
-		this.destination = destination;
-	}
-	
-	/**
-	 * Checks whether this teleporter can have the given destination as its 
-	 * destination.
+	 * Checks whether the given destination is a valid destination for all 
+	 * teleporters.
 	 *
 	 * @param destination
 	 * The destination to check.
@@ -65,12 +49,12 @@ public class Teleporter {
 	 *   | result == (destination != null)
 	 */
 	@Raw
-	public boolean canHaveAsDestination(Square destination) {
+	public static boolean isValidDestination(Square destination) {
 		return destination != null;
 	}
 	
 	/**
 	 * Variable registering the destination for this teleporter.
 	 */
-	private Square destination;
+	private final Square destination;
 }

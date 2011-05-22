@@ -8,7 +8,7 @@ import rpg.util.Temperature;
 /**
  * @invar
  * Each regular teleportation square can have its teleporter as its teleporter.
- *   | canHaveAsTeleporter(getTeleporter())
+ *   | isValidTeleporter(getTeleporter())
  *
  * @author Roald Frederickx
  */
@@ -107,7 +107,7 @@ public class RegularTeleportationSquare
 	 * @pre
 	 * The given teleporter must be a valid teleporter for this regular 
 	 * teleportation square.
-	 *   | canHaveAsTeleporter(teleporter)
+	 *   | isValidTeleporter(teleporter)
 	 * @post
 	 * The new teleporter for this regular teleportation square is equal to 
 	 * the given teleporter.
@@ -115,13 +115,13 @@ public class RegularTeleportationSquare
 	 */
 	@Raw
 	public void setTeleporter(Teleporter teleporter) {
-		assert canHaveAsTeleporter(teleporter);
+		assert isValidTeleporter(teleporter);
 		this.teleporter = teleporter;
 	}
 	
 	/**
-	 * Checks whether this regular teleportation square can have the given 
-	 * teleporter as its teleporter.
+	 * Checks whether the given teleporter is a valid teleporter for all 
+	 * regular teleportation squares.
 	 *
 	 * @param teleporter
 	 * The teleporter to check.
@@ -130,7 +130,7 @@ public class RegularTeleportationSquare
 	 *   | result == (teleporter != null)
 	 */
 	@Raw
-	public boolean canHaveAsTeleporter(Teleporter teleporter) {
+	public static boolean isValidTeleporter(Teleporter teleporter) {
 		return (teleporter != null);
 	}
 	

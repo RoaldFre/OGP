@@ -47,7 +47,8 @@ public class TransparentTeleportationSquareTest {
         assertTrue(square.hasProperBorders());
         assertTrue(square.bordersSatisfyConstraints());
         assertTrue(square.hasNoDuplicateBorders());
-        assertTrue(square.canHaveAsTeleporter(square.getTeleporter()));
+        assertTrue(TransparentTeleportationSquare.isValidTeleporter(
+                                                    square.getTeleporter()));
     }
 
     @Test

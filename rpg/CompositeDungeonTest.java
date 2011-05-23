@@ -90,6 +90,8 @@ public class CompositeDungeonTest {
         assertEquals(regTelSq3, map.get(Direction.EAST));
         assertEquals(regSq1, map.get(Direction.UP));
         assertEquals(2, map.size());
+
+        assertClassInvariants(dungeon);
     }
 
     @Test
@@ -119,6 +121,86 @@ public class CompositeDungeonTest {
                                                 new Coordinate(0, 1, 2)));
         assertEquals(transparentLevel, dungeon.getSubDungeonContaining(
                                                 new Coordinate(0, 1, 4)));
+        assertClassInvariants(dungeon);
+    }
+
+    @Test
+    public void translate_legal() {
+        CoordinateSystem teleport, regular, transparent;
+        transparent = transparentLevel.getCoordSyst();
+
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+
+        transparent.translate(new Coordinate(0, 0, 4));
+        assertEquals(transparent, transparentLevel.getCoordSyst());
+
+        teleport = teleportLevel.getCoordSyst();
+        regular = regularShaft.getCoordSyst();
+        transparent = transparentLevel.getCoordSyst();
+        
+        Coordinate regTelSq1Coord = new Coordinate(0, 1, 0);
+        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+
+        Coordinate offset = new Coordinate(0, 0, 2);
+        assertClassInvariants(dungeon);
+        dungeon.translate(offset);
+        assertClassInvariants(dungeon);
+
+        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord.add(offset)));
+
+        teleport.translate(offset);
+        regular.translate(offset);
+        transparent.translate(offset);
+        assertEquals(teleport, teleportLevel.getCoordSyst());
+        assertEquals(regular, regularShaft.getCoordSyst());
+        assertEquals(transparent, transparentLevel.getCoordSyst());
+    }
+
+    @Test
+    public void translate_exceptions() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        
+        CoordinateSystem teleport, regular, transparent;
+        teleport = teleportLevel.getCoordSyst();
+        regular = regularShaft.getCoordSyst();
+        transparent = transparentLevel.getCoordSyst();
+
+        Coordinate regTelSq1Coord = new Coordinate(0, 1, 0);
+        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+
+        try {
+            dungeon.translate(new Coordinate(0, 0, 1));
+            assertTrue(false);
+        } catch (CoordinateConstraintsException cce) { /* nop */ }
+
+        assertEquals(teleport, teleportLevel.getCoordSyst());
+        assertEquals(regular, regularShaft.getCoordSyst());
+        assertEquals(transparent, transparentLevel.getCoordSyst());
+        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+
+        try {
+            dungeon.translate(new Coordinate(-1, -1, -4));
+            assertTrue(false);
+        } catch (CoordinateConstraintsException cce) { /* nop */ }
+
+        assertEquals(teleport, teleportLevel.getCoordSyst());
+        assertEquals(regular, regularShaft.getCoordSyst());
+        assertEquals(transparent, transparentLevel.getCoordSyst());
+        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+
+        try {
+            dungeon.translate(null);
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) { /* nop */ }
+
+        assertEquals(teleport, teleportLevel.getCoordSyst());
+        assertEquals(regular, regularShaft.getCoordSyst());
+        assertEquals(transparent, transparentLevel.getCoordSyst());
+        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
     }
 }
 

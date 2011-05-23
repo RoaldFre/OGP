@@ -144,16 +144,22 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 	protected void translate(Coordinate offset) 
             throws IllegalArgumentException, CoordinateConstraintsException {
         translateCoordSyst(offset);
+        Set<Dungeon<?>> translatedSubDungeons = new HashSet<Dungeon<?>>();
         for (Dungeon<? extends S> subDungeon : getSubDungeons()) {
             try {
                 subDungeon.translate(offset);
+                translatedSubDungeons.add(subDungeon);
             } catch (CoordinateConstraintsException cce) {
                 //roll back everything that has been done already!
-                for (Dungeon<? extends S> subDungeon2 : getSubDungeons()) {
-                    if (subDungeon2 == subDungeon)
-                        throw cce; //everything rolled back already
-                    subDungeon2.translate(offset.mirror());
+                for (Dungeon<?> translatedSubDungeon : translatedSubDungeons) {
+                    try {
+                        translatedSubDungeon.translate(offset.mirror());
+                    } catch (CoordinateConstraintsException cce2) {
+                        assert false;
+                    }
                 }
+                translateCoordSyst(offset.mirror());
+                throw cce;
             }
         }
     }

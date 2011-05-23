@@ -8,7 +8,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     TemperatureTest.class,
 
-    SquareTest.class,
+    SquareImplTest.class,
     RegularSquareTest.class,
     RegularTeleportationSquareTest.class,
     TransparentSquareTest.class,

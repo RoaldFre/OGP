@@ -32,26 +32,6 @@ import java.util.LinkedList;
  * The heat damage temperature step that applies to all squares must be 
  * a valid heat damage temperature step.
  *   | isValidHeatDamageStep(getHeatDamageStep()) 
- * @invar
- * The area of this square is equilibrated.
- *   | new Area().isEquilibrated()
- *
- *
- *
- *
- * @invar
- * The heat damage threshold temperature that applies to all squares 
- * must be a valid heat damage threshold temperature.
- *   | isValidHeatDamageThreshold(getHeatDamageThreshold()) 
- * @invar
- * The heat damage temperature step that applies to all squares must be 
- * a valid heat damage temperature step.
- *   | isValidHeatDamageStep(getHeatDamageStep()) 
- * @invar
- * The weight constant for merging temperatures that applies to all 
- * squares must be a valid weight constant for merging temperatures.
- *   | isValidMergeTemperatureWeight(getMergeTemperatureWeight()) 
- *
  *
  * @author Roald Frederickx
  */
@@ -942,7 +922,7 @@ abstract public class SquareImpl implements Square {
      * If the border of this square were to be changed to the given border, 
      * some border constraints would be violated.
      */
-    void changeBorderAt(Direction direction, @Raw Border border) 
+    public void changeBorderAt(Direction direction, @Raw Border border) 
                 throws IllegalArgumentException, BorderConstraintsException {
         if (!isProperBorderAt(direction, border)  ||  hasBorder(border))
             throw new IllegalArgumentException();
@@ -972,7 +952,7 @@ abstract public class SquareImpl implements Square {
      * given border.
      *   | changeBorderAt(getDirectionOfBorder(oldBorder), newBorder)
      */
-    void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
+    public void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
                 throws IllegalArgumentException, BorderConstraintsException {
         changeBorderAt(getDirectionOfBorder(oldBorder), newBorder);
     }
@@ -1159,7 +1139,7 @@ abstract public class SquareImpl implements Square {
          *   | for each direction in Direction.values():
          *   |      canHaveAsBorderAt(direction, getBorderAt(direction))
          */
-        public void initializeBorders(@Raw Square square);
+        public void initializeBorders(@Raw SquareImpl square);
     }
 
     /** 
@@ -1389,9 +1369,43 @@ abstract public class SquareImpl implements Square {
      * Checks whether the area of this square is properly equilibrated.
 	 * 
 	 * @return 
+	 *   | isTerminated() || new Area().isEquilibrated();
 	 */
 	public boolean myAreaIsEquilibrated() {
+		if (isTerminated())
+			return true;
 		return new Area().isEquilibrated();
+	}
+
+    /** 
+     * Equilibrate the temperatures and humidities of the area that this 
+     * square is part of.
+     */
+    public void equilibrateMyArea() 
+                        throws EquilibratingSquaresViolatesLimitsException {
+        new Area().equilibrate();
+    }
+
+	/**
+     * Return the area that this square blongs to.
+	 * 
+	 * @return
+	 * The set of squares as returned by new Area().getArea().
+	 */
+	public Set<Square> getArea() {
+		assert !isTerminated();
+		return new Area().getArea();
+	}
+
+	/**
+     * Return the boundary of the area that this square blongs to.
+	 *
+	 * @return
+	 * The set of squares as returned by new Area().getBoundary().
+	 */
+	public Set<Square> getAreaBoundary() {
+		assert !isTerminated();
+		return new Area().getBoundary();
 	}
 
 	/** 
@@ -1669,7 +1683,7 @@ abstract public class SquareImpl implements Square {
      *   | for (Direction direction : Direction.values())
      *   |      changeBorderAt(direction, null);
      */
-    void terminate(){
+    public void terminate(){
         isTerminated = true;
         for (Direction direction : Direction.values())
             changeBorderAt(direction, null);

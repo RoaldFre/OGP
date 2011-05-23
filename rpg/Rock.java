@@ -7,7 +7,7 @@ import rpg.util.Direction;
 import rpg.util.Temperature;
 
 
-public class Rock extends Square {
+public class Rock extends SquareImpl {
 
     /** 
      * Initialize this new rock with the given temperature boundaries, a 
@@ -130,7 +130,7 @@ public class Rock extends Square {
      *   | setProperTemperature()
      */
 	@Override @Raw
-    protected void neighbourHasChangedTemperatureOrHumidity() {
+    public void neighbourHasChangedTemperatureOrHumidity() {
         setProperTemperature();
     }
 
@@ -179,15 +179,11 @@ public class Rock extends Square {
      * as borders in every direction.
      */
     static class RockBorderInitializer implements BorderInitializer {
-        public void initializeBorders(@Raw Square square) {
+        public void initializeBorders(@Raw SquareImpl square) {
             for (Direction direction : Direction.values())
                 square.setBorderAt(direction, new Wall(square, false));
         }
     }
-
-    
-
-
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

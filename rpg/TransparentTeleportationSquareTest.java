@@ -34,16 +34,18 @@ public class TransparentTeleportationSquareTest {
      * The transparent teleportation square to test.
      */
     private void assertClassInvariants(TransparentTeleportationSquare square) {
-        assertTrue(Square.matchesMinTemperatureMax(
-                        square.getMinTemperature(), 
-                        square.getTemperature(),
-                        square.getMaxTemperature()));
-        assertTrue(Square.isValidHeatDamageThreshold(
-                        Square.getHeatDamageThreshold()));
-        assertTrue(Square.isValidHeatDamageStep(Square.getHeatDamageStep()));
-        assertTrue(Square.isValidHumidity(square.getHumidity()));
-        assertTrue(Square.isValidMergeTemperatureWeight(
-                        Square.getMergeTemperatureWeight()));
+        assertTrue(square.matchesMinTemperatureMax(
+                square.getMinTemperature(), 
+                square.getTemperature(),
+                square.getMaxTemperature()));
+        assertTrue(TransparentTeleportationSquare.isValidHeatDamageThreshold(
+                TransparentTeleportationSquare.getHeatDamageThreshold()));
+        assertTrue(TransparentTeleportationSquare.isValidHeatDamageStep(
+                TransparentTeleportationSquare.getHeatDamageStep()));
+        assertTrue(TransparentTeleportationSquare.isValidHumidity(
+                square.getHumidity()));
+        assertTrue(TransparentTeleportationSquare.isValidMergeTemperatureWeight(
+                TransparentTeleportationSquare.getMergeTemperatureWeight()));
         assertTrue(square.hasProperBorders());
         assertTrue(square.bordersSatisfyConstraints());
         assertTrue(square.hasNoDuplicateBorders());

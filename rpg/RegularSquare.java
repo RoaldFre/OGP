@@ -13,7 +13,7 @@ import be.kuleuven.cs.som.annotate.*;
  * @author Roald Frederickx
  */
 
-public class RegularSquare extends Square {
+public class RegularSquare extends SquareImpl {
     /** 
      * Initialize this new regular square to a regular square with the 
      * given temperature, temperature limits, humidity and slipperiness of 
@@ -81,7 +81,7 @@ public class RegularSquare extends Square {
         RegularBorderInitializer(boolean hasSlipperyFloor) {
             this.hasSlipperyFloor = hasSlipperyFloor;
         }
-        public void initializeBorders(@Raw Square square) {
+        public void initializeBorders(@Raw SquareImpl square) {
             for (Direction direction : Direction.values()){
                 Border border;
                 if (direction.equals(Direction.DOWN))

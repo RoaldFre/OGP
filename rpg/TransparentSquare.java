@@ -7,7 +7,7 @@ import rpg.util.Direction;
 import rpg.util.Temperature;
 
 
-public class TransparentSquare extends Square {
+public class TransparentSquare extends SquareImpl {
     /** Initialize this new transparent square to a transparent square with 
      * the given temperature, temperature limits and humidity.
      * 
@@ -172,7 +172,7 @@ public class TransparentSquare extends Square {
          * directions given at creation time of this transparent border 
          * initializer, which contain open doors.
          */
-        public void initializeBorders(@Raw Square square) {
+        public void initializeBorders(@Raw SquareImpl square) {
             for (Direction direction : Direction.values()){
                 Border border;
                 if (Arrays.asList(doorDirections).contains(direction))

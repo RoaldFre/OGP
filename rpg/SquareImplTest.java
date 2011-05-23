@@ -12,27 +12,27 @@ import rpg.util.Temperature;
  *
  * @author Roald Frederickx
  */
-public class SquareTest {
+public class SquareImplTest {
 
     /**
      * Instance variable referencing squares that may change during 
      * individual tests.
      */
-    private Square squareDefault;
-    private Square square_T100_H50;
-    private Square square_Tneg5_H20;
-    private Square square_Tneg4p99_H5;
-    private Square square_Tneg15_H100;
-    private Square square_Tneg15p01_H0;
-    private Square square_Tneg100_H80;
-    private Square square_T35_H50;
-    private Square square_T40_H100;
-    private Square squareTemp49p99;
-    private Square squareTemp50;
-    private Square square_T20_Tmin0_Tmax100_H20;
+    private SquareImpl squareDefault;
+    private SquareImpl square_T100_H50;
+    private SquareImpl square_Tneg5_H20;
+    private SquareImpl square_Tneg4p99_H5;
+    private SquareImpl square_Tneg15_H100;
+    private SquareImpl square_Tneg15p01_H0;
+    private SquareImpl square_Tneg100_H80;
+    private SquareImpl square_T35_H50;
+    private SquareImpl square_T40_H100;
+    private SquareImpl squareTemp49p99;
+    private SquareImpl squareTemp50;
+    private SquareImpl square_T20_Tmin0_Tmax100_H20;
 
-    private Square connectedSquare1; //max temperature 1000C
-    private Square connectedSquare2; //max temperature 100C
+    private SquareImpl connectedSquare1; //max temperature 1000C
+    private SquareImpl connectedSquare2; //max temperature 100C
 
 
     /**
@@ -81,17 +81,17 @@ public class SquareTest {
      * @param square 
      * The square to test.
      */
-    private void assertClassInvariants(Square square) {
-        assertTrue(Square.matchesMinTemperatureMax(
+    private void assertClassInvariants(SquareImpl square) {
+        assertTrue(square.matchesMinTemperatureMax(
                         square.getMinTemperature(), 
                         square.getTemperature(),
                         square.getMaxTemperature()));
-        assertTrue(Square.isValidHeatDamageThreshold(
-                        Square.getHeatDamageThreshold()));
-        assertTrue(Square.isValidHeatDamageStep(Square.getHeatDamageStep()));
-        assertTrue(Square.isValidHumidity(square.getHumidity()));
-        assertTrue(Square.isValidMergeTemperatureWeight(
-                        Square.getMergeTemperatureWeight()));
+        assertTrue(SquareImpl.isValidHeatDamageThreshold(
+                        SquareImpl.getHeatDamageThreshold()));
+        assertTrue(SquareImpl.isValidHeatDamageStep(SquareImpl.getHeatDamageStep()));
+        assertTrue(SquareImpl.isValidHumidity(square.getHumidity()));
+        assertTrue(SquareImpl.isValidMergeTemperatureWeight(
+                        SquareImpl.getMergeTemperatureWeight()));
         assertTrue(square.hasProperBorders());
         assertTrue(square.bordersSatisfyConstraints());
         assertTrue(square.hasNoDuplicateBorders());
@@ -346,7 +346,7 @@ public class SquareTest {
         assertEquals(7500, square_T100_H50.getHumidity());
         assertEquals(7500, square_T40_H100.getHumidity());
 
-        double weightOffset = Square.getMergeTemperatureWeight();
+        double weightOffset = SquareImpl.getMergeTemperatureWeight();
         Temperature newTemp = new Temperature(
                 ((weightOffset + (1 - weightOffset) * 50/75) * 100
                  + (weightOffset + (1 - weightOffset) * 100/75) * 40) / 2.0);
@@ -423,39 +423,39 @@ public class SquareTest {
 
     public void setHeatDamageThreshold_LegalCase() {
         Temperature temperature = new Temperature(100);
-        Square.setHeatDamageThreshold(temperature);
-        assertEquals(temperature, Square.getHeatDamageThreshold());
+        SquareImpl.setHeatDamageThreshold(temperature);
+        assertEquals(temperature, SquareImpl.getHeatDamageThreshold());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setHeatDamageThreshold_Null() {
-        Square.setHeatDamageThreshold(null);
+        SquareImpl.setHeatDamageThreshold(null);
     }
 
     public void setHeatDamageStep_LegalCase() {
-        Square.setHeatDamageThreshold(new Temperature(100));
-        assertEquals(100, Square.getHeatDamageStep(), 0);
+        SquareImpl.setHeatDamageThreshold(new Temperature(100));
+        assertEquals(100, SquareImpl.getHeatDamageStep(), 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setHeatDamageStep_Zero() {
-        Square.setHeatDamageStep(0);
+        SquareImpl.setHeatDamageStep(0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setHeatDamageStep_Negative() {
-        Square.setHeatDamageStep(-1);
+        SquareImpl.setHeatDamageStep(-1);
     }
 
     @Test
     public void setMergeTemperatureWeight_LegalCase() {
-        Square.setMergeTemperatureWeight(0.3);
-        assertEquals(0.3, Square.getMergeTemperatureWeight(), 0); 
+        SquareImpl.setMergeTemperatureWeight(0.3);
+        assertEquals(0.3, SquareImpl.getMergeTemperatureWeight(), 0); 
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setMergeTemperatureWeight_IllegalCase() {
-        Square.setMergeTemperatureWeight(-1);
+        SquareImpl.setMergeTemperatureWeight(-1);
     }
 
     @Test

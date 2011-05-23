@@ -6,11 +6,7 @@ import rpg.util.Direction;
 import rpg.util.Temperature;
 
 import java.util.Map;
-import java.util.EnumMap;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.LinkedList;
 
 /**
  * An interface of squares involving a temperature, a humidity and a set of 
@@ -447,6 +443,58 @@ public interface Square {
     public boolean hasNoDuplicateBorders();
 
     /** 
+     * Change the border of this square for the given direction to the given 
+     * border.
+     * 
+     * @param direction 
+     * The direction of the border.
+     * @param border
+     * The new border.
+     * @post
+     * If this square is not terminated, then the new border in the given 
+     * direction is equal to the given border.
+     *   | if (!isTerminated())
+     *   |      then new.getBorderAt(direction).equals(border)
+     * @effect
+     * If the old border in the given direction is not null, then that old 
+     * border gets detatched from this square.
+     *   | if (old.getBorderAt(direction) != null)
+     *   |      old.getBorderAt(direction).detatchFromSquare(this);
+     * @throws IllegalArgumentException
+     * This square can not have the given border as a proper border in the 
+     * given direction.
+     *   | !isProperBorderAt(direction, border)
+     * @throws IllegalArgumentException
+     * This square already has the given non-null border as a border for 
+     * some direction.
+     *   | hasBorder(border)
+     * @throws BorderConstraintsException
+     * If the border of this square were to be changed to the given border, 
+     * some border constraints would be violated.
+     */
+    // Note: I would have liked to restrict the visibility of this method 
+    // to this package only, but that cannot be done in an interface.
+    public void changeBorderAt(Direction direction, @Raw Border border) 
+                throws IllegalArgumentException, BorderConstraintsException;
+
+    /** 
+     * Update the border of this square to the given border.
+     * 
+     * @param oldBorder
+     * The old border.
+     * @param newBorder
+     * The new border.
+     * @effect
+     * The border of this square in the given direction gets changed to the 
+     * given border.
+     *   | changeBorderAt(getDirectionOfBorder(oldBorder), newBorder)
+     */
+    // Note: I would have liked to restrict the visibility of this method 
+    // to this package only, but that cannot be done in an interface.
+    void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
+                throws IllegalArgumentException, BorderConstraintsException;
+
+    /** 
      * Returns the direction associated with the given border of this 
      * square.
      *
@@ -653,11 +701,11 @@ public interface Square {
      * Checks whether the area of this square is properly equilibrated.
      *
      * @return
-     * True iff all squares in the area of this squre have the same 
-     * temperature and humidity as this square, and all squares in the 
-     * boundary of the area of this square can have their temperatures and 
-     * humidities.
-     *   | result == (
+     * True iff this square is terminated or all squares in the area of 
+     * this squre have the same temperature and humidity as this square, 
+     * and all squares in the boundary of the area of this square can have 
+     * their temperatures and humidities.
+     *   | result == isTerminated()  ||  (
      *   |   (for each square in getArea() :
      *   |       square.getTemperature().equals(getTemperature())
      *   |       &amp;&amp; square.getHumidity() == getHumidity())
@@ -673,9 +721,10 @@ public interface Square {
      * Equilibrate the temperatures and humidities of the area that this 
      * square is part of.
      *
-     * @effect
-     *   | equilibrateAreaInternally(getArea())
-     *   | equilibrateBoundary(getBoundary(getArea()))
+     * @pre
+     *   | !isTerminated
+     * @post
+     *   | myAreaIsEquilibrated()
      */
     public void equilibrateMyArea() 
                         throws EquilibratingSquaresViolatesLimitsException;
@@ -684,77 +733,26 @@ public interface Square {
     /** 
      * Return the area that this square blongs to.
      * 
+     * @pre
+     *   | !isTerminated()
      * @return 
      * A maximal set of openly connected squares that contains this square.
      */
     @Raw
     public Set<Square> getArea();
 
-    @Raw
-    public static Set<Square> getBoundary(@Raw Set<Square> area) {
-        return getNeighbouringSquares(area, acceptAllNeighboursFilter);
-    }
-
-    @Model
-    protected static void equilibrateAreaInternally(@Raw Set<Square> area) 
-                        throws EquilibratingSquaresViolatesLimitsException {
-        if (area.size() == 0)
-            return;
-
-        double temperatureWeightedSum = 0;
-        double humiditiesSum = 0;
-        double temperatureWeightOffset = getMergeTemperatureWeight();
-        double temperatureBaseWeight = 1 - temperatureWeightOffset;
-
-        for (Square square : area) {
-            humiditiesSum  += square.getHumidity();
-        }
-        double averageHumidity = humiditiesSum / area.size();
-
-        for (Square square : area) {
-            double temperatureWeight = temperatureWeightOffset
-                            + temperatureBaseWeight * square.getHumidity() 
-                                                        / averageHumidity;
-            temperatureWeightedSum += square.getTemperature().temperature()
-                                                        * temperatureWeight;
-        }
-        Temperature newTemperature = new Temperature(
-                                        temperatureWeightedSum / area.size());
-        int newHumidity = (int) Math.round(averageHumidity);
-
-        for (Square square : area){
-            if (!square.canHaveAsTemperature(newTemperature)
-                                    || !square.canHaveAsHumidity(newHumidity))
-                throw new EquilibratingSquaresViolatesLimitsException();
-        }
-        for (Square square : area) {
-            square.setTemperatureRaw(newTemperature);
-            square.setHumidity(newHumidity);
-        }
-    }
-
     /** 
-     * Notify all the squares in the given set that one of their neighbours 
-     * has changed its temperature and/or humidity. 
+     * Return the boundary of the area that this square blongs to.
      * 
-     * @param boundary 
-     * A set of squares that border a region of squares that have changed 
-     * their temperature or humidity. For more information, also see 
-     * neighbourHasChangedTemperatureOrHumidity(), equilibrateMyArea() and 
-     * setTemperature().
      * @pre
-     *   | boundary != null
-     * @effect
-     *   | for each square in boundary:
-     *   |      square.neighbourHasChangedTemperatureOrHumidity()
+     *   | !isTerminated()
+     * @return 
+     * The squares bordering a maximal set of openly connected squares that 
+     * contains this square.
      */
-    @Model
-    protected static void equilibrateBoundary(@Raw Set<Square> boundary) {
-        assert boundary != null;
-        for (Square square : boundary) {
-            square.neighbourHasChangedTemperatureOrHumidity();
-        }
-    }
+    @Raw
+    public Set<Square> getAreaBoundary();
+
 
     /** 
      * Function signalling that one of the neighbours of this square has 
@@ -765,23 +763,36 @@ public interface Square {
      * in an area that get equilibrated.
      */
     @Raw
-    protected void neighbourHasChangedTemperatureOrHumidity() {
-        return;
-    }
+    public void neighbourHasChangedTemperatureOrHumidity();
 
-    public String toString() {
-        if (isTerminated())
-            return "Terminated!";
-        return  "Temperature:    " + getTemperature()
-            + "\nHumidity:       " + getHumidityString()
-            + "\nSlippery Floor: " + hasSlipperyFloor()
-            + "\nSlippery:       " + isSlippery()
-            + "\nCold damage:    " + coldDamage()
-            + "\nHeat damage:    " + heatDamage()
-            + "\nRust damage:    " + rustDamage()
-            + "\nInhabitability: " + inhabitability()
-            + "\nBorders:        " + bordersString();
-    }
+
+    /** 
+     * Terminate this square.
+     *
+     * <b>Note</b> It is not adviced to call this method as an end user 
+     * when this square is embedded in higher order structures (eg 
+     * dungeons), as it can turn those higher order structures into a raw 
+     * state, without them knowing. Please use caution.
+     *
+     * @note
+     * If you call this as an end user on a square that is embedded in a 
+     * higher order structure, then <b>Demons may fly out of your nose!</b>
+     * @post
+     * This square is terminated.
+     *   | new.isTerminated()
+     * @effect
+     * The old borders get changed to null and they get detatched from any 
+     * other squares.
+     *   | for (Direction direction : Direction.values())
+     *   |      changeBorderAt(direction, null);
+     */
+    // Note: would have liked to restrict the visibility of this method to 
+    // this package only, as terminating random squares can make associated 
+    // higher structures that this square does not know about (eg dungeons) 
+    // go raw without them knowing!
+    // However, this method needs to be available in this interface, and 
+    // one  can only specify public methods in an interface.
+    public void terminate();
 }
 
 

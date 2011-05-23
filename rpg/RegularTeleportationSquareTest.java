@@ -33,21 +33,23 @@ public class RegularTeleportationSquareTest {
      * The regular teleportation square to test.
      */
     private void assertClassInvariants(RegularTeleportationSquare square) {
-        assertTrue(Square.matchesMinTemperatureMax(
-                        square.getMinTemperature(), 
-                        square.getTemperature(),
-                        square.getMaxTemperature()));
-        assertTrue(Square.isValidHeatDamageThreshold(
-                        Square.getHeatDamageThreshold()));
-        assertTrue(Square.isValidHeatDamageStep(Square.getHeatDamageStep()));
-        assertTrue(Square.isValidHumidity(square.getHumidity()));
-        assertTrue(Square.isValidMergeTemperatureWeight(
-                        Square.getMergeTemperatureWeight()));
+        assertTrue(square.matchesMinTemperatureMax(
+                    square.getMinTemperature(), 
+                    square.getTemperature(),
+                    square.getMaxTemperature()));
+        assertTrue(RegularTeleportationSquare.isValidHeatDamageThreshold(
+                    RegularTeleportationSquare.getHeatDamageThreshold()));
+        assertTrue(RegularTeleportationSquare.isValidHeatDamageStep(
+                    RegularTeleportationSquare.getHeatDamageStep()));
+        assertTrue(RegularTeleportationSquare.isValidHumidity(
+                    square.getHumidity()));
+        assertTrue(RegularTeleportationSquare.isValidMergeTemperatureWeight(
+                    RegularTeleportationSquare.getMergeTemperatureWeight()));
         assertTrue(square.hasProperBorders());
         assertTrue(square.bordersSatisfyConstraints());
         assertTrue(square.hasNoDuplicateBorders());
         assertTrue(RegularTeleportationSquare.isValidTeleporter(
-                                                    square.getTeleporter()));
+                    square.getTeleporter()));
     }
 
     @Test

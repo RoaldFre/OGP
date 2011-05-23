@@ -29,6 +29,7 @@ import org.junit.runners.Suite;
     LeafDungeonTest.class,
     LevelTest.class,
     ShaftTest.class,
+    CompositeDungeonTest.class,
 })
 public class AllTests {
 }

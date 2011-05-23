@@ -50,9 +50,9 @@ public class CompositeDungeonTest {
         regSq1 = new RegularSquare(); 
         regSq2 = new RegularSquare(); 
         regSq3 = new RegularSquare(); 
-        regularShaft.addSquareAt(new Coordinate(0,1,1), regSq1);
-        regularShaft.addSquareAt(new Coordinate(0,1,2), regSq2);
-        regularShaft.addSquareAt(new Coordinate(0,1,3), regSq3);
+        regularShaft.addSquareAt(new Coordinate(0, 1, 1), regSq1);
+        regularShaft.addSquareAt(new Coordinate(0, 1, 2), regSq2);
+        regularShaft.addSquareAt(new Coordinate(0, 1, 3), regSq3);
 
         CoordinateSystem coordSyst = new CoordinateSystem(
                 new Coordinate(0, 0, 0),
@@ -201,6 +201,46 @@ public class CompositeDungeonTest {
         assertEquals(regular, regularShaft.getCoordSyst());
         assertEquals(transparent, transparentLevel.getCoordSyst());
         assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+        
+        assertClassInvariants(dungeon);
+    }
+
+    @Test
+    public void getSquareAt_legal() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+
+        assertEquals(regTelSq1, dungeon.getSquareAt(new Coordinate(0, 1, 0)));
+        assertEquals(regTelSq2, dungeon.getSquareAt(new Coordinate(1, 0, 0)));
+        assertEquals(regTelSq3, dungeon.getSquareAt(new Coordinate(1, 1, 0)));
+        assertEquals(regSq1, dungeon.getSquareAt(new Coordinate(0, 1, 1)));
+        assertEquals(regSq2, dungeon.getSquareAt(new Coordinate(0, 1, 2)));
+        assertEquals(regSq3, dungeon.getSquareAt(new Coordinate(0, 1, 3)));
+        assertEquals(transSq1, dungeon.getSquareAt(new Coordinate(0, 1, 4)));
+        assertEquals(transSq2, dungeon.getSquareAt(new Coordinate(1, 0, 4)));
+        assertEquals(transSq3, dungeon.getSquareAt(new Coordinate(1, 1, 4)));
+
+        assertClassInvariants(dungeon);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void getSquareAt_null() {
+        dungeon.getSquareAt(null);
+    }
+    @Test (expected = CoordinateNotOccupiedException.class)
+    public void getSquareAt_notOccupied_inDungeon() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.getSquareAt(new Coordinate (5, 0, 0));
+    }
+    @Test (expected = CoordinateNotOccupiedException.class)
+    public void getSquareAt_notOccupied_notInDungeon() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.getSquareAt(new Coordinate (-1, 0, 0));
     }
 }
 

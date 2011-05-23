@@ -184,6 +184,26 @@ public class TransparentSquare extends SquareImpl {
         }
         private Direction doorDirections[];
     }
+
+    /**
+     * Check whether this transparent square satisfies all its class 
+     * invariants.
+     */
+    @Raw
+    @Override
+    public boolean isNotRaw() {
+        return super.isNotRaw()
+            && isValidMergeTemperatureWeight(getMergeTemperatureWeight()) 
+            && isValidHeatDamageThreshold(getHeatDamageThreshold()) 
+            && isValidHeatDamageStep(getHeatDamageStep()) 
+            && matchesMinTemperatureMax(getMinTemperature(),
+                                    getTemperature(), getMaxTemperature())
+            && canHaveAsHumidity(getHumidity()) 
+            && hasProperBorders()
+            && bordersSatisfyConstraints()
+            && hasNoDuplicateBorders()
+            && myAreaIsEquilibrated();
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

@@ -82,19 +82,7 @@ public class SquareImplTest {
      * The square to test.
      */
     private void assertClassInvariants(SquareImpl square) {
-        assertTrue(square.matchesMinTemperatureMax(
-                        square.getMinTemperature(), 
-                        square.getTemperature(),
-                        square.getMaxTemperature()));
-        assertTrue(SquareImpl.isValidHeatDamageThreshold(
-                        SquareImpl.getHeatDamageThreshold()));
-        assertTrue(SquareImpl.isValidHeatDamageStep(SquareImpl.getHeatDamageStep()));
-        assertTrue(SquareImpl.isValidHumidity(square.getHumidity()));
-        assertTrue(SquareImpl.isValidMergeTemperatureWeight(
-                        SquareImpl.getMergeTemperatureWeight()));
-        assertTrue(square.hasProperBorders());
-        assertTrue(square.bordersSatisfyConstraints());
-        assertTrue(square.hasNoDuplicateBorders());
+        assertTrue(square.isNotRaw());
     }
 
     @Test

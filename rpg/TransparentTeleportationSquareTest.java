@@ -34,23 +34,7 @@ public class TransparentTeleportationSquareTest {
      * The transparent teleportation square to test.
      */
     private void assertClassInvariants(TransparentTeleportationSquare square) {
-        assertTrue(square.matchesMinTemperatureMax(
-                square.getMinTemperature(), 
-                square.getTemperature(),
-                square.getMaxTemperature()));
-        assertTrue(TransparentTeleportationSquare.isValidHeatDamageThreshold(
-                TransparentTeleportationSquare.getHeatDamageThreshold()));
-        assertTrue(TransparentTeleportationSquare.isValidHeatDamageStep(
-                TransparentTeleportationSquare.getHeatDamageStep()));
-        assertTrue(TransparentTeleportationSquare.isValidHumidity(
-                square.getHumidity()));
-        assertTrue(TransparentTeleportationSquare.isValidMergeTemperatureWeight(
-                TransparentTeleportationSquare.getMergeTemperatureWeight()));
-        assertTrue(square.hasProperBorders());
-        assertTrue(square.bordersSatisfyConstraints());
-        assertTrue(square.hasNoDuplicateBorders());
-        assertTrue(TransparentTeleportationSquare.isValidTeleporter(
-                                                    square.getTeleporter()));
+        assertTrue(square.isNotRaw());
     }
 
     @Test

@@ -793,6 +793,11 @@ public interface Square {
     // However, this method needs to be available in this interface, and 
     // one  can only specify public methods in an interface.
     public void terminate();
+
+    /**
+     * Check whether this square satisfies all its class invariants.
+     */
+    public boolean isNotRaw();
 }
 
 

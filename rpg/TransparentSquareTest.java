@@ -34,20 +34,7 @@ public class TransparentSquareTest {
      * The transparent square to test.
      */
     private void assertClassInvariants(TransparentSquare square) {
-        assertTrue(square.matchesMinTemperatureMax(
-                        square.getMinTemperature(), 
-                        square.getTemperature(),
-                        square.getMaxTemperature()));
-        assertTrue(TransparentSquare.isValidHeatDamageThreshold(
-                        TransparentSquare.getHeatDamageThreshold()));
-        assertTrue(TransparentSquare.isValidHeatDamageStep(
-                        TransparentSquare.getHeatDamageStep()));
-        assertTrue(TransparentSquare.isValidHumidity(square.getHumidity()));
-        assertTrue(TransparentSquare.isValidMergeTemperatureWeight(
-                        TransparentSquare.getMergeTemperatureWeight()));
-        assertTrue(square.hasProperBorders());
-        assertTrue(square.bordersSatisfyConstraints());
-        assertTrue(square.hasNoDuplicateBorders());
+        assertTrue(square.isNotRaw());
     }
 
     @Test

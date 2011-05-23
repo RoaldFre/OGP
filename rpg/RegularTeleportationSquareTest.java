@@ -33,23 +33,7 @@ public class RegularTeleportationSquareTest {
      * The regular teleportation square to test.
      */
     private void assertClassInvariants(RegularTeleportationSquare square) {
-        assertTrue(square.matchesMinTemperatureMax(
-                    square.getMinTemperature(), 
-                    square.getTemperature(),
-                    square.getMaxTemperature()));
-        assertTrue(RegularTeleportationSquare.isValidHeatDamageThreshold(
-                    RegularTeleportationSquare.getHeatDamageThreshold()));
-        assertTrue(RegularTeleportationSquare.isValidHeatDamageStep(
-                    RegularTeleportationSquare.getHeatDamageStep()));
-        assertTrue(RegularTeleportationSquare.isValidHumidity(
-                    square.getHumidity()));
-        assertTrue(RegularTeleportationSquare.isValidMergeTemperatureWeight(
-                    RegularTeleportationSquare.getMergeTemperatureWeight()));
-        assertTrue(square.hasProperBorders());
-        assertTrue(square.bordersSatisfyConstraints());
-        assertTrue(square.hasNoDuplicateBorders());
-        assertTrue(RegularTeleportationSquare.isValidTeleporter(
-                    square.getTeleporter()));
+        assertTrue(square.isNotRaw());
     }
 
     @Test

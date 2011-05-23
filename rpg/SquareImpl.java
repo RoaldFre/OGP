@@ -1391,6 +1391,25 @@ abstract public class SquareImpl implements Square {
             + "\nInhabitability: " + inhabitability()
             + "\nBorders:        " + bordersString();
     }
+
+    /**
+     * Check whether this square satisfies all its class invariants.
+     */
+    @Raw
+    @Override
+    public boolean isNotRaw() {
+        return true
+            && isValidMergeTemperatureWeight(getMergeTemperatureWeight()) 
+            && isValidHeatDamageThreshold(getHeatDamageThreshold()) 
+            && isValidHeatDamageStep(getHeatDamageStep()) 
+            && matchesMinTemperatureMax(getMinTemperature(),
+                                    getTemperature(), getMaxTemperature())
+            && canHaveAsHumidity(getHumidity()) 
+            && hasProperBorders()
+            && bordersSatisfyConstraints()
+            && hasNoDuplicateBorders()
+            && myAreaIsEquilibrated();
+    }
 }
 
 

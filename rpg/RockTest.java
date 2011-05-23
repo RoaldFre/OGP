@@ -25,19 +25,7 @@ public class RockTest {
      * The rock to test.
      */
     private void assertClassInvariants(Rock rock) {
-        assertTrue(rock.matchesMinTemperatureMax(
-                        rock.getMinTemperature(), 
-                        rock.getTemperature(),
-                        rock.getMaxTemperature()));
-        assertTrue(Rock.isValidHeatDamageThreshold(
-                        Rock.getHeatDamageThreshold()));
-        assertTrue(Rock.isValidHeatDamageStep(Rock.getHeatDamageStep()));
-        assertTrue(Rock.isValidHumidity(rock.getHumidity()));
-        assertTrue(Rock.isValidMergeTemperatureWeight(
-                        Rock.getMergeTemperatureWeight()));
-        assertTrue(rock.hasProperBorders());
-        assertTrue(rock.bordersSatisfyConstraints());
-        assertTrue(rock.hasNoDuplicateBorders());
+        assertTrue(rock.isNotRaw());
     }
 
     @Test

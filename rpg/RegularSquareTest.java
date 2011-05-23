@@ -34,20 +34,7 @@ public class RegularSquareTest {
      * The regular square to test.
      */
     private void assertClassInvariants(RegularSquare square) {
-        assertTrue(square.matchesMinTemperatureMax(
-                        square.getMinTemperature(), 
-                        square.getTemperature(),
-                        square.getMaxTemperature()));
-        assertTrue(RegularSquare.isValidHeatDamageThreshold(
-                        RegularSquare.getHeatDamageThreshold()));
-        assertTrue(RegularSquare.isValidHeatDamageStep(
-                        RegularSquare.getHeatDamageStep()));
-        assertTrue(RegularSquare.isValidHumidity(square.getHumidity()));
-        assertTrue(RegularSquare.isValidMergeTemperatureWeight(
-                        RegularSquare.getMergeTemperatureWeight()));
-        assertTrue(square.hasProperBorders());
-        assertTrue(square.bordersSatisfyConstraints());
-        assertTrue(square.hasNoDuplicateBorders());
+        assertTrue(square.isNotRaw());
     }
 
     @Test

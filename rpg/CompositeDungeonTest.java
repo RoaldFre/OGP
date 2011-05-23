@@ -80,19 +80,46 @@ public class CompositeDungeonTest {
         map = dungeon.getDirectionsAndNeighboursOf(new Coordinate(0, 0, 0));
         assertTrue(map.isEmpty());
 
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0,0,0));
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
         map = dungeon.getDirectionsAndNeighboursOf(new Coordinate(0, 1, 0));
         assertEquals(regTelSq3, map.get(Direction.EAST));
         assertEquals(1, map.size());
 
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0,0,0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
         map = dungeon.getDirectionsAndNeighboursOf(new Coordinate(0, 1, 0));
         assertEquals(regTelSq3, map.get(Direction.EAST));
         assertEquals(regSq1, map.get(Direction.UP));
         assertEquals(2, map.size());
     }
 
+    @Test
+    public void getSubDungeonContaining_test() {
+        assertEquals(null, dungeon.getSubDungeonContaining(
+                                                new Coordinate(0, 1, 0)));
 
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        assertEquals(teleportLevel, dungeon.getSubDungeonContaining(
+                                                new Coordinate(0, 1, 0)));
+        assertEquals(null, dungeon.getSubDungeonContaining(
+                                                new Coordinate(0, 1, 2)));
+
+
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        assertEquals(teleportLevel, dungeon.getSubDungeonContaining(
+                                                new Coordinate(0, 1, 0)));
+        assertEquals(regularShaft, dungeon.getSubDungeonContaining(
+                                                new Coordinate(0, 1, 2)));
+        assertEquals(null, dungeon.getSubDungeonContaining(
+                                                new Coordinate(0, 1, 4)));
+
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        assertEquals(teleportLevel, dungeon.getSubDungeonContaining(
+                                                new Coordinate(0, 1, 0)));
+        assertEquals(regularShaft, dungeon.getSubDungeonContaining(
+                                                new Coordinate(0, 1, 2)));
+        assertEquals(transparentLevel, dungeon.getSubDungeonContaining(
+                                                new Coordinate(0, 1, 4)));
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

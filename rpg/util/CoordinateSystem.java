@@ -376,6 +376,13 @@ public class CoordinateSystem implements Cloneable {
                 && this.getUpperBound().equals(otherCoordSyst.getUpperBound());
     }
 
+    /**
+     * Return a hashcode for this coordinate system.
+     *
+     * @return
+     *   | result == 
+     *   |      getLowerBound().hashcode() ^ getUpperBound().hashcode()
+     */
     @Override
     public int hashCode() {
         return getLowerBound().hashCode() ^ getUpperBound().hashCode();

@@ -436,6 +436,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
         if (!canExpandSubDungeonTo(null, translatedCoordSyst))
             throw new SubDungeonDoesNotFitException(subDungeon, this);
 
+        subDungeon.translate(offset);
         subDungeons.add(subDungeon);
         subDungeon.setParentDungeon(this);
     }

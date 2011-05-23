@@ -14,7 +14,7 @@ import rpg.util.Temperature;
  */
 public class TransparentTeleportationSquare
 							extends TransparentSquare
-							implements Teleportable {
+							implements TeleportationSquare {
     /** 
 	 * Initialize this new transparent teleportation square to a 
 	 * transparent teleportation square with the given temperature, 
@@ -138,7 +138,7 @@ public class TransparentTeleportationSquare
 	 *   | result == (getTeleporter().getDestination())
      */
     public Square teleport() {
-        return getTeleporter().getDestination();
+        return getTeleporter().teleport();
 	}
 
     /** 
@@ -152,7 +152,7 @@ public class TransparentTeleportationSquare
 	@Override
     public Set<Square> getNavigatableSquares() {
 		Set<Square> result = super.getNavigatableSquares();
-		result.add(getTeleporter().getDestination());
+		result.addAll(getTeleporter().getDestinations());
 		return result;
     }
 

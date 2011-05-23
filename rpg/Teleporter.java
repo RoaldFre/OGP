@@ -2,16 +2,18 @@ package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
 
+import java.util.Set;
+import java.util.HashSet;
+
 /**
- * A class representing a teleporter involving a destination square.
+ * A class representing a teleporter involving destination squares.
  *
  * @invar
- * Each teleporter can have its destination as its destination.
- *   | canHaveAsDestination(getDestination())
+ * Each teleporter has valid destinations.
+ *   | hasValidDestinations()
  *
  * @author Roald Frederickx
  */
-@Value
 public class Teleporter {
 	/** 
 	 * Initialize this new teleporter to a teleporter with the given 
@@ -31,11 +33,24 @@ public class Teleporter {
 	}
 	
 	/**
-	 * Return the destination for this teleporter.
+	 * Return a destination of this teleporter.
+	 *
+	 * @return
+	 *   | getDestinations().contains(result)
 	 */
-	@Basic @Raw @Immutable
-	public Square getDestination() {
+	@Basic @Raw 
+	public Square teleport() {
 		return destination;
+	}
+
+	/** 
+	 * Return the destinations associated with this teleporter.
+	 */
+	@Basic
+	public Set<Square> getDestinations() {
+		Set<Square> destinations = new HashSet<Square>();
+		destinations.add(destination);
+		return destinations;
 	}
 	
 	/**
@@ -52,7 +67,27 @@ public class Teleporter {
 	public static boolean isValidDestination(Square destination) {
 		return destination != null;
 	}
-	
+
+	/**
+	 * Checks whether all destinations of this teleporter are valid 
+	 * destinations.
+	 *
+	 * @return
+	 *   | result == (getDestinations() != null
+	 *   |		&amp;&amp; for each destination in getDestinations() :
+	 *   |								isValidDestination(destination))
+	 */
+	@Raw
+	public boolean hasValidDestinations() {
+		if (getDestinations() == null)
+			return false;
+		for (Square destination : getDestinations()) {
+			if (!isValidDestination(destination))
+				return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Variable registering the destination for this teleporter.
 	 */

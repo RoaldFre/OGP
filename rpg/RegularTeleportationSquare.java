@@ -14,7 +14,7 @@ import rpg.util.Temperature;
  */
 public class RegularTeleportationSquare
 							extends RegularSquare
-							implements Teleportable {
+							implements TeleportationSquare {
     /** 
 	 * Initialize this new regular teleportation square to a regular 
 	 * teleportation square with the given temperature, temperature limits, 
@@ -141,7 +141,7 @@ public class RegularTeleportationSquare
 	 *   | result == (getTeleporter().getDestination())
      */
     public Square teleport() {
-        return getTeleporter().getDestination();
+        return getTeleporter().teleport();
 	}
 
     /** 
@@ -155,7 +155,7 @@ public class RegularTeleportationSquare
 	@Override
     public Set<Square> getNavigatableSquares() {
 		Set<Square> result = super.getNavigatableSquares();
-		result.add(getTeleporter().getDestination());
+		result.addAll(getTeleporter().getDestinations());
 		return result;
     }
 

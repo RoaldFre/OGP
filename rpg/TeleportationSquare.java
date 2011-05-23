@@ -7,9 +7,9 @@ package rpg;
  */
 
 
-public interface Teleportable {
+public interface TeleportationSquare extends Square {
     /**
-     * Return a destination of this teleportable.
+     * Return a destination of this teleportation square.
      *
      * @return
      *   | result != null

@@ -242,6 +242,40 @@ public class CompositeDungeonTest {
         dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
         dungeon.getSquareAt(new Coordinate (-1, 0, 0));
     }
+
+    @Test
+    public void hasSquare_test() {
+        assertFalse(dungeon.hasSquare(null));
+        assertFalse(dungeon.hasSquare(regTelSq1));
+        assertFalse(dungeon.hasSquare(regSq1));
+        assertFalse(dungeon.hasSquare(transSq1));
+
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        assertTrue(dungeon.hasSquare(regTelSq1));
+        assertFalse(dungeon.hasSquare(regSq1));
+        assertFalse(dungeon.hasSquare(transSq1));
+
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        assertTrue(dungeon.hasSquare(regTelSq1));
+        assertTrue(dungeon.hasSquare(regSq1));
+        assertFalse(dungeon.hasSquare(transSq1));
+
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        assertTrue(dungeon.hasSquare(regTelSq1));
+        assertTrue(dungeon.hasSquare(regSq1));
+        assertTrue(dungeon.hasSquare(transSq1));
+    }
+
+    @Test
+    public void getNbSquares_test() {
+        assertEquals(0, dungeon.getNbSquares());
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        assertEquals(3, dungeon.getNbSquares());
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        assertEquals(6, dungeon.getNbSquares());
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        assertEquals(9, dungeon.getNbSquares());
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

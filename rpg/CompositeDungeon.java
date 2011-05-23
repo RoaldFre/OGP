@@ -198,6 +198,8 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      */
 	@Override
 	public boolean hasSquare(Square square) {
+        if (square == null)
+            return false;
         for (Dungeon<? extends S> subDungeon : getSubDungeons())
             if (subDungeon.hasSquare(square))
                 return true;
@@ -239,7 +241,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      */
 	@Override
 	public boolean isOccupied(Coordinate coordinate)
-			throws IllegalArgumentException {
+                                            throws IllegalArgumentException {
         if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
         if (getSubDungeonContaining(coordinate) == null)

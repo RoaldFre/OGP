@@ -92,8 +92,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     }
 
 
-
-
     /** 
      * Check whether the given coordinate lies within this composite dungeon.
      *
@@ -104,6 +102,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     public boolean containsCoordinate(Coordinate coordinate) {
         return getSubDungeonContaining(coordinate) != null;
     }
+
 
     /** 
      * Return the subdungeon of this composite dungeon that contains the 
@@ -130,12 +129,11 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     }
 
 
-
     /** 
-     * Translate this leaf dungeon over the given offset.
+     * Translate this composite dungeon over the given offset.
      *
      * @param offset 
-     * The offset over which to translate this leaf dungeon.
+     * The offset over which to translate this composite dungeon.
      * @effect
      *   | translateCoordSyst(offset)
      * @effect
@@ -180,6 +178,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
             throw new CoordinateNotOccupiedException(coordinate, this);
         return getSubDungeonContaining(coordinate).getSquareAt(coordinate);
 	}
+
 
     /** 
      * Returns whether or not this composite dungeon contains the given 
@@ -243,7 +242,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 	}
 
 
-	
 	/** 
      * Return the number of squares in this composite dungeon.
 	 */
@@ -371,6 +369,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
         return subDungeons;
     }
 
+
     /** 
      * Check whether this composite dungeon has the given dungeon as its 
      * direct subdungeon.
@@ -440,9 +439,8 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
         subDungeons.add(subDungeon);
         subDungeon.setParentDungeon(this);
     }
-
-
     
+
     /**
      * Checks whether this composite dungeon has proper subdungeons.
      *
@@ -501,7 +499,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
                 && canHaveAsParentDungeon(getParentDungeon())
                 && hasProperSubDungeons();
     }
-
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

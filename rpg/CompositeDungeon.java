@@ -3,6 +3,7 @@ package rpg;
 //import rpg.exceptions.*;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.EnumMap;
 import java.util.Map.Entry;
@@ -31,13 +32,10 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      *
      * @effect
      *   | super(coordSyst)
-     * @effect
-     *   | setParentDungeon(this)
      */
     public CompositeDungeon(CoordinateSystem coordSyst)
                                     throws IllegalArgumentException {
         super(coordSyst);
-        setParentDungeon(this);
     }
 
 
@@ -256,8 +254,11 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * Return the number of squares in this composite dungeon.
 	 */
 	@Override
+    @Raw
 	public int getNbSquares() {
         int result = 0;
+        if (getSubDungeons() == null)
+            return 0;
         for (Dungeon<? extends S> subDungeon : getSubDungeons())
             result += subDungeon.getNbSquares();
         return result;
@@ -272,12 +273,15 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * The map of coordinates to squares to add the mapping of coordinates 
      * to squares of this dungeon to.
      * @effect
-     *   | for each subDungeon in getSubDungeons()
+     *   | if (getSubDungeons() != null)
+     *   | then for each subDungeon in getSubDungeons()
      *   |      subDungeon.addSquareMappingTo(map)
      */
 	@Override @Basic @Raw
 	public void addSquareMappingTo(Map<Coordinate, ? super S> map)
                                             throws IllegalStateException{
+        if (getSubDungeons() == null)
+            return;
         for (Dungeon<? extends S> subDungeon : getSubDungeons())
             subDungeon.addSquareMappingTo(map);
 	}
@@ -288,15 +292,19 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
                                         final SquareFilter squareFilter) {
         return new Iterator<S>() {
             {
-                Iterator<Dungeon<? extends S>> subDungeonIterator;
-                subDungeonIterator = getSubDungeons().iterator();
-                if (!subDungeonIterator.hasNext()) {
+                if (getSubDungeons() == null) {
                     next = null;
                 } else {
-                    this.subDungeonIterator = subDungeonIterator;
-                    this.squareIterator = subDungeonIterator.next().
-                                    getFilteredSquareIterator(squareFilter);
-                    this.next = getNextSquare();
+                    Iterator<Dungeon<? extends S>> subDungeonIterator;
+                    subDungeonIterator = getSubDungeons().iterator();
+                    if (!subDungeonIterator.hasNext()) {
+                        next = null;
+                    } else {
+                        this.subDungeonIterator = subDungeonIterator;
+                        this.squareIterator = subDungeonIterator.next().
+                                        getFilteredSquareIterator(squareFilter);
+                        this.next = getNextSquare();
+                    }
                 }
             }
            
@@ -364,10 +372,15 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * @param dungeon 
      * The dungeon to check.
      * @return 
-     *   | result == (for some subDungeon in getSubDungeons():
-     *   |              subDungeon == dungeon)
+     *   | if (getSubDungeons() == null)
+     *   |      then result == false
+     *   |      else result == (for some subDungeon in getSubDungeons():
+     *   |                          subDungeon == dungeon)
      */
+    @Raw
     public boolean hasAsSubDungeon(Dungeon<?> dungeon) {
+        if (getSubDungeons() == null)
+            return false;
         for (Dungeon<?> subDungeon : getSubDungeons())
             if (subDungeon == dungeon)
                 return true;
@@ -427,11 +440,15 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * Checks whether this composite dungeon has proper subdungeons.
      *
      * @return
-     *   | result == (for each subDungeon in getSubDungeons() :
-     *   |                  isProperSubDungeon(subDungeon)
+     *   | if (getSubDungeons() == null)
+     *   |      result == false
+     *   |      else result == (for each subDungeon in getSubDungeons() :
+     *   |                          isProperSubDungeon(subDungeon)
      */
     @Raw
     public boolean hasProperSubDungeons() {
+        if (getSubDungeons() == null)
+            return false;
         for (Dungeon<? extends S> subDungeon : getSubDungeons())
             if (!isProperSubDungeon(subDungeon))
                 return false;
@@ -460,8 +477,23 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     /**
      * Variable registering the set of subdungeons for this composite dungeon.
      */
-    private Set<Dungeon<? extends S>> subDungeons;
+    private Set<Dungeon<? extends S>> subDungeons = 
+                                        new HashSet<Dungeon<? extends S>>();
 
+
+    /**
+     * Check whether this composite dungeon is not raw.
+     */
+    @Raw
+    @Override
+    public boolean isNotRaw() {
+        return super.isNotRaw()
+                && squaresSatisfyConstraints()
+                && canHaveAsCoordSyst(getCoordSyst())
+                && getSquareMapping() != null
+                && canHaveAsParentDungeon(getParentDungeon())
+                && hasProperSubDungeons();
+    }
 
 }
 

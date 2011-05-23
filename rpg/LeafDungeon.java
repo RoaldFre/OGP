@@ -40,10 +40,8 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 
     /** 
      * Translate this leaf dungeon over the given offset.
-     *
-     * @param offset 
-     * The offset over which to translate this leaf dungeon.
      */
+    @Override
     protected void translate(Coordinate offset)
                                     throws IllegalArgumentException,
                                             CoordinateConstraintsException {
@@ -64,9 +62,6 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 
     /** 
      * Check whether the given coordinate lies within this leaf dungeon.
-     *
-     * @return
-     *   | getCoordSyst().contains(coordinate)
      */
     @Override
     public boolean containsCoordinate(Coordinate coordinate) {
@@ -126,18 +121,9 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     /** 
      * Return a mapping of directions to squares that represent all 
      * neighbouring squares of the given coordinate in this dungeon. 
-     * 
-     * @param coordinate 
-     * The coordinate whose neighbours to return.
-     * @return
-     * A mapping of directions to squares that represent all neighbouring 
-     * squares of the given coordinate in this dungeon. 
-     *   | for each e in result.entrySet() :
-     *   |      e.getValue() == getSquareAt(coordinate.moveTo(e.getKey()))
-     * @throws IllegalArgumentException
-     *   | !isEffectiveCoordinate(coordinate)
      */
     @Raw
+    @Override
     public Map<Direction, S> getDirectionsAndNeighboursOf(
                                                         Coordinate coordinate)
                                             throws IllegalArgumentException {
@@ -162,15 +148,9 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 
     /** 
      * Returns the square at the given coordinate in this dungeon.
-     * 
-     * @param coordinate 
-     * The coordinate of the square to return.
-     * @throws IllegalArgumentException
-     *   | !isEffectiveCoordinate(coordinate)
-     * @throws CoordinateNotOccupiedException
-     *   | !isOccupied(coordinate)
      */
     @Basic @Raw
+    @Override
     public S getSquareAt(Coordinate coordinate) 
                                     throws IllegalArgumentException,
                                             CoordinateNotOccupiedException {
@@ -186,25 +166,17 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 
     /** 
      * Returns wheter or not this dungeon contains the given square.
-     * 
-     * @param square 
-     * The square to check.
      */
     @Basic @Raw
+    @Override
     public boolean hasSquare(Square square) {
         return squares.containsValue(square);
     }
 
     /** 
      * Deletes the square at the given coordinate and terminates it.
-     *
-     * @param coordinate 
-     * The coordinate to remove the square at.
-     * @post
-     *   | !isOccupied(coordinate)
-     * @effect
-     *   | old.getSquareAt(coordinate).terminate()
      */
+    @Override
     public void deleteSquareAt(Coordinate coordinate) 
                                     throws IllegalArgumentException,
                                             CoordinateNotOccupiedException {
@@ -216,13 +188,9 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     /** 
      * Returns whether or not the given coordinate is occupied in this 
      * dungeon.
-     * 
-     * @param coordinate 
-     * The coordinate to check.
-     * @throws IllegalArgumentException
-     *   | !isEffectiveCoordinate(coordinate)
      */
     @Basic
+    @Override
     public boolean isOccupied(Coordinate coordinate)
                                         throws IllegalArgumentException {
         if (!isEffectiveCoordinate(coordinate))
@@ -233,25 +201,21 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 
     /** 
      * Return the number of squares in this dungeon.
-     *
-     * @return
-     *   result == {square in getSquares() | true : true}.size()
      */
+    @Raw
+    @Override
     public int getNbSquares() {
+        if (squares == null)
+            return 0;
         return squares.size();
     }
 
     /**
      * Add the mapping of coordinates to squares of this leaf dungeon to 
      * the given map.
-     * 
-     * @param map 
-     * The map of coordinates to squares to add the mapping of coordinates 
-     * to squares of this dungeon to.
-     * @effect
-     *   | map.putAll(getSquares())
      */
-    @Override @Basic @Raw
+    @Basic @Raw
+    @Override
     public void addSquareMappingTo(Map<Coordinate, ? super S> map) 
                                             throws IllegalStateException {
         if (squares == null)
@@ -262,13 +226,8 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     /**
      * Return an iterator of the squares in this dungeon that satisfy the 
      * conditions as imposed by the given filter.
-     *
-     * @param squareFilter
-     * The filter used to select which squares of this dungeon to return.
-     * @return
-     * An iterator over the elements of getSquareMapping().values() that 
-     * satisfy the given square filter.
      */
+    @Override
     public Iterator<S> getFilteredSquareIterator(
                                     final SquareFilter squareFilter) {
         return new Iterator<S>() {
@@ -305,13 +264,9 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 
     /**
      * Return an iterable of the squares and their position in this dungeon.
-     *
-     * @return
-     * An iterable over the elements of getSquareMapping().entrySet().
-     * @throws IllegalStateException
-     *   | getSquareMapping == null();
      */
-    @Override @Raw
+    @Raw
+    @Override
     public Iterable<Map.Entry<Coordinate, S>> getPositionsAndSquares() 
                                             throws IllegalStateException {
         if (squares == null)
@@ -437,9 +392,20 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     }
 
 
-
-
-
+    /**
+     * Check whether this leaf dungeon is not raw.
+     */
+    @Raw
+    @Override
+    public boolean isNotRaw() {
+        return super.isNotRaw()
+                && squaresSatisfyConstraints()
+                && canHaveAsCoordSyst(getCoordSyst())
+                && getSquareMapping() != null
+                && canHaveAsParentDungeon(getParentDungeon())
+                && canHaveSquaresAtTheirCoordinates()
+                && hasProperBorderingSquares();
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

@@ -300,8 +300,11 @@ public abstract class Dungeon<S extends Square> {
      * Return the number of squares in this dungeon.
      *
      * @return
-     *   result == {square in getSquares() | true : true}.size()
+     *   | if (getSquares() == null)
+     *   |      then result == null
+     *   |      else result == {square in getSquares() | true : true}.size()
      */
+    @Raw
     abstract public int getNbSquares();
 
     /** 
@@ -723,6 +726,20 @@ public abstract class Dungeon<S extends Square> {
         return coordinate != null;
     }
 
+    /**
+     * Check whether this dungeon is not raw.
+     *
+     * @return
+     * True iff this dungeon satisfies all its class invariants.
+     */
+    @Raw
+    public boolean isNotRaw() {
+        return true
+                && squaresSatisfyConstraints()
+                && canHaveAsCoordSyst(getCoordSyst())
+                && getSquareMapping() != null
+                && canHaveAsParentDungeon(getParentDungeon());
+    }
 } 
 
 // vim: ts=4:sw=4:expandtab:smarttab

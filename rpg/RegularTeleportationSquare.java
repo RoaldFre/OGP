@@ -40,10 +40,10 @@ public class RegularTeleportationSquare
      */
     @Raw
     public RegularTeleportationSquare(Temperature temperature,
-                    Temperature minTemp, Temperature maxTemp,
-                    int humidity, boolean hasSlipperyFloor,
-					Teleporter teleporter)
-                                            throws IllegalArgumentException {
+								Temperature minTemp, Temperature maxTemp,
+								int humidity, boolean hasSlipperyFloor,
+								Teleporter teleporter)
+								throws IllegalArgumentException {
         super(temperature, minTemp, maxTemp, humidity, hasSlipperyFloor);
 		setTeleporter(teleporter);
     }

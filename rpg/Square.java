@@ -52,9 +52,8 @@ public interface Square {
      * @param temperature
      * The temperature of this square.
      * @return
-     * False if the given temperature is not effective, strictly lower than 
-     * the minimum temperature for this square, or strictly higher 
-     * than the maximum temperature for this square.
+     * False if the given temperature does not match with the minimum and 
+     * maximum temperature of this square.
      *   | if !matchesMinTemperatureMax(getMinTemperature(), 
      *   |                              temperature, getMaxTemperature())
      *   |      then result == false
@@ -70,7 +69,8 @@ public interface Square {
      * @effect
      * The new temperature of this square is set to the given temperature 
      * and then the area of this square is equilibrated.
-     *   | setTemperatureRaw(temperature); equilibrateMyArea()
+     *   | setTemperatureRaw(temperature);
+     *   | equilibrateMyArea()
      * @throws IllegalArgumentException
      * This square can not have the given temperature.
      *   | !canHaveAsTemperature(temperature)
@@ -85,8 +85,7 @@ public interface Square {
                                 EquilibratingSquaresViolatesLimitsException;
 
     /**
-     * Sets the temperature of this square, without equilibrating its a 
-     * area.
+     * Sets the temperature of this square, without equilibrating its area.
      *
      * @param temperature
      * The new temperature.
@@ -148,6 +147,7 @@ public interface Square {
     /**
      * Checks whether this square can have the given maximum temperature as 
      * its maximum temperature.
+     *
      * @param max
      * The maximum temperature.
      * @return 
@@ -783,7 +783,7 @@ public interface Square {
      * @effect
      * The old borders get changed to null and they get detatched from any 
      * other squares.
-     *   | for (Direction direction : Direction.values())
+     *   | for each direction in Direction.values() :
      *   |      changeBorderAt(direction, null);
      */
     // Note: would have liked to restrict the visibility of this method to 

@@ -135,6 +135,7 @@ abstract public class SquareImpl implements Square {
     /**
      * Returns the temperature of this square.
      */
+    @Override
     @Basic @Raw
     public Temperature getTemperature() {
         return temperature;
@@ -142,17 +143,8 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Checks whether the given temperature is valid for this square. 
-     * 
-     * @param temperature
-     * The temperature of this square.
-     * @return
-     * False if the given temperature is not effective, strictly lower than 
-     * the minimum temperature for this square, or strictly higher 
-     * than the maximum temperature for this square.
-     *   | if !matchesMinTemperatureMax(getMinTemperature(), 
-     *   |                              temperature, getMaxTemperature())
-     *   |      then result == false
      */
+    @Override
     public boolean canHaveAsTemperature(Temperature temperature){
         return matchesMinTemperatureMax(getMinTemperature(), temperature,
                 getMaxTemperature());
@@ -161,21 +153,8 @@ abstract public class SquareImpl implements Square {
     /**
      * Sets the temperature of this square and equilibrate its area 
      * afterwards.
-     *
-     * @param temperature
-     * The new temperature.
-     * @effect
-     * The new temperature of this square is set to the given temperature 
-     * and then the area of this square is equilibrated.
-     *   | setTemperatureRaw(temperature); equilibrateMyArea()
-     * @throws IllegalArgumentException
-     * This square can not have the given temperature.
-     *   | !canHaveAsTemperature(temperature)
-     * @throws EquilibratingSquaresViolatesLimitsException
-     * Equilibrating the area of this square after having set its 
-     * temperature to the given temperature, violates some temperature or 
-     * humidities constraints of a square in said area.
      */
+    @Override
     @Raw
     public void setTemperature(Temperature temperature)
                         throws IllegalArgumentException,
@@ -193,19 +172,9 @@ abstract public class SquareImpl implements Square {
     }
 
     /**
-     * Sets the temperature of this square.
-     *
-     * @param temperature
-     * The new temperature.
-     * @pre
-     * This square can have the given temperature as its temperature.
-     *   | canHaveAsTemperature(temperature)
-     * @post
-     * The new temperature of this square is equal to the given temperature
-     *   | new.getTemperature().equals(temperature)
-     * @throws IllegalArgumentException
-     * This square can not have the given temperature.
+     * Sets the temperature of this square, without equilibrating its area.
      */
+    @Override
     @Raw
     public void setTemperatureRaw(Temperature temperature)
                                             throws IllegalArgumentException {
@@ -223,6 +192,7 @@ abstract public class SquareImpl implements Square {
     /**
      * Returns the minimum temperature for this square.
      */
+    @Override
     @Basic @Raw
     public Temperature getMinTemperature() {
         return minTemperature;
@@ -231,14 +201,8 @@ abstract public class SquareImpl implements Square {
     /**
      * Checks whether this square can have the given minimum temperature as 
      * its minimum temperature.
-     * @param min
-     * The minimum temperature.
-     * @return 
-     * True iff the given minimum temperature is consistent with the 
-     * current temperature and the current maximum temperature.
-     *   | result == matchesMinTemperatureMax(min, getTemperature(), 
-     *   |                              getMaxTemperature())
      */
+    @Override
     public boolean canHaveAsMinTemperature(Temperature min) {
         return matchesMinTemperatureMax(min, getTemperature(),
                 getMaxTemperature());
@@ -246,17 +210,8 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Set the minimum temperature for this square. 
-     * 
-     * @param min
-     * The minimum temperature for this square.
-     * @post
-     * The new minimum temperature for this square is equal to the given 
-     * minimum temperature.
-     *   | new.getMinTemperature().equals(min)
-     * @throws IllegalArgumentException
-     * The given minimum temperature is illegal for this square.
-     *   | ! canHaveAsMinTemperature(min)
      */
+    @Override
     @Raw
     public void setMinTemperature(Temperature min)
                                     throws IllegalArgumentException {
@@ -289,6 +244,7 @@ abstract public class SquareImpl implements Square {
     /**
      * Returns the maximum temperature for this square.
      */
+    @Override
     @Basic @Raw
     public Temperature getMaxTemperature() {
         return maxTemperature;
@@ -312,17 +268,8 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Set the maximum temperature for this square. 
-     * 
-     * @param max
-     * The maximum temperature for this square.
-     * @post
-     * The new maximum temperature for this square is equal to the given 
-     * maximum temperature.
-     *   | new.getMaxTemperature().equals(max)
-     * @throws IllegalArgumentException
-     * The given maximum temperature is illegal for this square.
-     *   | ! canHaveAsMaxTemperature(max)
      */
+    @Override
     @Raw
     public void setMaxTemperature(Temperature max)
                                 throws IllegalArgumentException {
@@ -355,22 +302,8 @@ abstract public class SquareImpl implements Square {
     /**
      * Check whether the given temperature matches with the given 
      * temperature limits and all given values are effective.
-     *
-     * @param minTemperature 
-     * The minimum temperature.
-     * @param temperature 
-     * The acutual temperature.
-     * @param maxTemperature 
-     * The maximum temperature.
-     * @return 
-     * True iff all temperatures are effective and the given temperature 
-     * lays between the given temperature limits.
-     *   | result == minTemperature != null 
-     *   |          &amp;&amp; temperature != null
-     *   |          &amp;&amp; maxTemperature != null
-     *   |          &amp;&amp; minTemperature.compareTo(temperature) &lt;= 0
-     *   |          &amp;&amp; temperature.compareTo(maxTemperature) &lt;= 0;
      */
+    @Override
     public boolean matchesMinTemperatureMax(Temperature minTemperature,
             Temperature temperature, Temperature maxTemperature) {
         return minTemperature != null 
@@ -394,6 +327,7 @@ abstract public class SquareImpl implements Square {
      *   |     result == 1 + (int)((COLD_DAMAGE_THRESHOLD
      *   |              - getTemperature().temperature()) / COLD_DAMAGE_STEP)
      */
+    @Override
     public int coldDamage() {
         double temp = getTemperature().temperature();
         if (temp > COLD_DAMAGE_THRESHOLD)
@@ -425,6 +359,7 @@ abstract public class SquareImpl implements Square {
      *   |                  - getHeatDamageThreshold().temperature())
      *   |                                  / getHeatDamageStep())
      */
+    @Override
     public int heatDamage() {
         if (getTemperature().compareTo(getHeatDamageThreshold()) < 0)
             return 0;
@@ -554,6 +489,7 @@ abstract public class SquareImpl implements Square {
      * Return the humidity for this square.
      */
     @Basic @Raw
+    @Override
     public int getHumidity() {
         return humidity;
     }
@@ -589,29 +525,14 @@ abstract public class SquareImpl implements Square {
     /** 
      * Checks whether this square can have the given humidity as its 
      * humidity. 
-     * 
-     * @param humidity
-     * The humidity to check.
-     * @return 
-     * False if the given humidity is not a valid humidity for a square.
-     *   | if (!isValidHumidity(humidity))
-     *   |      then result == false
      */
+    @Override
     public boolean canHaveAsHumidity(int humidity) {
         return isValidHumidity(humidity);
     }
 
     /**
      * Set the humidity for this square to the given humidity.
-     *
-     * @param humidity
-     * The new humidity for this square.
-     * @pre
-     * This square can have the given humidity as its humidity.
-     *   | canHaveAsHumidity(humidity) 
-     * @post
-     * The new humidity for this square is equal to the given humidity.
-     *   | new.getHumidity() == humidity
      */
     @Raw
     public void setHumidity(int humidity) {
@@ -637,6 +558,7 @@ abstract public class SquareImpl implements Square {
      *   |      else result == (getHumidity() - RUST_DAMAGE_THRESHOLD)
      *   |                                      / RUST_DAMAGE_STEP
      */
+    @Override
     public int rustDamage() {
         if (getHumidity() < RUST_DAMAGE_THRESHOLD)
             return 0;
@@ -656,14 +578,8 @@ abstract public class SquareImpl implements Square {
 
     /**
      * Return the slipperiness of the floor for this square.
-     * 
-     * @pre
-     * This square is not terminated.
-     *   | !isTerminated()
-     * @return
-     * The slipperiness of the floor.
-     *   | result == getBorderAt(Direction.DOWN).isSlippery()
      */
+    @Override
     public boolean hasSlipperyFloor() {
         assert !isTerminated();
         return getBorderAt(Direction.DOWN).isSlippery();
@@ -672,14 +588,8 @@ abstract public class SquareImpl implements Square {
 
     /**
      * Returns whether or not this square is slippery at the moment.
-     * 
-     * @return
-     * True iff this square has a slippery floor, is slippery because of 
-     * its humidity of is slippery because of its temperature.
-     *   | result == (hasSlipperyFloor()
-     *   |              || isSlipperyBecauseOfTemperature()
-     *   |              || isSlipperyBecauseOfHumidity()
      */
+    @Override
     public boolean isSlippery() {
         return hasSlipperyFloor()
                 || isSlipperyBecauseOfTemperature()
@@ -689,13 +599,8 @@ abstract public class SquareImpl implements Square {
     /** 
      * Returns whether or not this square is slippery at the moment because 
      * of humidity.
-     * 
-     * @return 
-     * True iff the humidity is 100% and the temperature is positive (in 
-     * degrees Celcius).
-     *   | result == (getHumidity() == 10000
-     *   |              &amp;&amp; getTemperature().temperature() &gt; 0)
      */
+    @Override
     public boolean isSlipperyBecauseOfHumidity() {
         return getHumidity() == 10000 && getTemperature().temperature() > 0;
     }
@@ -703,13 +608,8 @@ abstract public class SquareImpl implements Square {
     /** 
      * Returns whether or not this square is slippery at the moment because 
      * of temperature.
-     * 
-     * @return
-     * True iff the temperature is below 0C and the humidity is greater 
-     * than 10%.
-     *   | result == (getTemperature().temperature() &lt; 0 
-     *   |              &amp;&amp; getHumidity() &gt; 1000);
      */
+    @Override
     public boolean isSlipperyBecauseOfTemperature() {
         return getTemperature().temperature() < 0 && getHumidity() > 1000;
     }
@@ -717,14 +617,8 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Return the inhabitability associated with this square. 
-     * 
-     * @return
-     * The inhabitability associated with this square.
-     *   | result == -1 * Math.sqrt(
-     *   |              heatDamage() * heatDamage() * heatDamage()
-     *   |                              / (101 - getHumidity()/100.0))
-     *   |          - Math.sqrt(coldDamage())
      */
+    @Override
     public double inhabitability() {
         double heatDam = heatDamage();
         double heatDamCubed = heatDam * heatDam * heatDam;
@@ -738,14 +632,9 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Return the border of this square in the given direction.
-     * 
-     * @param direction 
-     * The direction of the border.
-     * @pre
-     * The direction is valid
-     *   | isValidDirection(direction)
      */
     @Basic @Raw
+    @Override
     public Border getBorderAt(Direction direction) {
         assert isValidDirection(direction);
         if (borders == null)
@@ -771,26 +660,9 @@ abstract public class SquareImpl implements Square {
      * Check whether this square can possibly have the given border as its 
      * border in the given direction, not taking into account specific 
      * rules for specific types of squares.
-     * 
-     * @param direction 
-     * The direction of the border.
-     * @param border
-     * The border to check.
-     * @return
-     * True iff the given direction is valid and:
-     *   - this square is terminated and the given border is null;
-     *   or 
-     *   - this square is not terminated and the given border is not null 
-     *   nor terminated.
-     *   | if (!isValidDirection(direction))
-     *   |      then result == false
-     *   | else if (isTerminated())
-     *   |      then result == (border == null)
-     *   | else
-     *   |      result == (border != null 
-     *   |                      &amp;&amp; !border.isTerminated())
      */
     @Raw
+    @Override
     public boolean canPossiblyHaveAsBorderAt(Direction direction, Border border) {
         if (!isValidDirection(direction))
             return false;
@@ -803,48 +675,25 @@ abstract public class SquareImpl implements Square {
      * Check whether this square can have the given border as its border in 
      * the given direction, taking into account specific rules for specific 
      * types of squares.
-     * 
-     * @param direction 
-     * The direction of the border.
-     * @param border
-     * The border to check.
      */
     @Raw
+    @Override
     abstract public boolean canHaveAsBorderAt(Direction direction, Border border);
 
     /**
      * Checks whether the borders of this square satisfy the specific 
      * constraints of the game for this type of square.
-     *
-     * @pre
-     * This square has prober, non-duplicated borders
-     *   | hasProperBorders() &amp;&amp; hasNoDuplicateBorders()
-     * @return
-     * True if this square is terminated.
-     *   | if (isTerminated())
-     *   |      then result == true
      */
     @Raw
+    @Override
     abstract public boolean bordersSatisfyConstraints();
 
     /** 
      * Check whether the given border is a proper border for the given 
      * direction.
-     * 
-     * @param direction
-     * The direction of the border.
-     * @param border
-     * The border to check.
-     * @return 
-     * True iff this square can have the given border as a border in the 
-     * given direction and the given border is either null or it borders on 
-     * this square.
-     *   | result ==
-     *   |      (canHaveAsBorderAt(direction, border)
-     *   |          &amp;&amp;
-     *   |          (border == null  ||  border.bordersOnSquare(this)))
      */
     @Raw
+    @Override
     public boolean isProperBorderAt(Direction direction, Border border) {
         return (canHaveAsBorderAt(direction, border) &&
                 (border == null  ||  border.bordersOnSquare(this)));
@@ -852,15 +701,9 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Checks whether this square has proper borders associated with it.
-     *
-     * @return
-     * True iff every border of this square is a proper border for this 
-     * square in its direction.
-     *   | result ==
-     *   |      for each direction in Direction.values() : 
-     *   |              isProperBorderAt(direction, getBorderAt(direction)
      */
     @Raw
+    @Override
     public boolean hasProperBorders() {
         for (Direction direction : Direction.values()){
             if (!isProperBorderAt(direction, getBorderAt(direction)))
@@ -871,19 +714,9 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Returns whether this square has no duplicate borders.
-     *
-     * @return 
-     * Whether this square has no duplicate borders, or true if this square 
-     * is terminated
-     *   | if (isTerminated())
-     *   |      then result == true
-     *   | else
-     *   |      result == (
-     *   |          for all d1 in Direction.values() :
-     *   |              { d2 in Direction.values() | true :
-     *   |                  getBorderAt(d2) == getBorderAt(d1) }.size() == 1)
      */
     @Raw
+    @Override
     public boolean hasNoDuplicateBorders() {
         if (isTerminated())
             return true;
@@ -895,33 +728,8 @@ abstract public class SquareImpl implements Square {
     /** 
      * Change the border of this square for the given direction to the given 
      * border.
-     * 
-     * @param direction 
-     * The direction of the border.
-     * @param border
-     * The new border.
-     * @post
-     * If this square is not terminated, then the new border in the given 
-     * direction is equal to the given border.
-     *   | if (!isTerminated())
-     *   |      then new.getBorderAt(direction).equals(border)
-     * @effect
-     * If the old border in the given direction is not null, then that old 
-     * border gets detatched from this square.
-     *   | if (old.getBorderAt(direction) != null)
-     *   |      old.getBorderAt(direction).detatchFromSquare(this);
-     * @throws IllegalArgumentException
-     * This square can not have the given border as a proper border in the 
-     * given direction.
-     *   | !isProperBorderAt(direction, border)
-     * @throws IllegalArgumentException
-     * This square already has the given non-null border as a border for 
-     * some direction.
-     *   | hasBorder(border)
-     * @throws BorderConstraintsException
-     * If the border of this square were to be changed to the given border, 
-     * some border constraints would be violated.
      */
+    @Override
     public void changeBorderAt(Direction direction, @Raw Border border) 
                 throws IllegalArgumentException, BorderConstraintsException {
         if (!isProperBorderAt(direction, border)  ||  hasBorder(border))
@@ -942,16 +750,8 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Update the border of this square to the given border.
-     * 
-     * @param oldBorder
-     * The old border.
-     * @param newBorder
-     * The new border.
-     * @effect
-     * The border of this square in the given direction gets changed to the 
-     * given border.
-     *   | changeBorderAt(getDirectionOfBorder(oldBorder), newBorder)
      */
+    @Override
     public void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
                 throws IllegalArgumentException, BorderConstraintsException {
         changeBorderAt(getDirectionOfBorder(oldBorder), newBorder);
@@ -960,18 +760,8 @@ abstract public class SquareImpl implements Square {
     /** 
      * Returns the direction associated with the given border of this 
      * square.
-     *
-     * @param border
-     * The border whose direction to search for.
-     * @return
-     * The directon of the given border of this square.
-     * @throws IllegalArgumentException
-     * The given border is null or does not border this square.
-     *   | border == null  ||  !border.bordersOnSquare(this)
-     * @throws IllegalStateException
-     * This square is terminated.
-     *   | isTerminated()
      */
+    @Override
     public Direction getDirectionOfBorder(@Raw Border border) 
                     throws IllegalArgumentException, IllegalStateException {
         if (isTerminated())
@@ -984,18 +774,8 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Check whether this square has the given border as its border. 
-     * 
-     * @param border 
-     * The border to check.
-     * @return 
-     * Whether this square has the given border as its border, or false if 
-     * this square is terminated. 
-     *   | if (isTerminated()  ||  border == null)
-     *   |      then result == false
-     *   | else
-     *   |      result == (for some direction in Direction.values() :
-     *   |                      getBorderAt(direction).equals(border))
      */
+    @Override
     public boolean hasBorder(Border border) {
         if (isTerminated()  ||  border == null)
             return false;
@@ -1005,21 +785,16 @@ abstract public class SquareImpl implements Square {
     
     /** 
      * Returns the squares that neighbour this square. 
-     * 
-     * @return 
-	 *   | result == getFilteredNeighbours(acceptAllNeighboursFilter)
      */
+    @Override
     public Map<Direction, Square> getNeighbours(){
         return getFilteredNeighbours(acceptAllNeighboursFilter);
     }
 
     /** 
      * Returns the squares that neighbour this square through open borders. 
-     * 
-     * @return 
-	 *   | result == getFilteredNeighbours(
-	 *   |							acceptOpenlyConnectedNeighboursFilter)
      */
+    @Override
     public Map<Direction, Square> getAccessibleNeighbours(){
         return getFilteredNeighbours(acceptOpenlyConnectedNeighboursFilter);
     }
@@ -1027,77 +802,17 @@ abstract public class SquareImpl implements Square {
     /** 
      * Return a set of squares that can directly be navigated to 
      * from this square in a single step in one way or another.
-     * 
-     * @return 
-     * A set of squares that can directly be navigated to from this 
-     * square in a single step in one way or another.
-     * @return
-     * The resulting set contains all accessible neighbours.
-     *   | for each square in getAccessibleNeighbours().values()
-     *   |      result.contains(square)
      */
+    @Override
     public Set<Square> getNavigatableSquares() {
         return new HashSet<Square>(getAccessibleNeighbours().values());
     }
 
-
-
-
-
-//
-//    /** 
-//     * An interface to filter neighbouring squares.
-//     */
-//    public static interface NeighbourFilter {
-//        /** 
-//         * Check whether the given neighbour of the given square is allowed 
-//         * to pass this neighbour filter.
-//         * 
-//         * @param square
-//         * The square whose neighbour to filter.
-//         * @param border
-//         * The border at which the given square borders the given neighbour.
-//         * @param neighbour
-//         * The neighbour to filter.
-//         * @pre
-//         *   | border != null &amp;&amp;
-//         *   |              square != null &amp;&amp; neighbour != null
-//         * @pre
-//         *   | border.isSharedByTwoSquares()
-//         * @pre
-//         *   | border.bordersOnSquare(square);
-//         * @pre
-//         *   | border.bordersOnSquare(neighbour);
-//         */
-//        @Basic
-//        public boolean filter(Square square, Border border, Square neighbour);
-//    }
-//    
-//    public static final NeighbourFilter acceptAllNeighboursFilter =
-//                new NeighbourFilter() {
-//                    public boolean filter(Square s, Border b, Square n){
-//                        return true;
-//                    }
-//                };
-//
-//    public static final NeighbourFilter acceptOpenlyConnectedNeighboursFilter =
-//                new NeighbourFilter() {
-//                    public boolean filter(Square s, Border border, Square n){
-//                        return border.isOpen();
-//                    }
-//                };
-
     /** 
      * Return a list of neighbouring squares that satisfy the given filter.
-     * 
-     * @param nf
-     * The neighbourfilter that will be applied to the neighbours.
-     * @pre
-     *   | nf != null
-     * @return
-     * A list of neighbouring squares that satisfy the given filter.
      */
     @Raw
+    @Override
     public Map<Direction, Square> getFilteredNeighbours(NeighbourFilter nf) {
         assert nf != null;
         Map<Direction, Square> result = 
@@ -1188,24 +903,8 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Merge this square with the given square in the given direction. 
-     * 
-     * @param other
-     * The square to merge with this one.
-     * @param direction
-     * The direction in which to merge the squares.
-     * @effect
-     * The border of this square in the given direction gets merged with 
-     * the border of the other square in the complementary direction.
-     *   | getBorderAt(direction).mergeWith(
-     *   |              other.getBorderAt(direction.complement()))
-     * @throws IllegalArgumentException
-     * The given other square is not effective or the given direction is 
-     * not valid.
-     *   | other == null  ||  !isValidDirection(direction)
-     * @throws IllegalStateException
-     * This square and/or the given square is/are terminated.
-     *   | this.isTerminated() || other.isTerminated()
      */
+    @Override
     public void mergeWith(Square other, Direction direction)
         throws IllegalArgumentException, IllegalStateException {
         if (other == null  ||  !isValidDirection(direction))
@@ -1219,19 +918,8 @@ abstract public class SquareImpl implements Square {
 
     /** 
      * Merge the humidities of this square with the given square. 
-     *
-     * @pre
-     * The other square is effective
-     *   | other != null
-     * @post
-     * New humidity of both squares is average of humidity of the old
-     * squares.
-     *   | (new this).getHumidity() == 
-     *   |      ((old this).getHumidity() + (old other).getHumidity() + 1) / 2
-     *   | &amp;&amp;
-     *   | (new other).getHumidity() == 
-     *   |      ((old this).getHumidity() + (old other).getHumidity() + 1) / 2
      */
+    @Override
     public void mergeHumidities(Square other) {
         assert other != null;
         int newHumididty = (this.getHumidity() + other.getHumidity() + 1) / 2;
@@ -1247,24 +935,8 @@ abstract public class SquareImpl implements Square {
      * 'getMergeTemperatureWeight()' and an additional weight, proportional 
      * to the humidity of the squares, to reach a total average weight of 
      * unity.
-     * 
-     * @pre
-     * The other square is effective
-     *   | other != null
-     * @post
-     * Both new squares have the same temperature.
-     *   | new.getTemperature().equals((new other).getTemperature())
-     * @post
-     * The new temperature lies between the old temperatures of the 
-     * squares.
-     *   | new.getTemperature()
-     *   |   &lt;= min(old.getTemperature(), (old other).getTemperature())
-     *   | &amp;&amp; new.getTemperature()
-     *   |   &gt;= max(old.getTemperature(), (old other).getTemperature())
-     * @throws MergingTemperaturesViolatesLimitsException
-     * Merging the temperaturs would violate the temperature limits of one 
-     * of the squares.
      */
+    @Override
     public void mergeTemperatures(Square other)
                         throws MergingTemperaturesViolatesLimitsException {
         assert other != null;
@@ -1371,6 +1043,7 @@ abstract public class SquareImpl implements Square {
 	 * @return 
 	 *   | isTerminated() || new Area().isEquilibrated();
 	 */
+    @Override
 	public boolean myAreaIsEquilibrated() {
 		if (isTerminated())
 			return true;
@@ -1381,8 +1054,9 @@ abstract public class SquareImpl implements Square {
      * Equilibrate the temperatures and humidities of the area that this 
      * square is part of.
      */
+    @Override
     public void equilibrateMyArea() 
-                        throws EquilibratingSquaresViolatesLimitsException {
+                    throws EquilibratingSquaresViolatesLimitsException {
         new Area().equilibrate();
     }
 
@@ -1392,6 +1066,7 @@ abstract public class SquareImpl implements Square {
 	 * @return
 	 * The set of squares as returned by new Area().getArea().
 	 */
+    @Override
 	public Set<Square> getArea() {
 		assert !isTerminated();
 		return new Area().getArea();
@@ -1403,6 +1078,7 @@ abstract public class SquareImpl implements Square {
 	 * @return
 	 * The set of squares as returned by new Area().getBoundary().
 	 */
+    @Override
 	public Set<Square> getAreaBoundary() {
 		assert !isTerminated();
 		return new Area().getBoundary();
@@ -1429,7 +1105,7 @@ abstract public class SquareImpl implements Square {
 			Square square = SquareImpl.this;
 			squareSet.add(square);
 			addNeighbouringSquaresRecursively(squareSet,
-									Square.acceptOpenlyConnectedNeighboursFilter);
+                            Square.acceptOpenlyConnectedNeighboursFilter);
 			return squareSet;
 		}
 
@@ -1466,19 +1142,19 @@ abstract public class SquareImpl implements Square {
 		/** 
 		 * Checks whether the area of this square is properly equilibrated.
 		 *
-		 * @return
-		 * True iff all squares in the area of this squre have the same 
-		 * temperature and humidity as this square, and all squares in the 
-		 * boundary of the area of this square can have their temperatures and 
-		 * humidities.
+         * @return
+         * True iff all squares in the area of this squre have the same 
+         * temperature and humidity as this square, and all squares in the 
+         * boundary of the area of this square can have their temperatures 
+         * and humidities.
 		 *   | result == (
 		 *   |   (for each square in getArea() :
-		 *   |       square.getTemperature().equals(getTemperature())
-		 *   |       &amp;&amp; square.getHumidity() == getHumidity())
+		 *   |      square.getTemperature().equals(getTemperature())
+		 *   |      &amp;&amp; square.getHumidity() == getHumidity())
 		 *   |   &amp;&amp;
 		 *   |   (for each square in getBoundary(getArea()) :
-		 *   |       square.canHaveAsTemperature(square.getTemperature())
-		 *   |       &amp;&amp; square.canHaveAsHumidity(square.getHumidity())))
+		 *   |      square.canHaveAsTemperature(square.getTemperature())
+		 *   |      &amp;&amp; square.canHaveAsHumidity(square.getHumidity())))
 		 * @throws IllegalStateException
 		 *   | SquareImpl.this.isTerminated()
 		 */
@@ -1496,7 +1172,7 @@ abstract public class SquareImpl implements Square {
 			Set<Square> boundary = getBoundary(area);
 			for (Square square : boundary)
 				if (!square.canHaveAsTemperature(square.getTemperature())
-							|| !square.canHaveAsHumidity(square.getHumidity()))
+                        || !square.canHaveAsHumidity(square.getHumidity()))
 					return false;
 			return true;
 		}
@@ -1538,7 +1214,8 @@ abstract public class SquareImpl implements Square {
 											Square.NeighbourFilter nf) {
 				Set<Square> result = new HashSet<Square>();
 				for (Square next : squares) {
-					for (Square neigh : next.getFilteredNeighbours(nf).values()) {
+					for (Square neigh : next.getFilteredNeighbours(nf)
+                                                                .values()) {
 					if (!squares.contains(neigh))
 						result.add(neigh);
 				}
@@ -1547,8 +1224,8 @@ abstract public class SquareImpl implements Square {
 		}
 
 		/** 
-		 * Recursively expand the given set of squares with all neighbours 
-		 * of its squares according to the given neighbourfilter.
+         * Recursively expand the given set of squares with all neighbours 
+         * of its squares according to the given neighbourfilter.
 		 * 
 		 * @param squares 
 		 * The set of squares to expand.
@@ -1562,8 +1239,9 @@ abstract public class SquareImpl implements Square {
 		 * filter.
 		 */
 		@Raw
-		private void addNeighbouringSquaresRecursively(@Raw Set<Square> squares,
-													  Square.NeighbourFilter nf) {
+		private void addNeighbouringSquaresRecursively(
+                                                @Raw Set<Square> squares,
+                                                Square.NeighbourFilter nf) {
 			assert squares != null;
 			assert nf != null;
 			Queue<Square> queue = new LinkedList<Square>();
@@ -1590,7 +1268,7 @@ abstract public class SquareImpl implements Square {
 		 * humidity.
 		 */
 		protected void equilibrateAreaInternally(@Raw Set<Square> area) 
-							throws EquilibratingSquaresViolatesLimitsException {
+                        throws EquilibratingSquaresViolatesLimitsException {
 			if (area.size() == 0)
 				return;
 
@@ -1606,18 +1284,19 @@ abstract public class SquareImpl implements Square {
 
 			for (Square square : area) {
 				double temperatureWeight = temperatureWeightOffset
-								+ temperatureBaseWeight * square.getHumidity() 
-															/ averageHumidity;
-				temperatureWeightedSum += square.getTemperature().temperature()
-															* temperatureWeight;
+                            + temperatureBaseWeight * square.getHumidity() 
+                                                        / averageHumidity;
+				temperatureWeightedSum += 
+                            square.getTemperature().temperature()
+                                                    * temperatureWeight;
 			}
 			Temperature newTemperature = new Temperature(
-											temperatureWeightedSum / area.size());
+                                    temperatureWeightedSum / area.size());
 			int newHumidity = (int) Math.round(averageHumidity);
 
 			for (Square square : area){
 				if (!square.canHaveAsTemperature(newTemperature)
-										|| !square.canHaveAsHumidity(newHumidity))
+                                || !square.canHaveAsHumidity(newHumidity))
 					throw new EquilibratingSquaresViolatesLimitsException();
 			}
 			for (Square square : area) {
@@ -1627,15 +1306,15 @@ abstract public class SquareImpl implements Square {
 		}
 
 		/** 
-		 * Notify all the squares in the given set that one of their neighbours 
-		 * has changed its temperature and/or humidity. 
+         * Notify all the squares in the given set that one of their 
+         * neighbours has changed its temperature and/or humidity. 
 		 * 
-		 * @param boundary 
-		 * A set of squares that border a region of squares that have changed 
-		 * their temperature or humidity. For more information, also see 
-		 * neighbourHasChangedTemperatureOrHumidity(), equilibrateMyArea() and 
-		 * setTemperature().
-		 * @pre
+         * @param boundary A set of squares that border a region of squares 
+         * that have changed their temperature or humidity. For more 
+         * information, also see 
+         * neighbourHasChangedTemperatureOrHumidity(), equilibrateMyArea() 
+         * and setTemperature().
+         * @pre
 		 *   | boundary != null
 		 * @effect
 		 *   | for each square in boundary:
@@ -1659,6 +1338,7 @@ abstract public class SquareImpl implements Square {
      * in an area that get equilibrated.
      */
     @Raw
+    @Override
     public void neighbourHasChangedTemperatureOrHumidity() {
         return;
     }
@@ -1667,6 +1347,7 @@ abstract public class SquareImpl implements Square {
      * Return the termination status for this square.
      */
     @Basic @Raw
+    @Override
     public boolean isTerminated() {
         return isTerminated;
     }
@@ -1683,6 +1364,7 @@ abstract public class SquareImpl implements Square {
      *   | for (Direction direction : Direction.values())
      *   |      changeBorderAt(direction, null);
      */
+    @Override
     public void terminate(){
         isTerminated = true;
         for (Direction direction : Direction.values())
@@ -1695,6 +1377,7 @@ abstract public class SquareImpl implements Square {
     private boolean isTerminated = false;
 
 
+    @Override
     public String toString() {
         if (isTerminated())
             return "Terminated!";

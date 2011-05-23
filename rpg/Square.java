@@ -48,9 +48,9 @@ import java.util.LinkedList;
  * @invar
  * No square has duplicate borders.
  *   | hasNoDuplicateBorders()
- *
  * @invar
- * area................................
+ * The area of this square is equilibrated.
+ *   | myAreaIsEquilibrated()
  *
  * @author Roald Frederickx
  */
@@ -126,8 +126,8 @@ abstract public class Square {
      *   | this(temperature, new Temperature(-200), new Temperature(5000),
      *   |                                               humidity, borders)
      */
-    @Raw
-    public Square(Temperature temperature, int humidity,
+    @Raw @Model
+    protected Square(Temperature temperature, int humidity,
                             BorderInitializer borderInitializer)
                                             throws IllegalArgumentException {
         this(temperature, new Temperature(-200), new Temperature(5000),
@@ -145,8 +145,8 @@ abstract public class Square {
      * temperature and 50% humidity.
      *   | this(new Temperature(20), 5000, borderInitializer)
      */
-    @Raw
-    public Square(BorderInitializer borderInitializer)
+    @Raw @Model
+    protected Square(BorderInitializer borderInitializer)
                                             throws IllegalArgumentException {
         this(new Temperature(20), 5000, borderInitializer);
     }
@@ -1063,7 +1063,7 @@ abstract public class Square {
     /** 
      * An interface to filter neighbouring squares.
      */
-    static interface NeighbourFilter {
+    public static interface NeighbourFilter {
         /** 
          * Check whether the given neighbour of the given square is allowed 
          * to pass this neighbour filter.
@@ -1088,14 +1088,14 @@ abstract public class Square {
         public boolean filter(Square square, Border border, Square neighbour);
     }
     
-    static final NeighbourFilter acceptAllNeighboursFilter =
+    public static final NeighbourFilter acceptAllNeighboursFilter =
                 new NeighbourFilter() {
                     public boolean filter(Square s, Border b, Square n){
                         return true;
                     }
                 };
 
-    static final NeighbourFilter acceptOpenlyConnectedNeighboursFilter =
+    public static final NeighbourFilter acceptOpenlyConnectedNeighboursFilter =
                 new NeighbourFilter() {
                     public boolean filter(Square s, Border border, Square n){
                         return border.isOpen();
@@ -1113,7 +1113,7 @@ abstract public class Square {
      * A list of neighbouring squares that satisfy the given filter.
      */
     @Raw
-    Map<Direction, Square> getFilteredNeighbours(NeighbourFilter nf) {
+    public Map<Direction, Square> getFilteredNeighbours(NeighbourFilter nf) {
         assert nf != null;
         Map<Direction, Square> result = 
             new EnumMap<Direction, Square>(Direction.class);
@@ -1414,6 +1414,40 @@ abstract public class Square {
 
 
     /** 
+     * Checks whether the area of this square is properly equilibrated.
+     *
+     * @return
+     * True iff all squares in the area of this squre have the same 
+     * temperature and humidity as this square, and all squares in the 
+     * boundary of the area of this square can have their temperatures and 
+     * humidities.
+     *   | result == (
+     *   |   (for each square in getArea() :
+     *   |       square.getTemperature().equals(getTemperature())
+     *   |       &amp;&amp; square.getHumidity() == getHumidity())
+     *   |   &amp;&amp;
+     *   |   (for each square in getBoundary(getArea()) :
+     *   |       square.canHaveAsTemperature(square.getTemperature())
+     *   |       &amp;&amp; square.canHaveAsHumidity(square.getHumidity())))
+     */
+    @Raw
+    public boolean myAreaIsEquilibrated() throws IllegalStateException {
+        Set<Square> area = getArea();
+        Temperature myTemperature = getTemperature();
+        int myHumidity = getHumidity();
+        for (Square square : area)
+            if (!square.getTemperature().equals(myTemperature)
+                        || square.getHumidity() != myHumidity)
+                return false;
+        Set<Square> boundary = getBoundary(area);
+        for (Square square : boundary)
+            if (!square.canHaveAsTemperature(square.getTemperature())
+                        || !square.canHaveAsHumidity(square.getHumidity()))
+                return false;
+        return true;
+    }
+
+    /** 
      * Equilibrate the temperatures and humidities of the area that this 
      * square is part of.
      *
@@ -1421,19 +1455,13 @@ abstract public class Square {
      *   | equilibrateAreaInternally(getArea())
      *   | equilibrateBoundary(getBoundary(getArea()))
      */
-    protected void equilibrateMyArea() 
+    public void equilibrateMyArea() 
                         throws EquilibratingSquaresViolatesLimitsException {
         Set<Square> area = getArea();
         equilibrateAreaInternally(area);
         Set<Square> boundary = getBoundary(area);
         equilibrateBoundary(boundary);
     }
-
-
-
-
-
-    //TODO: proper tests of equilibration & specs
 
 
 
@@ -1445,7 +1473,7 @@ abstract public class Square {
      * @return 
      */
     @Raw
-    static Set<Square> getNeighbouringSquares(@Raw Set<Square> squares,
+    public static Set<Square> getNeighbouringSquares(@Raw Set<Square> squares,
                 NeighbourFilter nf) {
             Set<Square> result = new HashSet<Square>();
             for (Square next : squares) {
@@ -1465,7 +1493,7 @@ abstract public class Square {
      * @return 
      */
     @Raw
-    static Set<Square> getNeighbouringSquaresRecursively(
+    public static Set<Square> getNeighbouringSquaresRecursively(
                                                     @Raw Set<Square> squares,
                                                     NeighbourFilter nf) {
         Set<Square> result = new HashSet<Square>();
@@ -1484,7 +1512,7 @@ abstract public class Square {
     }
 
     @Raw
-    protected Set<Square> getArea() {
+    public Set<Square> getArea() {
         Set<Square> squareSet = new HashSet<Square>();
         squareSet.add(this);
         Set<Square> neighbours = getNeighbouringSquaresRecursively(squareSet,
@@ -1494,10 +1522,11 @@ abstract public class Square {
     }
 
     @Raw
-    protected static Set<Square> getBoundary(@Raw Set<Square> area) {
+    public static Set<Square> getBoundary(@Raw Set<Square> area) {
         return getNeighbouringSquares(area, acceptAllNeighboursFilter);
     }
 
+    @Model
     protected static void equilibrateAreaInternally(@Raw Set<Square> area) 
                         throws EquilibratingSquaresViolatesLimitsException {
         if (area.size() == 0)
@@ -1550,6 +1579,7 @@ abstract public class Square {
      *   | for each square in boundary:
      *   |      square.neighbourHasChangedTemperatureOrHumidity()
      */
+    @Model
     protected static void equilibrateBoundary(@Raw Set<Square> boundary) {
         assert boundary != null;
         for (Square square : boundary) {

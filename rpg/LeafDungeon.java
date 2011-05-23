@@ -224,8 +224,8 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     }
 
     /**
-     * Return an iterator of the squares in this dungeon that satisfy the 
-     * conditions as imposed by the given filter.
+     * Return an iterator of the squares in this leaf dungeon that satisfy 
+     * the conditions as imposed by the given filter.
      */
     @Override
     public Iterator<S> getFilteredSquareIterator(
@@ -263,7 +263,8 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     }
 
     /**
-     * Return an iterable of the squares and their position in this dungeon.
+     * Return an iterable of the squares and their position in this leaf 
+     * dungeon.
      */
     @Raw
     @Override

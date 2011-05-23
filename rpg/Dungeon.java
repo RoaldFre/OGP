@@ -351,7 +351,7 @@ public abstract class Dungeon<S extends Square> {
      * @throws IllegalStateException
      * This dungeon is not in a valid state for this operation.
      */
-    @Basic @Raw
+    @Raw
     abstract protected void addSquareMappingTo(Map<Coordinate, ? super S> map)
                                                 throws IllegalStateException;
 

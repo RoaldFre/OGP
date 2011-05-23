@@ -43,18 +43,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * Return a mapping of directions to squares that represent all 
      * neighbouring squares of the given coordinate in this composite 
      * dungeon. 
-     * 
-     * @param coordinate 
-     * The coordinate whose neighbours to return.
-     * @return
-     * A mapping of directions to squares that represent all neighbouring 
-     * squares of the given coordinate in this dungeon. 
-     *   | for each e in result.entrySet() :
-     *   |      e.getValue() == getSquareAt(coordinate.moveTo(e.getKey()))
-     * @throws IllegalArgumentException
-     *   | coordinate == null
      */
     @Raw
+    @Override
     public Map<Direction,S> getDirectionsAndNeighboursOf(Coordinate coordinate)
                                             throws IllegalArgumentException {
         EnumMap<Direction, S> result =
@@ -105,11 +96,11 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * Check whether the given coordinate lies within this composite dungeon.
      *
      * @return
-     *   | result == (getDungeonContaining(coordinate) != null)
+     *   | result == (getSubDungeonContaining(coordinate) != null)
      */
     @Override
     public boolean containsCoordinate(Coordinate coordinate) {
-        return getDungeonContaining(coordinate) != null;
+        return getSubDungeonContaining(coordinate) != null;
     }
 
     /** 
@@ -126,7 +117,8 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      *   | else hasAsSubDungeon(result)
      *   |      &amp;&amp; result.containsCoordinate(coordinate)
      */
-    public Dungeon<? extends S> getDungeonContaining(Coordinate coordinate) {
+    public Dungeon<? extends S> getSubDungeonContaining(
+                                                Coordinate coordinate) {
         if (!getCoordSyst().contains(coordinate))
             return null;
         for (Dungeon<? extends S> subDungeon : getSubDungeons())
@@ -182,9 +174,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
             throws IllegalArgumentException, CoordinateNotOccupiedException {
         if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
-        if (getDungeonContaining(coordinate) == null)
+        if (getSubDungeonContaining(coordinate) == null)
             throw new CoordinateNotOccupiedException(coordinate, this);
-        return getDungeonContaining(coordinate).getSquareAt(coordinate);
+        return getSubDungeonContaining(coordinate).getSquareAt(coordinate);
 	}
 
     /** 
@@ -212,9 +204,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * @param coordinate 
      * The coordinate to remove the square at.
      * @effect
-     *   | getDungeonContaining(coordinate).deleteSquareAt(coordinate)
+     *   | getSubDungeonContaining(coordinate).deleteSquareAt(coordinate)
      * @throws CoordinateNotOccupiedException
-     *   | !getDungeonContaining(coordinate) == null
+     *   | !getSubDungeonContaining(coordinate) == null
      * @throws IllegalArgumentException
      *   | !isEffectiveCoordinate(coordinate)
      */
@@ -223,9 +215,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 			throws IllegalArgumentException, CoordinateNotOccupiedException {
         if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
-        if (getDungeonContaining(coordinate) == null)
+        if (getSubDungeonContaining(coordinate) == null)
             throw new CoordinateNotOccupiedException(coordinate, this);
-        getDungeonContaining(coordinate).deleteSquareAt(coordinate);
+        getSubDungeonContaining(coordinate).deleteSquareAt(coordinate);
 	}
 
 
@@ -243,9 +235,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 			throws IllegalArgumentException {
         if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
-        if (getDungeonContaining(coordinate) == null)
+        if (getSubDungeonContaining(coordinate) == null)
             return false;
-        return getDungeonContaining(coordinate).isOccupied(coordinate);
+        return getSubDungeonContaining(coordinate).isOccupied(coordinate);
 	}
 
 
@@ -269,15 +261,13 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * Add the mapping of coordinates to squares of this composite dungeon 
      * to the given map.
      *
-     * @param map 
-     * The map of coordinates to squares to add the mapping of coordinates 
-     * to squares of this dungeon to.
      * @effect
      *   | if (getSubDungeons() != null)
      *   | then for each subDungeon in getSubDungeons()
      *   |      subDungeon.addSquareMappingTo(map)
      */
-	@Override @Basic @Raw
+	@Override
+    @Raw
 	public void addSquareMappingTo(Map<Coordinate, ? super S> map)
                                             throws IllegalStateException{
         if (getSubDungeons() == null)
@@ -287,6 +277,10 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 	}
 
 
+    /**
+     * Return an iterator of the squares in this composite dungeon that 
+     * satisfy the conditions as imposed by the given filter.
+     */
 	@Override
 	public Iterator<S> getFilteredSquareIterator(
                                         final SquareFilter squareFilter) {
@@ -342,13 +336,23 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 	}
 
 
-	/* (non-Javadoc)
-	 * @see rpg.Dungeon#getPositionsAndSquares()
-	 */
+    /**
+     * Return an iterable of the squares and their position in this 
+     * composite dungeon.
+     */
 	@Override @Raw
 	public Iterable<Entry<Coordinate, S>> getPositionsAndSquares()
                                             throws IllegalStateException {
+
+                                            
+                                            
         throw new UnsupportedOperationException();
+
+
+
+
+
+
 	}
 
 
@@ -457,7 +461,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 
     
     /** 
-     * Checks if the given subdungeon is or would be a proper subdungeon 
+     * Checks if the given subdungeon is, or would be, a proper subdungeon 
      * for this composite dungeon.
      * 
      * @param subDungeon 

@@ -6,6 +6,8 @@ import rpg.exceptions.*;
 import static org.junit.Assert.*;
 import org.junit.*;
 
+import java.util.Map;
+
 public class CompositeDungeonTest {
 
     Level<TransparentSquare> transparentLevel;
@@ -31,16 +33,26 @@ public class CompositeDungeonTest {
         transSq1 = new TransparentSquare();
         transSq2 = new TransparentSquare();
         transSq3 = new TransparentSquare();
+        transparentLevel.addSquareAt(new Coordinate(0, 1, 0), transSq1);
+        transparentLevel.addSquareAt(new Coordinate(1, 0, 0), transSq2);
+        transparentLevel.addSquareAt(new Coordinate(1, 1, 0), transSq3);
 
         teleportLevel = new Level<TeleportationSquare>(2, 2);
         regTelSq1 = new RegularTeleportationSquare(new Teleporter(transSq1));
         regTelSq2 = new RegularTeleportationSquare(new Teleporter(transSq2));
         regTelSq3 = new RegularTeleportationSquare(new Teleporter(transSq3));
+        teleportLevel.addSquareAt(new Coordinate(0, 1, 0), regTelSq1);
+        teleportLevel.addSquareAt(new Coordinate(1, 0, 0), regTelSq2);
+        teleportLevel.addSquareAt(new Coordinate(1, 1, 0), regTelSq3);
 
-        regularShaft = new Shaft<RegularSquare>(3, Direction.UP);
+        regularShaft = new Shaft<RegularSquare>(new Coordinate(0, 1, 1),
+                                                3, Direction.UP);
         regSq1 = new RegularSquare(); 
         regSq2 = new RegularSquare(); 
         regSq3 = new RegularSquare(); 
+        regularShaft.addSquareAt(new Coordinate(0,1,1), regSq1);
+        regularShaft.addSquareAt(new Coordinate(0,1,2), regSq2);
+        regularShaft.addSquareAt(new Coordinate(0,1,3), regSq3);
 
         CoordinateSystem coordSyst = new CoordinateSystem(
                 new Coordinate(0, 0, 0),
@@ -61,6 +73,25 @@ public class CompositeDungeonTest {
                                 new CompositeDungeon<Square>(coordSyst);
         assertClassInvariants(dungeon);
     }
+
+    @Test
+    public void getDirectionsAndNeighboursOf_legal() {
+        Map<Direction, Square> map;
+        map = dungeon.getDirectionsAndNeighboursOf(new Coordinate(0, 0, 0));
+        assertTrue(map.isEmpty());
+
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0,0,0));
+        map = dungeon.getDirectionsAndNeighboursOf(new Coordinate(0, 1, 0));
+        assertEquals(regTelSq3, map.get(Direction.EAST));
+        assertEquals(1, map.size());
+
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0,0,0));
+        map = dungeon.getDirectionsAndNeighboursOf(new Coordinate(0, 1, 0));
+        assertEquals(regTelSq3, map.get(Direction.EAST));
+        assertEquals(regSq1, map.get(Direction.UP));
+        assertEquals(2, map.size());
+    }
+
 
 }
 

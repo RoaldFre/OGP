@@ -186,6 +186,17 @@ public class Rock extends SquareImpl {
     }
 
     /**
+     * Check if this rock can be used as an endpoint in a teleporter.
+     *
+     * @return
+     *   | result == false
+     */
+    @Override @Immutable
+    public boolean isPossibleTeleportationEndPoint() {
+        return false;
+    }
+
+    /**
      * Check whether this rock satisfies all its class 
      * invariants.
      */

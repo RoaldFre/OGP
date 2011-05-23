@@ -64,14 +64,16 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * out' of this composite dungeon.
      * 
      * @param dungeon
-     * The subdungeon to check.
+     * The subdungeon to check. May be null, in which case only check if 
+     * the given coordinate system fits in this composite dungeon without 
+     * overlapping subdungeons or 'breaking out'.
      * @param coordSyst
      * The new dimensions of the subdungeon to check.
      * @pre
      *   | coordSyst != null
      * @return 
      *   | result == (
-     *   |      getCoordSyst().contains(dungeon.getCoordSyst())
+     *   |      getCoordSyst().contains(coordSyst)
      *   |      &amp;&amp; 
      *   |      (for all subDungeon in getSubDungeons() :
      *   |                subDungeon == dungeon 
@@ -81,7 +83,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
                                          CoordinateSystem coordSyst) {
         assert coordSyst != null;
 
-        if (!getCoordSyst().contains(dungeon.getCoordSyst()))
+        if (!getCoordSyst().contains(coordSyst))
             return false;
         for (Dungeon<?> subDungeon : getSubDungeons())
             if (subDungeon != dungeon  &&  subDungeon.overlaps(coordSyst))

@@ -691,12 +691,6 @@ public interface Square {
     public void mergeTemperatures(Square other)
                         throws MergingTemperaturesViolatesLimitsException;
 
-    /**
-     * Return the termination status for this square.
-     */
-    @Basic @Raw
-    public boolean isTerminated();
-
     /** 
      * Checks whether the area of this square is properly equilibrated.
      *
@@ -765,6 +759,20 @@ public interface Square {
     @Raw
     public void neighbourHasChangedTemperatureOrHumidity();
 
+    /**
+     * Check if this square can be used as an endpoint in a teleporter.
+     *
+     * @return
+     *   | if (isTerminated())
+     *   |      then result == false
+     */
+    public boolean isPossibleTeleportationEndPoint();
+
+    /**
+     * Return the termination status for this square.
+     */
+    @Basic @Raw
+    public boolean isTerminated();
 
     /** 
      * Terminate this square.

@@ -376,6 +376,11 @@ public class CoordinateSystem implements Cloneable {
                 && this.getUpperBound().equals(otherCoordSyst.getUpperBound());
     }
 
+    @Override
+    public int hashCode() {
+        return getLowerBound().hashCode() ^ getUpperBound().hashCode();
+    }
+
     /** 
      * Clone this coordinate system.
      * 
@@ -389,6 +394,14 @@ public class CoordinateSystem implements Cloneable {
             assert false;
             return null;
         }
+    }
+
+    /**
+     * Return a string representation this coordinate system.
+     */
+    @Override
+    public String toString() {
+        return getLowerBound().toString() + "--" + getUpperBound().toString();
     }
 }
 

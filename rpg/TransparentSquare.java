@@ -186,6 +186,18 @@ public class TransparentSquare extends SquareImpl {
     }
 
     /**
+     * Check if this transparent square can be used as an endpoint in a 
+     * teleporter.
+     *
+     * @return
+     *   | result == !isTerminated()
+     */
+    @Override
+    public boolean isPossibleTeleportationEndPoint() {
+        return !isTerminated();
+    }
+
+    /**
      * Check whether this transparent square satisfies all its class 
      * invariants.
      */

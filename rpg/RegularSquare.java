@@ -145,6 +145,18 @@ public class RegularSquare extends SquareImpl {
     }
 
     /**
+     * Check if this regular square can be used as an endpoint in a 
+     * teleporter.
+     *
+     * @return
+     *   | result == !isTerminated()
+     */
+    @Override
+    public boolean isPossibleTeleportationEndPoint() {
+        return !isTerminated();
+    }
+
+    /**
      * Check whether this regular square satisfies all its class 
      * invariants.
      */

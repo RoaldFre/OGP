@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 import java.util.Map;
+import java.util.HashMap;
 
 public class CompositeDungeonTest {
 
@@ -19,6 +20,9 @@ public class CompositeDungeonTest {
     RegularTeleportationSquare regTelSq1;
     RegularTeleportationSquare regTelSq2;
     RegularTeleportationSquare regTelSq3;
+    Coordinate telCoord1;
+    Coordinate telCoord2;
+    Coordinate telCoord3;
 
     Shaft<RegularSquare> regularShaft;
     RegularSquare regSq1;
@@ -41,9 +45,12 @@ public class CompositeDungeonTest {
         regTelSq1 = new RegularTeleportationSquare(new Teleporter(transSq1));
         regTelSq2 = new RegularTeleportationSquare(new Teleporter(transSq2));
         regTelSq3 = new RegularTeleportationSquare(new Teleporter(transSq3));
-        teleportLevel.addSquareAt(new Coordinate(0, 1, 0), regTelSq1);
-        teleportLevel.addSquareAt(new Coordinate(1, 0, 0), regTelSq2);
-        teleportLevel.addSquareAt(new Coordinate(1, 1, 0), regTelSq3);
+        telCoord1 = new Coordinate (0, 1, 0);
+        telCoord2 = new Coordinate (1, 0, 0);
+        telCoord3 = new Coordinate (1, 1, 0);
+        teleportLevel.addSquareAt(telCoord1, regTelSq1);
+        teleportLevel.addSquareAt(telCoord2, regTelSq2);
+        teleportLevel.addSquareAt(telCoord3, regTelSq3);
 
         regularShaft = new Shaft<RegularSquare>(new Coordinate(0, 1, 1),
                                                 3, Direction.UP);
@@ -140,15 +147,14 @@ public class CompositeDungeonTest {
         regular = regularShaft.getCoordSyst();
         transparent = transparentLevel.getCoordSyst();
         
-        Coordinate regTelSq1Coord = new Coordinate(0, 1, 0);
-        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+        assertEquals(regTelSq1, dungeon.getSquareAt(telCoord1));
 
         Coordinate offset = new Coordinate(0, 0, 2);
         assertClassInvariants(dungeon);
         dungeon.translate(offset);
         assertClassInvariants(dungeon);
 
-        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord.add(offset)));
+        assertEquals(regTelSq1, dungeon.getSquareAt(telCoord1.add(offset)));
 
         teleport.translate(offset);
         regular.translate(offset);
@@ -169,8 +175,7 @@ public class CompositeDungeonTest {
         regular = regularShaft.getCoordSyst();
         transparent = transparentLevel.getCoordSyst();
 
-        Coordinate regTelSq1Coord = new Coordinate(0, 1, 0);
-        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+        assertEquals(regTelSq1, dungeon.getSquareAt(telCoord1));
 
         try {
             dungeon.translate(new Coordinate(0, 0, 1));
@@ -180,7 +185,7 @@ public class CompositeDungeonTest {
         assertEquals(teleport, teleportLevel.getCoordSyst());
         assertEquals(regular, regularShaft.getCoordSyst());
         assertEquals(transparent, transparentLevel.getCoordSyst());
-        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+        assertEquals(regTelSq1, dungeon.getSquareAt(telCoord1));
 
         try {
             dungeon.translate(new Coordinate(-1, -1, -4));
@@ -190,7 +195,7 @@ public class CompositeDungeonTest {
         assertEquals(teleport, teleportLevel.getCoordSyst());
         assertEquals(regular, regularShaft.getCoordSyst());
         assertEquals(transparent, transparentLevel.getCoordSyst());
-        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+        assertEquals(regTelSq1, dungeon.getSquareAt(telCoord1));
 
         try {
             dungeon.translate(null);
@@ -200,7 +205,7 @@ public class CompositeDungeonTest {
         assertEquals(teleport, teleportLevel.getCoordSyst());
         assertEquals(regular, regularShaft.getCoordSyst());
         assertEquals(transparent, transparentLevel.getCoordSyst());
-        assertEquals(regTelSq1, dungeon.getSquareAt(regTelSq1Coord));
+        assertEquals(regTelSq1, dungeon.getSquareAt(telCoord1));
         
         assertClassInvariants(dungeon);
     }
@@ -275,6 +280,19 @@ public class CompositeDungeonTest {
         assertEquals(6, dungeon.getNbSquares());
         dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
         assertEquals(9, dungeon.getNbSquares());
+    }
+
+    @Test
+    public void addSquareMappingTo_test() {
+        Map<Coordinate, Square> map = new HashMap<Coordinate, Square>();
+        dungeon.addSquareMappingTo(map);
+        assertTrue(map.isEmpty());
+
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSquareMappingTo(map);
+        assertEquals(regTelSq1, map.get(telCoord1));
+        assertEquals(regTelSq2, map.get(telCoord2));
+        assertEquals(regTelSq3, map.get(telCoord3));
     }
 }
 

@@ -563,6 +563,17 @@ public class CompositeDungeonTest {
         ShaftTest.assertClassInvariants(regularShaft);
         LevelTest.assertClassInvariants(transparentLevel);
     }
+
+    @Test
+    public void deleteSquareAt_legal() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.deleteSquareAt(telCoord1);
+        assertFalse(dungeon.hasSquare(regTelSq1));
+        assertFalse(dungeon.isOccupied(telCoord1));
+        assertClassInvariantsDeep(dungeon);
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

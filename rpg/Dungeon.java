@@ -417,11 +417,11 @@ public abstract class Dungeon<S extends Square> {
         return getFilteredSquareIterator(acceptAllSquaresFilter);
     }
 
-    public interface SquareFilter {
+    public static interface SquareFilter {
         public boolean filter(LeafDungeon<? extends Square> dungeon, Square square);
     }
 
-    public final SquareFilter acceptAllSquaresFilter =
+    public static final SquareFilter acceptAllSquaresFilter =
             new SquareFilter() {
                 public boolean filter(LeafDungeon<? extends Square> d, Square s) {
                     return true;

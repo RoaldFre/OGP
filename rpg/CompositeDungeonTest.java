@@ -1,5 +1,6 @@
 package rpg;
 
+import rpg.Dungeon.*;
 import rpg.util.*;
 import rpg.exceptions.*;
 
@@ -8,6 +9,8 @@ import org.junit.*;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 public class CompositeDungeonTest {
 
@@ -293,6 +296,78 @@ public class CompositeDungeonTest {
         assertEquals(regTelSq1, map.get(telCoord1));
         assertEquals(regTelSq2, map.get(telCoord2));
         assertEquals(regTelSq3, map.get(telCoord3));
+    }
+
+    @Test
+    public void getFilteredSquareIterator_test() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+
+        Set<Square> squareSet;
+
+        SquareFilter teleportationSquaresFilter = new SquareFilter() {
+            public boolean filter(LeafDungeon<? extends Square> d, Square s) {
+                return s instanceof TeleportationSquare;
+            }
+        };
+        squareSet = new HashSet<Square>();
+        for (Square square :
+                    dungeon.getFilteredSquares(teleportationSquaresFilter))
+            squareSet.add(square);
+        assertEquals(3, squareSet.size());
+        assertTrue(squareSet.contains(regTelSq1));
+        assertTrue(squareSet.contains(regTelSq2));
+        assertTrue(squareSet.contains(regTelSq3));
+        
+
+        squareSet = new HashSet<Square>();
+        SquareFilter transparentSquaresFilter = new SquareFilter() {
+            public boolean filter(LeafDungeon<? extends Square> d, Square s) {
+                return s instanceof TransparentSquare;
+            }
+        };
+        squareSet = new HashSet<Square>();
+        for (Square square :
+                    dungeon.getFilteredSquares(transparentSquaresFilter))
+            squareSet.add(square);
+        assertEquals(3, squareSet.size());
+        assertTrue(squareSet.contains(transSq1));
+        assertTrue(squareSet.contains(transSq2));
+        assertTrue(squareSet.contains(transSq3));
+        squareSet = new HashSet<Square>();
+
+
+        SquareFilter squaresInShaftFilter = new SquareFilter() {
+            public boolean filter(LeafDungeon<? extends Square> d, Square s) {
+                return d instanceof Shaft<?>;
+            }
+        };
+        squareSet = new HashSet<Square>();
+        for (Square square :
+                    dungeon.getFilteredSquares(squaresInShaftFilter))
+            squareSet.add(square);
+        assertEquals(3, squareSet.size());
+        assertTrue(squareSet.contains(regSq1));
+        assertTrue(squareSet.contains(regSq2));
+        assertTrue(squareSet.contains(regSq3));
+
+        squareSet = new HashSet<Square>();
+        for (Square square :
+                    dungeon.getFilteredSquares(Dungeon.acceptAllSquaresFilter))
+            squareSet.add(square);
+        assertEquals(9, squareSet.size());
+        assertTrue(squareSet.contains(regTelSq1));
+        assertTrue(squareSet.contains(regTelSq2));
+        assertTrue(squareSet.contains(regTelSq3));
+        assertTrue(squareSet.contains(transSq1));
+        assertTrue(squareSet.contains(transSq2));
+        assertTrue(squareSet.contains(transSq3));
+        assertTrue(squareSet.contains(regSq1));
+        assertTrue(squareSet.contains(regSq2));
+        assertTrue(squareSet.contains(regSq3));
+
+        assertClassInvariants(dungeon);
     }
 }
 

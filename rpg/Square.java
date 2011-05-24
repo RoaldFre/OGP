@@ -461,9 +461,9 @@ public interface Square {
      *   | if (old.getBorderAt(direction) != null)
      *   |      old.getBorderAt(direction).detatchFromSquare(this);
      * @post
-     * The area of this square gets equilibrated after having changed the 
-     * border.
-     *   | new.myAreaIsEquilibrated()
+     * If this square is not terminated, the area of this square gets 
+     * equilibrated after having changed the border.
+     *   | isTerminated() || new.myAreaIsEquilibrated()
      * @throws IllegalArgumentException
      * This square can not have the given border as a proper border in the 
      * given direction.

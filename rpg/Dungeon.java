@@ -254,6 +254,70 @@ public abstract class Dungeon<S extends Square> {
     abstract public boolean hasSquare(Square square);
 
     /** 
+     * Check if the given square at the given coordinate borders properly 
+     * on all the squares that are its neighbours, as given by the root 
+     * dungeon.
+     * 
+     * @param square 
+     * The square to check.
+     * @param coordinate 
+     * The coordinate of the square to check.
+     * @pre
+     *   | getSquareAt(coordinate).equals(square)
+     * @return 
+     *   | result ==
+     *   |  (for each dn in 
+     *   |           getRootDungeon().getDirectionsAndNeighboursOf(
+     *   |                                         coordinate).entrySet() :
+     *   |     square.getBorderAt(dn.getKey()).bordersOnSquare(dn.getValue()))
+     */
+    @Raw
+    @Model
+    protected boolean squareBordersProperlyOnItsNeighbours(Square square,
+                                                    Coordinate coordinate) {
+        assert getSquareAt(coordinate).equals(square);
+        Dungeon<? super S> root = getRootDungeon();
+        for (Map.Entry<Direction, ? super S> neighbourEntry :
+                root.getDirectionsAndNeighboursOf(coordinate).entrySet()) {
+            Square neighbour = (Square) neighbourEntry.getValue();
+            Direction direction = neighbourEntry.getKey();
+            if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Merge the given square at the given coordinate with its neighbours 
+     * in the dungeon complex of this dungeon, as given by the root 
+     * dungeon.
+     *
+     * @param square 
+     * The square to merge.
+     * @param coordinate 
+     * The coordinate of the square to merge.
+     * @effect
+     *   | for each dn in 
+     *   |           getRootDungeon().getDirectionsAndNeighboursOf(
+     *   |                                         coordinate).entrySet() :
+     *   |     square.mergeWith(dn.getValue(), dn.getKey())
+     * @post
+     *   | squareBordersProperlyOnItsNeighbours(square, coordinate)
+     */
+    @Raw
+    protected void mergeSquareWithNeighbours(Square square,
+                                                    Coordinate coordinate) {
+        Dungeon<? super S> root = getRootDungeon();
+        for (Map.Entry<Direction, ? super S> neighbourEntry :
+                root.getDirectionsAndNeighboursOf(coordinate).entrySet()) {
+            Square neighbour = (Square) neighbourEntry.getValue();
+            Direction neighbourDirection = neighbourEntry.getKey();
+            square.mergeWith(neighbour, neighbourDirection);
+        }
+    }
+
+
+    /** 
      * Deletes the square at the given coordinate and terminates it.
      *
      * @param coordinate 
@@ -530,7 +594,7 @@ public abstract class Dungeon<S extends Square> {
         if (parent == null)
             return null;
         while (parent.hasParentDungeon())
-            parent = getParentDungeon();
+            parent = parent.getParentDungeon();
         return parent;
     }
 

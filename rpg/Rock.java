@@ -1,10 +1,13 @@
 package rpg;
 
-import be.kuleuven.cs.som.annotate.*;
-import java.util.Collection;
 
 import rpg.util.Direction;
 import rpg.util.Temperature;
+import rpg.exceptions.*;
+
+import be.kuleuven.cs.som.annotate.*;
+
+import java.util.Collection;
 
 
 public class Rock extends SquareImpl {
@@ -171,6 +174,17 @@ public class Rock extends SquareImpl {
                         return !(neighb instanceof Rock);
                     }
                 };
+
+    /** 
+     * Equilibrate the temperatures and humidities of the area that this 
+     * rock is part of.
+     */
+    @Override
+    public void equilibrateMyArea()
+                        throws EquilibratingSquaresViolatesLimitsException {
+        assert !isTerminated();
+        new Area().equilibrateBoundary();
+    }
 
     /** 
      * A default border initializer for rocks.

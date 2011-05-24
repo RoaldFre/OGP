@@ -425,17 +425,33 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
             throw new SubDungeonDoesNotFitException(subDungeon, this);
 
         subDungeon.translate(offset);
+        mergeSquaresOfSubdungeonWithNeighbours(subDungeon);
         subDungeons.add(subDungeon);
         subDungeon.setParentDungeon(this);
-
-        for (Map.Entry<Direction, ? super S> neighbourEntry :
-                        getRootDungeon().getDirectionsAndNeighboursOf(
-                                                    coordinate).entrySet()) {
-            Square neighbour = (Square) neighbourEntry.getValue();
-            Direction neighbourDirection = neighbourEntry.getKey();
-            square.mergeWith(neighbour, neighbourDirection);
-        }
     }
+
+    /** 
+     * Merge the squares of the given dungeon with all its neighbouring 
+     * squares in the dungeon complex of this dungeon.
+     *
+     * @param subDungeon 
+     * The dungeon whose squares to merge with the squares in the dungeon 
+     * complex of this dungeon.
+     * @effect
+     *   | for each enty in subDungeon.getPositionsAndSquares() :
+     *   |      mergeSquareWithNeighbours(entry.getValue(), entry.getKey())
+     */
+    @Raw
+    protected void mergeSquaresOfSubdungeonWithNeighbours(
+                                        Dungeon<? extends S> subDungeon) {
+        for (Map.Entry<Coordinate, ? extends S> ps : 
+                                        subDungeon.getPositionsAndSquares())
+            mergeSquareWithNeighbours(ps.getValue(), ps.getKey());
+    }
+
+
+
+
 
 
 

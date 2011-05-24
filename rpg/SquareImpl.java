@@ -747,7 +747,8 @@ abstract public class SquareImpl implements Square {
         else
             oldBorder.detatchFromSquare(this);
 
-        equilibrateMyArea();
+        if (!isTerminated())
+            equilibrateMyArea();
     }
 
     /** 
@@ -1041,7 +1042,7 @@ abstract public class SquareImpl implements Square {
 
 	/** 
      * Checks whether the area of this square is properly equilibrated.
-	 * 
+     *
 	 * @return 
 	 *   | isTerminated() || new Area().isEquilibrated();
 	 */
@@ -1183,11 +1184,14 @@ abstract public class SquareImpl implements Square {
 		 * Equilibrate the temperatures and humidities of the area associated 
 		 * with this square.
 		 *
+         * @effect
+         *   | equilibrateAreaInternally()
+         *   | equilibrateBoundary()
 		 * @post
 		 *   | isEquilibrated()
 		 * @throws EquilibratingSquaresViolatesLimitsException
 		 * Equilibrating this area violates some temperature or humidities 
-		 * constraints of a square in this area.
+		 * constraints of a square.
 		 */
 		public void equilibrate() 
 							throws EquilibratingSquaresViolatesLimitsException {
@@ -1196,7 +1200,33 @@ abstract public class SquareImpl implements Square {
 			Set<Square> boundary = getBoundary(area);
 			equilibrateBoundary(boundary);
 		}
-
+       
+        /**
+         * Equilibrate the enterior of this area.
+         *
+         * @effect
+         *   | equilibrateAreaInternally(getArea());
+		 * @throws EquilibratingSquaresViolatesLimitsException
+         * Equilibrating the interior of this  area violates some 
+         * temperature or humidities constraints of a square.
+         */
+        public void equilibrateAreaInternally()
+							throws EquilibratingSquaresViolatesLimitsException {
+            equilibrateAreaInternally(getArea());
+        }
+        /**
+         * Equilibrate the boundary of this area.
+         *
+         * @effect
+         *   | equilibrateBoundary(getBoundary())
+		 * @throws EquilibratingSquaresViolatesLimitsException
+         * Equilibrating the boundary of this area violates some 
+         * temperature or humidities constraints of a square.
+         */
+        public void equilibrateBoundary()
+							throws EquilibratingSquaresViolatesLimitsException {
+            equilibrateBoundary(getBoundary());
+        }
 
 		/** 
 		 * Return the neighbouring squares of the given set of (raw) 
@@ -1269,7 +1299,8 @@ abstract public class SquareImpl implements Square {
 		 * All squares in the given area have the same temperature and 
 		 * humidity.
 		 */
-		protected void equilibrateAreaInternally(@Raw Set<Square> area) 
+        @Model
+		private void equilibrateAreaInternally(@Raw Set<Square> area) 
                         throws EquilibratingSquaresViolatesLimitsException {
 			if (area.size() == 0)
 				return;
@@ -1322,8 +1353,8 @@ abstract public class SquareImpl implements Square {
 		 *   | for each square in boundary:
 		 *   |      square.neighbourHasChangedTemperatureOrHumidity()
 		 */
-		@Model
-		protected void equilibrateBoundary(@Raw Set<Square> boundary) {
+        @Model
+		private void equilibrateBoundary(@Raw Set<Square> boundary) {
 			assert boundary != null;
 			for (Square square : boundary) {
 				square.neighbourHasChangedTemperatureOrHumidity();

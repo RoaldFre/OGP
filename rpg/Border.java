@@ -116,13 +116,15 @@ public abstract class Border {
      * @throws BorderConstraintsException
      * Merging the borders would violate a border constraint.
      * @throws BorderMergeException
-     * One of the two borders is already shared by two squares, or both 
-     * borders share the same square.
+     * One of the two borders is already shared by two squares.
      */
     Border mergeWith(Border other) throws BorderConstraintsException,
                                         BorderMergeException {
         assert other != null;
         assert !this.isTerminated() && !other.isTerminated();
+        
+        if (this.equals(other)  &&  isSharedByTwoSquares())
+            return this; //this border is already merged
 
         if (this.isSharedByTwoSquares() || other.isSharedByTwoSquares()
                         || this.getASquare().equals(other.getASquare()))

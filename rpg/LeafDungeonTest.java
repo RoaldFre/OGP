@@ -89,7 +89,7 @@ public class LeafDungeonTest {
         dungeonDemo.addSquareAt(new Coordinate(1, 12, 0), square_1_12_0);
     }
 
-    private void assertClassInvariants(LeafDungeon<? extends Square> ld) {
+    public static void assertClassInvariants(LeafDungeon<? extends Square> ld) {
         assertTrue(ld.canHaveSquaresAtTheirCoordinates());
         assertTrue(ld.squaresSatisfyConstraints());
         assertTrue(ld.hasProperBorderingSquares());

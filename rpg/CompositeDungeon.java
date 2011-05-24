@@ -427,8 +427,42 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
         subDungeon.translate(offset);
         subDungeons.add(subDungeon);
         subDungeon.setParentDungeon(this);
+
+        for (Map.Entry<Direction, ? super S> neighbourEntry :
+                        getRootDungeon().getDirectionsAndNeighboursOf(
+                                                    coordinate).entrySet()) {
+            Square neighbour = (Square) neighbourEntry.getValue();
+            Direction neighbourDirection = neighbourEntry.getKey();
+            square.mergeWith(neighbour, neighbourDirection);
+        }
+    }
+
+
+
+
+
+
+    /** 
+     * 
+     * 
+     * @param subDungeon 
+     */
+    public void deleteSubDungeon(@Raw Dungeon<?> subDungeon) 
+                    throws IllegalStateException, IllegalArgumentException {
+        if (isTerminated())
+            throw new IllegalStateException();
+        if (subDungeon == null)
+            throw new IllegalArgumentException();
+        if (!hasAsSubDungeon(subDungeon))
+            return;
+        if (!subDungeon.isTerminated())
+            subDungeon.terminate();
+        subDungeons.remove(subDungeon);
+        subDungeon.setParentDungeon(null);
     }
     
+
+
 
     /**
      * Checks whether this composite dungeon has proper subdungeons.
@@ -474,6 +508,22 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     private Set<Dungeon<? extends S>> subDungeons = 
                                         new HashSet<Dungeon<? extends S>>();
 
+
+    /** 
+     * Terminate this composite dungeon.
+     *
+     * @effect
+     *   | for each subDungeon in getSubDungeons() :
+     *   |      subDungeon.terminate()
+     */
+    @Override
+    public void terminate(){
+        for (Dungeon<? extends S> subDungeon : getSubDungeons())
+            subDungeon.terminate();
+        setIsTerminated();
+        if (getParentDungeon() != null)
+            getParentDungeon().deleteSubDungeon(this); 
+    }
 
     /**
      * Check whether this composite dungeon is not raw.

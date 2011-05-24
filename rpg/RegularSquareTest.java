@@ -33,7 +33,7 @@ public class RegularSquareTest {
      * @param square 
      * The regular square to test.
      */
-    private void assertClassInvariants(RegularSquare square) {
+    public static void assertClassInvariants(RegularSquare square) {
         assertTrue(square.isNotRaw());
     }
 

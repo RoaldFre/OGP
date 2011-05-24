@@ -81,7 +81,7 @@ public class SquareImplTest {
      * @param square 
      * The square to test.
      */
-    private void assertClassInvariants(SquareImpl square) {
+    public static void assertClassInvariants(SquareImpl square) {
         assertTrue(square.isNotRaw());
     }
 

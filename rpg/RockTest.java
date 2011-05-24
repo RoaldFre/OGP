@@ -24,7 +24,7 @@ public class RockTest {
      * @param rock 
      * The rock to test.
      */
-    private void assertClassInvariants(Rock rock) {
+    public static void assertClassInvariants(Rock rock) {
         assertTrue(rock.isNotRaw());
     }
 

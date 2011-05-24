@@ -70,7 +70,7 @@ public class CompositeDungeonTest {
         dungeon = new CompositeDungeon<Square>(coordSyst);
     }
 
-    private void assertClassInvariants(CompositeDungeon<?> compositeDungeon) {
+    public static void assertClassInvariants(CompositeDungeon<?> compositeDungeon) {
         assertTrue(compositeDungeon.isNotRaw());
     }
 
@@ -380,6 +380,7 @@ public class CompositeDungeonTest {
         assertTrue(dungeon.getSubDungeons().contains(teleportLevel));
         assertTrue(dungeon.getSubDungeons().contains(regularShaft));
         assertTrue(dungeon.getSubDungeons().contains(transparentLevel));
+        assertClassInvariants(dungeon);
     }
 
     @Test
@@ -387,13 +388,52 @@ public class CompositeDungeonTest {
         assertFalse(dungeon.hasAsSubDungeon(teleportLevel));
         dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
         assertTrue(dungeon.hasAsSubDungeon(teleportLevel));
+        assertClassInvariants(dungeon);
     }
 
     @Test
-    public void addSubDungeonAt_legal() {
+    public void addSubDungeonAt_leaves() {
         dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+
         assertTrue(dungeon.hasAsSubDungeon(teleportLevel));
+        assertTrue(dungeon.hasAsSubDungeon(regularShaft));
+        assertTrue(dungeon.hasAsSubDungeon(transparentLevel));
+
         assertEquals(dungeon, teleportLevel.getParentDungeon());
+        assertEquals(dungeon, regularShaft.getParentDungeon());
+        assertEquals(dungeon, transparentLevel.getParentDungeon());
+
+        assertClassInvariants(dungeon);
+        LevelTest.assertClassInvariants(teleportLevel);
+        ShaftTest.assertClassInvariants(regularShaft);
+        LevelTest.assertClassInvariants(transparentLevel);
+    }
+    @Test
+    public void addSubDungeonAt_compositeDungeon() {
+        CompositeDungeon<Square> subDungeon
+            = new CompositeDungeon<Square>(transparentLevel.getCoordSyst());
+        subDungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(subDungeon, new Coordinate(0, 0, 4));
+
+        assertTrue(dungeon.hasAsSubDungeon(teleportLevel));
+        assertTrue(dungeon.hasAsSubDungeon(regularShaft));
+        assertTrue(dungeon.hasAsSubDungeon(subDungeon));
+        assertTrue(subDungeon.hasAsSubDungeon(transparentLevel));
+
+        assertEquals(dungeon, teleportLevel.getParentDungeon());
+        assertEquals(dungeon, regularShaft.getParentDungeon());
+        assertEquals(dungeon, subDungeon.getParentDungeon());
+        assertEquals(subDungeon, transparentLevel.getParentDungeon());
+
+        assertClassInvariants(dungeon);
+        assertClassInvariants(subDungeon);
+        LevelTest.assertClassInvariants(teleportLevel);
+        ShaftTest.assertClassInvariants(regularShaft);
+        LevelTest.assertClassInvariants(transparentLevel);
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -438,6 +478,79 @@ public class CompositeDungeonTest {
     public void addSubDungeonAt_subDungeonOverlaps() {
         dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
         dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
+    }
+
+
+    @Test
+    public void terminate_empty() {
+        dungeon.terminate();
+        assertTrue(dungeon.isTerminated());
+        assertClassInvariants(dungeon);
+    }
+    @Test
+    public void terminate_withLeaves() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+
+        dungeon.terminate();
+
+        assertTrue(dungeon.isTerminated());
+        assertTrue(regularShaft.isTerminated());
+        assertTrue(teleportLevel.isTerminated());
+        assertTrue(transparentLevel.isTerminated());
+        assertClassInvariants(dungeon);
+        LevelTest.assertClassInvariants(teleportLevel);
+        ShaftTest.assertClassInvariants(regularShaft);
+        LevelTest.assertClassInvariants(transparentLevel);
+    }
+    @Test
+    public void terminate_withCompositeSubdungeons() {
+        CompositeDungeon<Square> subDungeon
+            = new CompositeDungeon<Square>(transparentLevel.getCoordSyst());
+        subDungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(subDungeon, new Coordinate(0, 0, 4));
+
+        dungeon.terminate();
+
+        assertTrue(dungeon.isTerminated());
+        assertTrue(subDungeon.isTerminated());
+        assertTrue(regularShaft.isTerminated());
+        assertTrue(teleportLevel.isTerminated());
+        assertTrue(transparentLevel.isTerminated());
+        assertClassInvariants(dungeon);
+        assertClassInvariants(subDungeon);
+        LevelTest.assertClassInvariants(teleportLevel);
+        ShaftTest.assertClassInvariants(regularShaft);
+        LevelTest.assertClassInvariants(transparentLevel);
+    }
+
+    @Test
+    public void terminate_withParent() {
+        CompositeDungeon<Square> subDungeon
+            = new CompositeDungeon<Square>(transparentLevel.getCoordSyst());
+        subDungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(subDungeon, new Coordinate(0, 0, 4));
+
+        subDungeon.terminate();
+
+        assertEquals(null, subDungeon.getParentDungeon());
+        assertFalse(dungeon.hasAsSubDungeon(subDungeon));
+
+        assertFalse(dungeon.isTerminated());
+        assertTrue(subDungeon.isTerminated());
+        assertFalse(regularShaft.isTerminated());
+        assertFalse(teleportLevel.isTerminated());
+        assertTrue(transparentLevel.isTerminated());
+        assertClassInvariants(dungeon);
+        assertClassInvariants(subDungeon);
+        LevelTest.assertClassInvariants(teleportLevel);
+        ShaftTest.assertClassInvariants(regularShaft);
+        LevelTest.assertClassInvariants(transparentLevel);
     }
 }
 

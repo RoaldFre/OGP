@@ -33,7 +33,7 @@ public class TransparentTeleportationSquareTest {
      * @param square 
      * The transparent teleportation square to test.
      */
-    private void assertClassInvariants(TransparentTeleportationSquare square) {
+    public static void assertClassInvariants(TransparentTeleportationSquare square) {
         assertTrue(square.isNotRaw());
     }
 

@@ -32,7 +32,7 @@ public class RegularTeleportationSquareTest {
      * @param square 
      * The regular teleportation square to test.
      */
-    private void assertClassInvariants(RegularTeleportationSquare square) {
+    public static void assertClassInvariants(RegularTeleportationSquare square) {
         assertTrue(square.isNotRaw());
     }
 

@@ -17,7 +17,7 @@ public class LevelTest {
         level_10 = new Level<Square>(10, 10);
     }
 
-    private void assertClassInvariants(Level<?> level) {
+    public static void assertClassInvariants(Level<?> level) {
         assertTrue(level.canHaveSquaresAtTheirCoordinates());
         assertTrue(level.squaresSatisfyConstraints());
         assertTrue(level.hasProperBorderingSquares());

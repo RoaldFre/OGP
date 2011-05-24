@@ -746,6 +746,8 @@ abstract public class SquareImpl implements Square {
             assert isTerminated();
         else
             oldBorder.detatchFromSquare(this);
+
+        equilibrateMyArea();
     }
 
     /** 
@@ -906,7 +908,7 @@ abstract public class SquareImpl implements Square {
      */
     @Override
     public void mergeWith(Square other, Direction direction)
-        throws IllegalArgumentException, IllegalStateException {
+                    throws IllegalArgumentException, IllegalStateException {
         if (other == null  ||  !isValidDirection(direction))
             throw new IllegalArgumentException();
         if (isTerminated() || other.isTerminated())

@@ -33,7 +33,7 @@ public class TransparentSquareTest {
      * @param square 
      * The transparent square to test.
      */
-    private void assertClassInvariants(TransparentSquare square) {
+    public static void assertClassInvariants(TransparentSquare square) {
         assertTrue(square.isNotRaw());
     }
 

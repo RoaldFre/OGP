@@ -347,34 +347,67 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      * neighbouring squares. 
      * 
      * @return
-     * True iff every square of this dungeon borders on all its neighbours 
-     * (as given by the parent dungeon) in the correct direction.
+     * True iff every square of this dungeon borders properly on all its 
+     * neighbours (as given by the root dungeon).
      *   | result == 
      *   |  (for each ps in getPositionsAndSquares() :
-     *   |      (for each dn in 
-     *   |              getRootDungeon().getDirectionsAndNeighboursOf(
-     *   |                                         Coordinate).entrySet() :
-     *   |          ps.getValue().getBorderAt(dn.getKey()).bordersOnSquare(
-     *   |                                               dn.getValue())))
+     *   |          squareBordersProperlyOnItsNeighbours(ps.getValue(),
+     *   |                                               ps.getKey()))
      */
     @Raw
     public boolean hasProperBorderingSquares() throws IllegalStateException {
-        Dungeon<? super S> root = getRootDungeon();
-        for (Map.Entry<Coordinate, S> entry : getPositionsAndSquares()) {
-            S square = entry.getValue();
-            Coordinate coordinate = entry.getKey();
+        for (Map.Entry<Coordinate, S> ps : getPositionsAndSquares())
+            if (!squareBordersProperlyOnItsNeighbours(ps.getValue(),
+                                                      ps.getKey()))
+                return false;
+        return true;
+    }
 
-            for (Map.Entry<Direction, ? super S> neighbourEntry :
-                    root.getDirectionsAndNeighboursOf(coordinate).entrySet()) {
-                Square neighbour = (Square) neighbourEntry.getValue();
-                Direction direction = neighbourEntry.getKey();
-                if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
-                    return false;
-                    }
+    /** 
+     * Check if the given square at the given coordinate borders properly 
+     * on all the squares that are its neighbours, as given by the root 
+     * dungeon.
+     * 
+     * @param square 
+     * The square to check.
+     * @param coordinate 
+     * The coordinate of the square to check.
+     * @pre
+     *   | getSquareAt(coordinate).equals(square)
+     * @return 
+     *   | result ==
+     *   |  (for each dn in 
+     *   |           getRootDungeon().getDirectionsAndNeighboursOf(
+     *   |                                         coordinate).entrySet() :
+     *   |     square.getBorderAt(dn.getKey()).bordersOnSquare(dn.getValue()))
+     */
+    @Raw
+    @Model
+    private boolean squareBordersProperlyOnItsNeighbours(Square square,
+                                                    Coordinate coordinate) {
+        assert getSquareAt(coordinate).equals(square);
+        Dungeon<? super S> root = getRootDungeon();
+        for (Map.Entry<Direction, ? super S> neighbourEntry :
+                root.getDirectionsAndNeighboursOf(coordinate).entrySet()) {
+            Square neighbour = (Square) neighbourEntry.getValue();
+            Direction direction = neighbourEntry.getKey();
+            if (!square.getBorderAt(direction).bordersOnSquare(neighbour))
+                return false;
         }
         return true;
     }
 
+
+    /** 
+     * Terminate this leaf dungeon.
+     */
+    public void terminate(){
+        for (Coordinate coordinate : getSquareMapping().keySet())
+            deleteSquareAt(coordinate);
+        setIsTerminated();
+        if (getParentDungeon() != null)
+            getParentDungeon().deleteSubDungeon(this); 
+    }
 
     /**
      * Check whether this leaf dungeon is not raw.

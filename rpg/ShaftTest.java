@@ -18,7 +18,7 @@ public class ShaftTest {
         shaft_10N = new Shaft<Square>(10, Direction.NORTH);
     }
 
-    private void assertClassInvariants(Shaft<?> shaft) {
+    public static void assertClassInvariants(Shaft<?> shaft) {
         assertTrue(shaft.canHaveSquaresAtTheirCoordinates());
         assertTrue(shaft.squaresSatisfyConstraints());
         assertTrue(shaft.hasProperBorderingSquares());

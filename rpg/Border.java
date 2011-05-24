@@ -142,9 +142,7 @@ public abstract class Border {
         foreignSquare = otherBorder.getASquare();
         newBorder.addSquare(foreignSquare);
         foreignSquare.updateBorder(otherBorder, newBorder);
-        //TODO
-        if (newBorder.isOpen())
-            newBorder.equilibrateSquares();
+
         return newBorder;
         /* Yes, I am aware that I'm doing some complex mutation-like 
          * operations *and* returning a value, but this saves some spurious 

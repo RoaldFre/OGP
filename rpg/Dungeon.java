@@ -557,7 +557,6 @@ public abstract class Dungeon<S extends Square> {
 
 
 
-
     /**
      * Return the termination status for this dungeon.
      */
@@ -572,13 +571,27 @@ public abstract class Dungeon<S extends Square> {
      * @post
      * This dungeon is terminated.
      *   | new.isTerminated()
+     * @effect
+     *   | if (getParentDungeon() != null)
+     *   |      then getParentDungeon().deleteSubDungeon(this)
+     * @effect
+     *   | for each coordinate in getSquareMapping().keySet() :
+     *   |      deleteSquareAt(coordinate)
      */
-    @Model
-    protected void terminate(){
+    abstract public void terminate();
+
+    /** 
+     * Set the termination status of this dungeon to true.
+     * 
+     * @post
+     *   | isTerminated()
+     */
+    @Raw
+    protected void setIsTerminated() {
         isTerminated = true;
-        //getRootDungeon().deleteDungeon(this); //DIT ROEPT MSS ZELF AL TERMINATE AAN? -> in that case, gewoon een assert zetten dat !containsSubDungeon(this)
-        setParentDungeon(null);
     }
+            
+
 
     /**
      * Variable registering the termination status for this dungeon.

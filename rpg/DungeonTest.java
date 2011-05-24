@@ -95,7 +95,7 @@ public class DungeonTest {
         door = (Door) square_0_11_0.getBorderAt(Direction.EAST);
     }
 
-    private void assertClassInvariants(Dungeon<?> dungeon) {
+    public static void assertClassInvariants(Dungeon<?> dungeon) {
         assertTrue(dungeon.squaresSatisfyConstraints());
         assertTrue(dungeon.canHaveAsCoordSyst(dungeon.getCoordSyst()));
         assertTrue(dungeon.getSquareMapping() != null);

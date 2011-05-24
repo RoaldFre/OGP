@@ -460,6 +460,10 @@ public interface Square {
      * border gets detatched from this square.
      *   | if (old.getBorderAt(direction) != null)
      *   |      old.getBorderAt(direction).detatchFromSquare(this);
+     * @post
+     * The area of this square gets equilibrated after having changed the 
+     * border.
+     *   | new.myAreaIsEquilibrated()
      * @throws IllegalArgumentException
      * This square can not have the given border as a proper border in the 
      * given direction.
@@ -491,7 +495,7 @@ public interface Square {
      */
     // Note: I would have liked to restrict the visibility of this method 
     // to this package only, but that cannot be done in an interface.
-    void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
+    public void updateBorder(@Raw Border oldBorder, @Raw Border newBorder) 
                 throws IllegalArgumentException, BorderConstraintsException;
 
     /** 
@@ -777,14 +781,6 @@ public interface Square {
     /** 
      * Terminate this square.
      *
-     * <b>Note</b> It is not adviced to call this method as an end user 
-     * when this square is embedded in higher order structures (eg 
-     * dungeons), as it can turn those higher order structures into a raw 
-     * state, without them knowing. Please use caution.
-     *
-     * @note
-     * If you call this as an end user on a square that is embedded in a 
-     * higher order structure, then <b>Demons may fly out of your nose!</b>
      * @post
      * This square is terminated.
      *   | new.isTerminated()
@@ -793,13 +789,13 @@ public interface Square {
      * other squares.
      *   | for each direction in Direction.values() :
      *   |      changeBorderAt(direction, null);
+     * @note
+     * If you call this as an end user on a square that is embedded in a 
+     * higher order structure, then <b>Demons may fly out of your nose!</b>
+     * Those higher order structures (eg dungeons) may turn into a raw 
+     * state without them knowing. Use caution and double check the 
+     * appropriate invariants and preconditions.
      */
-    // Note: would have liked to restrict the visibility of this method to 
-    // this package only, as terminating random squares can make associated 
-    // higher structures that this square does not know about (eg dungeons) 
-    // go raw without them knowing!
-    // However, this method needs to be available in this interface, and 
-    // one  can only specify public methods in an interface.
     public void terminate();
 
     /**

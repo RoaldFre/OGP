@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.EnumMap;
-import java.util.Map.Entry;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -50,7 +49,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
                                             throws IllegalArgumentException {
         EnumMap<Direction, S> result =
                                 new EnumMap<Direction, S>(Direction.class);
-        for (Dungeon<? extends S> subDungeon : getSubDungeons()) {
+        for (Dungeon<? extends S> subDungeon : getSubDungeonsRaw()) {
             result.putAll(subDungeon.getDirectionsAndNeighboursOf(coordinate));
         }
         return result;
@@ -85,7 +84,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 
         if (!getCoordSyst().contains(coordSyst))
             return false;
-        for (Dungeon<?> subDungeon : getSubDungeons())
+        for (Dungeon<?> subDungeon : getSubDungeonsRaw())
             if (subDungeon != dungeon  &&  subDungeon.overlaps(coordSyst))
                 return false;
         return true;
@@ -122,7 +121,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
                                                 Coordinate coordinate) {
         if (!getCoordSyst().contains(coordinate))
             return null;
-        for (Dungeon<? extends S> subDungeon : getSubDungeons())
+        for (Dungeon<? extends S> subDungeon : getSubDungeonsRaw())
             if (subDungeon.containsCoordinate(coordinate))
                 return subDungeon;
         return null;
@@ -145,7 +144,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
             throws IllegalArgumentException, CoordinateConstraintsException {
         translateCoordSyst(offset);
         Set<Dungeon<?>> translatedSubDungeons = new HashSet<Dungeon<?>>();
-        for (Dungeon<? extends S> subDungeon : getSubDungeons()) {
+        for (Dungeon<? extends S> subDungeon : getSubDungeonsRaw()) {
             try {
                 subDungeon.translate(offset);
                 translatedSubDungeons.add(subDungeon);
@@ -200,7 +199,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 	public boolean hasSquare(Square square) {
         if (square == null)
             return false;
-        for (Dungeon<? extends S> subDungeon : getSubDungeons())
+        for (Dungeon<? extends S> subDungeon : getSubDungeonsRaw())
             if (subDungeon.hasSquare(square))
                 return true;
 		return false;
@@ -257,9 +256,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     @Raw
 	public int getNbSquares() {
         int result = 0;
-        if (getSubDungeons() == null)
+        if (getSubDungeonsRaw() == null)
             return 0;
-        for (Dungeon<? extends S> subDungeon : getSubDungeons())
+        for (Dungeon<? extends S> subDungeon : getSubDungeonsRaw())
             result += subDungeon.getNbSquares();
         return result;
 	}
@@ -278,9 +277,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     @Raw
 	public void addSquareMappingTo(Map<Coordinate, ? super S> map)
                                             throws IllegalStateException{
-        if (getSubDungeons() == null)
+        if (getSubDungeonsRaw() == null)
             return;
-        for (Dungeon<? extends S> subDungeon : getSubDungeons())
+        for (Dungeon<? extends S> subDungeon : getSubDungeonsRaw())
             subDungeon.addSquareMappingTo(map);
 	}
 
@@ -294,11 +293,11 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
                                         final SquareFilter squareFilter) {
         return new Iterator<S>() {
             {
-                if (getSubDungeons() == null) {
+                if (getSubDungeonsRaw() == null) {
                     next = null;
                 } else {
                     Iterator<Dungeon<? extends S>> subDungeonIterator;
-                    subDungeonIterator = getSubDungeons().iterator();
+                    subDungeonIterator = getSubDungeonsRaw().iterator();
                     if (!subDungeonIterator.hasNext()) {
                         next = null;
                     } else {
@@ -343,37 +342,24 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
 		};
 	}
 
-
-    /**
-     * Return an iterable of the squares and their position in this 
-     * composite dungeon.
-     */
-	@Override @Raw
-	public Iterable<Entry<Coordinate, S>> getPositionsAndSquares()
-                                            throws IllegalStateException {
-
-                                            
-                                            
-        throw new UnsupportedOperationException();
-
-
-
-
-
-
-	}
-
-
-
-
-
-
-    
     /**
      * Return the set of direct subdungeons for this composite dungeon.
      */
     @Basic @Raw
     public Set<Dungeon<? extends S>> getSubDungeons() {
+        if (getSubDungeonsRaw() == null)
+            return null;
+        Set<Dungeon<? extends S>> result = new HashSet<Dungeon<? extends S>>();
+        result.addAll(getSubDungeonsRaw());
+        return result;
+    }
+    
+    /**
+     * Return the set of direct subdungeons for this composite dungeon, do 
+     * not pass this to the end user or demons may fly out of your nose.
+     */
+    @Basic @Raw
+    private Set<Dungeon<? extends S>> getSubDungeonsRaw() {
         return subDungeons;
     }
 
@@ -392,9 +378,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      */
     @Raw
     public boolean hasAsSubDungeon(Dungeon<?> dungeon) {
-        if (getSubDungeons() == null)
+        if (getSubDungeonsRaw() == null)
             return false;
-        for (Dungeon<?> subDungeon : getSubDungeons())
+        for (Dungeon<?> subDungeon : getSubDungeonsRaw())
             if (subDungeon == dungeon)
                 return true;
         return false;
@@ -460,9 +446,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      */
     @Raw
     public boolean hasProperSubDungeons() {
-        if (getSubDungeons() == null)
+        if (getSubDungeonsRaw() == null)
             return false;
-        for (Dungeon<? extends S> subDungeon : getSubDungeons())
+        for (Dungeon<? extends S> subDungeon : getSubDungeonsRaw())
             if (!isProperSubDungeon(subDungeon))
                 return false;
         return true;

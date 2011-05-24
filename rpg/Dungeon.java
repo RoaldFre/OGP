@@ -7,6 +7,7 @@ import be.kuleuven.cs.som.annotate.*;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -356,15 +357,20 @@ public abstract class Dungeon<S extends Square> {
                                                 throws IllegalStateException;
 
     /**
-     * Return an iterable of the squares and their position in this 
-     * dungeon.
+     * Return a set of the squares and their position in this dungeon.
      *
      * @return
-     * An iterable over the elements of getSquareMapping().entrySet().
+     * Return a set with the elements of getSquareMapping().entrySet().
+     * @throws IllegalStateException
+     *   | getSquareMapping() == null
      */
     @Raw
-    abstract public Iterable<Map.Entry<Coordinate,S>> getPositionsAndSquares()
-                                                throws IllegalStateException;
+    public Set<Map.Entry<Coordinate,S>> getPositionsAndSquares() 
+                                                throws IllegalStateException {
+        if (getSquareMapping() == null)
+            throw new IllegalStateException();
+        return getSquareMapping().entrySet();
+    }
 
     /**
      * Return an iterable of the squares in this dungeon that satisfy the 
@@ -636,7 +642,7 @@ public abstract class Dungeon<S extends Square> {
         if (!isOccupied(source) || !isOccupied(destination))
             return false;
         
-        HashSet<Coordinate> visited = new HashSet<Coordinate>();
+        Set<Coordinate> visited = new HashSet<Coordinate>();
         return canReach(source, destination, visited);
     }
 
@@ -673,7 +679,7 @@ public abstract class Dungeon<S extends Square> {
      * passing any coordinates that have already been visited.
      */
     private boolean canReach(Coordinate source, Coordinate destination,
-                                            HashSet<Coordinate> visited) {
+                                                Set<Coordinate> visited) {
         assert source != null;
         assert destination != null;
         assert visited != null;

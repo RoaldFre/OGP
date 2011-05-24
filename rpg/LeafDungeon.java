@@ -58,8 +58,6 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
         squares = translatedSquares;
     }
 
-
-
     /** 
      * Check whether the given coordinate lies within this leaf dungeon.
      */
@@ -262,19 +260,6 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 		};
     }
 
-    /**
-     * Return an iterable of the squares and their position in this leaf 
-     * dungeon.
-     */
-    @Raw
-    @Override
-    public Iterable<Map.Entry<Coordinate, S>> getPositionsAndSquares() 
-                                            throws IllegalStateException {
-        if (squares == null)
-            throw new IllegalStateException();
-        return squares.entrySet();
-    }
-
 
     /**
      * Variable referencing a map of the squares of this dungeon
@@ -371,8 +356,6 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      *   |                                         Coordinate).entrySet() :
      *   |          ps.getValue().getBorderAt(dn.getKey()).bordersOnSquare(
      *   |                                               dn.getValue())))
-     * @throws IllegalStateException
-     *   | getPositionsAndSquares() == null
      */
     @Raw
     public boolean hasProperBorderingSquares() throws IllegalStateException {

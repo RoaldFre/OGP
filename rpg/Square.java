@@ -697,20 +697,6 @@ public interface Square {
 
     /** 
      * Checks whether the area of this square is properly equilibrated.
-     *
-     * @return
-     * True iff this square is terminated or all squares in the area of 
-     * this squre have the same temperature and humidity as this square, 
-     * and all squares in the boundary of the area of this square can have 
-     * their temperatures and humidities.
-     *   | result == isTerminated()  ||  (
-     *   |   (for each square in getArea() :
-     *   |       square.getTemperature().equals(getTemperature())
-     *   |       &amp;&amp; square.getHumidity() == getHumidity())
-     *   |   &amp;&amp;
-     *   |   (for each square in getBoundary(getArea()) :
-     *   |       square.canHaveAsTemperature(square.getTemperature())
-     *   |       &amp;&amp; square.canHaveAsHumidity(square.getHumidity())))
      */
     @Raw
     public boolean myAreaIsEquilibrated() throws IllegalStateException;

@@ -94,6 +94,13 @@ public class Teleporter {
      * Variable registering the destination for this teleporter.
      */
     private final Square destination;
+
+    /** 
+     * Check whether this teleporter satisfies all its class invariants.
+     */
+    public boolean isNotRaw() {
+        return hasValidDestinations();
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

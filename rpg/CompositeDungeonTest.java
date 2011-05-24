@@ -369,6 +369,76 @@ public class CompositeDungeonTest {
 
         assertClassInvariants(dungeon);
     }
+
+    @Test
+    public void getSubDungeons_test() {
+        assertTrue(dungeon.getSubDungeons().isEmpty());
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        assertEquals(3, dungeon.getSubDungeons().size());
+        assertTrue(dungeon.getSubDungeons().contains(teleportLevel));
+        assertTrue(dungeon.getSubDungeons().contains(regularShaft));
+        assertTrue(dungeon.getSubDungeons().contains(transparentLevel));
+    }
+
+    @Test
+    public void hasAsSubDungeon_test() {
+        assertFalse(dungeon.hasAsSubDungeon(teleportLevel));
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        assertTrue(dungeon.hasAsSubDungeon(teleportLevel));
+    }
+
+    @Test
+    public void addSubDungeonAt_legal() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        assertTrue(dungeon.hasAsSubDungeon(teleportLevel));
+        assertEquals(dungeon, teleportLevel.getParentDungeon());
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void addSubDungeonAt_illegalDungeon() {
+        dungeon.addSubDungeonAt(null, new Coordinate(0, 0, 0));
+    }
+    @Test (expected = IllegalArgumentException.class)
+    public void addSubDungeonAt_illegalCoordinate() {
+        dungeon.addSubDungeonAt(teleportLevel, null);
+    }
+
+    @Test (expected = IllegalStateException.class)
+    public void addSubDungeonAt_terminated() {
+        dungeon.terminate();
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+    }
+    @Test (expected = IllegalStateException.class)
+    public void addSubDungeonAt_subDungeonTerminated() {
+        teleportLevel.terminate();
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+    }
+
+    @Test (expected = DungeonAlreadyAssociatedException.class)
+    public void addSubDungeonAt_alreadyAssociatedWithOther() {
+        CompositeDungeon<Square> otherDungeon =
+                        new CompositeDungeon<Square>(dungeon.getCoordSyst());
+        otherDungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+    }
+    @Test (expected = DungeonAlreadyAssociatedException.class)
+    public void addSubDungeonAt_alreadyAssociatedWithSelf() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 1));
+    }
+
+    @Test (expected = SubDungeonDoesNotFitException.class)
+    public void addSubDungeonAt_subDungeonTooBig() {
+        Level<Square> massiveLevel = new Level<Square>(1000, 1000);
+        dungeon.addSubDungeonAt(massiveLevel, new Coordinate(0, 0, 1));
+    }
+    @Test (expected = SubDungeonDoesNotFitException.class)
+    public void addSubDungeonAt_subDungeonOverlaps() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

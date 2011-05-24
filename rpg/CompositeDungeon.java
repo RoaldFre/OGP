@@ -363,7 +363,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
         return subDungeons;
     }
 
-
     /** 
      * Check whether this composite dungeon has the given dungeon as its 
      * direct subdungeon.
@@ -380,12 +379,8 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     public boolean hasAsSubDungeon(Dungeon<?> dungeon) {
         if (getSubDungeonsRaw() == null)
             return false;
-        for (Dungeon<?> subDungeon : getSubDungeonsRaw())
-            if (subDungeon == dungeon)
-                return true;
-        return false;
+        return getSubDungeonsRaw().contains(dungeon);
     }
-
 
     /** 
      * Add the given dungeon as a subdungeon in this composite dungeon at 

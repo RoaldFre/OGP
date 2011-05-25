@@ -1058,6 +1058,9 @@ abstract public class SquareImpl implements Square {
     /** 
      * Equilibrate the temperatures and humidities of the area that this 
      * square is part of.
+     *
+     * @effect
+     *   | new Area().equilibrate()
      */
     @Override
     public void equilibrateMyArea() 
@@ -1209,7 +1212,7 @@ abstract public class SquareImpl implements Square {
          * @effect
          *   | equilibrateAreaInternally(getArea());
 		 * @throws EquilibratingSquaresViolatesLimitsException
-         * Equilibrating the interior of this  area violates some 
+         * Equilibrating the interior of this area violates some 
          * temperature or humidities constraints of a square.
          */
         public void equilibrateAreaInternally()
@@ -1300,6 +1303,12 @@ abstract public class SquareImpl implements Square {
 		 * @post
 		 * All squares in the given area have the same temperature and 
 		 * humidity.
+         * The temperature is the weighted sum of the 
+         * temperatures of the squares in this area, weighted by their 
+         * humidities according to the merge temperature weight that 
+         * applies to all squares.
+         * The humidity is the average of the humidities of the squares in 
+         * this area.
 		 */
         @Model
 		private void equilibrateAreaInternally(@Raw Set<Square> area) 

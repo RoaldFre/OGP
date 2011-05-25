@@ -4,8 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 import rpg.exceptions.*;
-import rpg.util.Direction;
-import rpg.util.Temperature;
+import rpg.util.*;
 
 /**
  * A class collecting tests for the abstract class of squares.
@@ -131,6 +130,104 @@ public class SquareImplTest {
         }
     }
 
+    @Test
+    public void setTemperature_properEquilibrationOverArea() {
+        /* Level is initialized as follows:
+         *
+         *  (North)
+         *     y  
+         *      ^         
+         *    3 | X X X X     'X' = RegularSquare
+         *    2 | # # # #     '#' = Rock
+         *    1 | # X:X #     ':' = Door
+         *    0 | # # # #     ' ' = OpenBorder
+         *      +--------->
+         *        0 1 2 3  x (East)
+         */
+        Level<Square> level = new Level<Square>(new Coordinate(0, 0, 4), 4, 4);
+        Coordinate c00, c01, c02, c03, c10, c11, c12, c13, 
+                   c20, c21, c22, c23, c30, c31, c32, c33;
+        c00 = new Coordinate(0, 0, 4); c20 = new Coordinate(2, 0, 4);
+        c01 = new Coordinate(0, 1, 4); c21 = new Coordinate(2, 1, 4);
+        c02 = new Coordinate(0, 2, 4); c22 = new Coordinate(2, 2, 4);
+        c03 = new Coordinate(0, 3, 4); c23 = new Coordinate(2, 3, 4);
+        c10 = new Coordinate(1, 0, 4); c30 = new Coordinate(3, 0, 4);
+        c11 = new Coordinate(1, 1, 4); c31 = new Coordinate(3, 1, 4);
+        c12 = new Coordinate(1, 2, 4); c32 = new Coordinate(3, 2, 4);
+        c13 = new Coordinate(1, 3, 4); c33 = new Coordinate(3, 3, 4);
+        SquareImpl s11, s21, s03, s13, s23, s33;
+        s11 = new RegularSquare(); s13 = new RegularSquare();
+        s21 = new RegularSquare(); s23 = new RegularSquare();
+        s03 = new RegularSquare(); s33 = new RegularSquare();
+        Rock r00, r10, r20, r30, r01, r31, r02, r12, r22, r32;        
+        r00 = new Rock(); r10 = new Rock(); r20 = new Rock(); r30 = new Rock();
+        r01 = new Rock();                                     r31 = new Rock();
+        r02 = new Rock(); r12 = new Rock(); r22 = new Rock(); r32 = new Rock();
+
+        Door door = new Door(s11.getBorderAt(Direction.EAST), false);
+        s11.setTemperature(new Temperature(40));
+        s11.setHumidity(10000);
+
+        s03.setTemperature(new Temperature(0));
+        s13.setTemperature(new Temperature(20));
+        s23.setTemperature(new Temperature(40));
+        s33.setTemperature(new Temperature(60));
+
+        level.addSquareAt(c11, s11); level.addSquareAt(c21, s21);
+        level.addSquareAt(c03, s03); level.addSquareAt(c13, s13);
+        level.addSquareAt(c23, s23); level.addSquareAt(c33, s33);
+
+        level.addSquareAt(c00, r00); level.addSquareAt(c10, r10);
+        level.addSquareAt(c20, r20); level.addSquareAt(c30, r30);
+        level.addSquareAt(c01, r01); level.addSquareAt(c31, r31);
+        level.addSquareAt(c02, r02); level.addSquareAt(c12, r12);
+        level.addSquareAt(c22, r22); level.addSquareAt(c32, r32);
+
+        LevelTest.assertClassInvariants(level);
+        for (Square square : level.getSquares())
+            assertClassInvariants((SquareImpl) square);
+
+        Temperature upperSquaresTemp = new Temperature(30);
+        assertEquals(upperSquaresTemp, s03.getTemperature());
+        assertEquals(upperSquaresTemp, s13.getTemperature());
+        assertEquals(upperSquaresTemp, s23.getTemperature());
+        assertEquals(upperSquaresTemp, s33.getTemperature());
+
+        assertEquals(new Temperature(40), s11.getTemperature());
+        assertEquals(new Temperature(20), s21.getTemperature());
+
+
+        door.open();
+
+
+        LevelTest.assertClassInvariants(level);
+        for (Square square : level.getSquares())
+            assertClassInvariants((SquareImpl) square);
+
+        assertEquals(7500, s11.getHumidity());
+        assertEquals(7500, s21.getHumidity());
+
+        double tempWeightOffset = SquareImpl.getMergeTemperatureWeight();
+        double tempBaseWeight = 1 - tempWeightOffset;
+        Temperature endTemperature = new Temperature(
+             (   (tempWeightOffset + tempBaseWeight *  50./75) * 20
+               + (tempWeightOffset + tempBaseWeight * 100./75) * 40) / 2.);
+        assertEquals(endTemperature, s11.getTemperature());
+        assertEquals(endTemperature, s21.getTemperature());
+
+
+        s03.setTemperature(new Temperature(70));
+
+        upperSquaresTemp = new Temperature(40);
+        assertEquals(upperSquaresTemp, s03.getTemperature());
+        assertEquals(upperSquaresTemp, s13.getTemperature());
+        assertEquals(upperSquaresTemp, s23.getTemperature());
+        assertEquals(upperSquaresTemp, s33.getTemperature());
+
+        LevelTest.assertClassInvariants(level);
+        for (Square square : level.getSquares())
+            assertClassInvariants((SquareImpl) square);
+    }
 
     @Test
     public void setMaxTemperature_LegalCase() {

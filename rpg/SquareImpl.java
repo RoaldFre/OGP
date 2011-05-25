@@ -499,7 +499,9 @@ abstract public class SquareImpl implements Square {
      *
      * @return
      * A string representing the humidity percentage
-     *   | result == (getHumidity() / 100 + "." + getHumidity() % 100 + "%")
+     *   | result == (getHumidity() / 100 + "." 
+     *   |                + (getHumidity() % 100 < 10 ? "0" : "") 
+     *   |                + getHumidity() % 100 + "%")
      */
     private String getHumidityString() {
         int integerPart = getHumidity() / 100;

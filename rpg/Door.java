@@ -2,6 +2,11 @@ package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * A class of doors than can be opened or closed.
+ *
+ * @author Roald Frederickx
+ */
 public class Door extends Border{
     /** 
      * Create a new door with the given intrinsic slipperyness that borders 

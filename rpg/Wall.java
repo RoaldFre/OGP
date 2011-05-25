@@ -2,6 +2,11 @@ package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * A class of walls than can be slippery.
+ *
+ * @author Roald Frederickx
+ */
 public class Wall extends Border{
     /** 
      * Create a new wall with the given intrinsic slipperyness that borders 

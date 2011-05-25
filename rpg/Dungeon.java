@@ -304,7 +304,7 @@ public abstract class Dungeon<S extends Square> {
      * @post
      *   | squareBordersProperlyOnItsNeighbours(square, coordinate)
      */
-    @Raw
+    @Raw @Model
     protected void mergeSquareWithNeighbours(Square square,
                                                     Coordinate coordinate) {
         Dungeon<? super S> root = getRootDungeon();

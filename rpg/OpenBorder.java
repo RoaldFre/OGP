@@ -2,6 +2,11 @@ package rpg;
 
 import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * A class of open borders.
+ *
+ * @author Roald Frederickx
+ */
 public class OpenBorder extends Border{
 
     /** 

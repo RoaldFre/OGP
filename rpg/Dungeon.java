@@ -500,19 +500,6 @@ public abstract class Dungeon<S extends Square> {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Return the parent dungeon for this dungeon.
      */
@@ -620,6 +607,32 @@ public abstract class Dungeon<S extends Square> {
     private CompositeDungeon<? super S> parentDungeon;
 
 
+    /**
+     * Return a set of all containing leaf dungeons (this dungeon included, 
+     * if applicable).
+     *
+     * @return
+     * A set that is the result of adding all containing leaf dungeons to 
+     * an empty set.
+     * @return
+     *   | result != null
+     */
+    abstract public Set<Dungeon<? extends S>> getContainingLeafDungeons();
+
+
+    /** 
+     * Checks whether or not the given coordinate is a possible square 
+     * coordinate for all dungeons.
+     * 
+     * @param coordinate
+     * The coordinate to check.
+     * @return
+     *   | result == (coordinate != null)
+     */
+    public static boolean isEffectiveCoordinate(Coordinate coordinate) {
+        return coordinate != null;
+    }
+
 
     /**
      * Return the termination status for this dungeon.
@@ -661,7 +674,6 @@ public abstract class Dungeon<S extends Square> {
      * Variable registering the termination status for this dungeon.
      */
     private boolean isTerminated = false;
-
 
 
 
@@ -794,20 +806,6 @@ public abstract class Dungeon<S extends Square> {
 
 
 
-
-
-    /** 
-     * Checks whether or not the given coordinate is a possible square 
-     * coordinate for all dungeons.
-     * 
-     * @param coordinate
-     * The coordinate to check.
-     * @return
-     *   | result == (coordinate != null)
-     */
-    public static boolean isEffectiveCoordinate(Coordinate coordinate) {
-        return coordinate != null;
-    }
 
     /**
      * Check whether this dungeon is not raw.

@@ -225,6 +225,13 @@ public class LeafDungeonTest {
     public void getDirectionsAndNeighboursOf_null() {
         level_10_withSquares.getDirectionsAndNeighboursOf(null);
     }
+
+    @Test
+    public void getContainingLeafDungeons_test() {
+        assertEquals(1, level_10.getContainingLeafDungeons().size());
+        assertTrue(level_10.getContainingLeafDungeons().contains(level_10));
+        assertClassInvariants(level_10);
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

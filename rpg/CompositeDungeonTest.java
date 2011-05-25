@@ -574,6 +574,20 @@ public class CompositeDungeonTest {
         assertFalse(dungeon.isOccupied(telCoord1));
         assertClassInvariantsDeep(dungeon);
     }
+
+    @Test
+    public void getContainingLeafDungeons_test() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+
+        Set<Dungeon<?>> leaves = dungeon.getContainingLeafDungeons();
+        assertEquals(3, leaves.size());
+        assertTrue(leaves.contains(teleportLevel));
+        assertTrue(leaves.contains(regularShaft));
+        assertTrue(leaves.contains(transparentLevel));
+        assertClassInvariantsDeep(dungeon);
+    }
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

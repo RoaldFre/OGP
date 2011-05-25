@@ -5,6 +5,8 @@ import rpg.util.Coordinate;
 import rpg.util.CoordinateSystem;
 import rpg.util.Direction;
 import be.kuleuven.cs.som.annotate.*;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
@@ -380,6 +382,17 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     }
 
 
+    /** 
+     * Return a set of all containing leaf dungeons.
+     * 
+     * @return 
+     * A singleton set with this leaf dungeon as only element.
+     */
+    public Set<Dungeon<? extends S>> getContainingLeafDungeons() {
+        Set<Dungeon<? extends S>> result = new HashSet<Dungeon<? extends S>>();
+        result.add(this);
+        return result;
+    }
 
     /** 
      * Terminate this leaf dungeon.

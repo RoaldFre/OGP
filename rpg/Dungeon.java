@@ -464,6 +464,26 @@ public abstract class Dungeon<S extends Square> {
         return getFilteredSquares(acceptAllSquaresFilter);
     }
 
+    /** 
+     * Return an iterable of all rocks in this dungeon that have a 
+     * temperature greater than 200C.
+     * 
+     * @return 
+     * An iterable of all rocks in this dungeon that have a temperature 
+     * greater than 200C.
+     */
+    public Iterable<S> getHotRocks() {
+        return getFilteredSquares(
+            new SquareFilter() {
+                public boolean filter(LeafDungeon<? extends Square> d, Square s) {
+                    return (s instanceof Rock)
+                        && (s.getTemperature().compareTo(
+                                                new Temperature(200)) >= 0);
+                }
+            }
+        );
+    }
+
     /**
      * Return an iterator of the squares in this dungeon that satisfy the 
      * conditions as imposed by the given filter.

@@ -923,6 +923,7 @@ abstract public class SquareImpl implements Square {
      * Merge the humidities of this square with the given square. 
      */
     @Override
+    @Deprecated
     public void mergeHumidities(Square other) {
         assert other != null;
         int newHumididty = (this.getHumidity() + other.getHumidity() + 1) / 2;
@@ -940,6 +941,7 @@ abstract public class SquareImpl implements Square {
      * unity.
      */
     @Override
+    @Deprecated
     public void mergeTemperatures(Square other)
                         throws MergingTemperaturesViolatesLimitsException {
         assert other != null;

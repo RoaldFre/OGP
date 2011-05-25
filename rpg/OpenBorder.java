@@ -11,13 +11,10 @@ public class OpenBorder extends Border{
      * The square that this open border will border.
      * @effect
      *   | super(square)
-     * @effect
-     *   | equilibrateSquares()
      */
     @Raw
     public OpenBorder(Square square) {
         super(square);
-        equilibrateSquares();
     }
 
     /** 
@@ -28,12 +25,14 @@ public class OpenBorder extends Border{
      * @effect
      *   | super(border)
      * @effect
-     *   | equilibrateSquares()
+     *   | if (isSharedByTwoSquares())
+     *   |      then getASquare().equilibrateMyArea()
      */
     @Raw
     public OpenBorder(Border border) {
         super(border);
-        equilibrateSquares();
+        if (isSharedByTwoSquares())
+            getASquare().equilibrateMyArea();
     }
 
     @Override

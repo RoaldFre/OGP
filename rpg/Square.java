@@ -665,6 +665,7 @@ public interface Square {
      *   | (new other).getHumidity() == 
      *   |      ((old this).getHumidity() + (old other).getHumidity() + 1) / 2
      */
+    @Deprecated
     public void mergeHumidities(Square other);
 
     /** 
@@ -692,6 +693,7 @@ public interface Square {
      * Merging the temperaturs would violate the temperature limits of one 
      * of the squares.
      */
+    @Deprecated
     public void mergeTemperatures(Square other)
                         throws MergingTemperaturesViolatesLimitsException;
 

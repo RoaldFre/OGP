@@ -15,16 +15,11 @@ public class Door extends Border{
      *   | isOpen() == isOpened
      * @effect
      *   | super(square)
-     * @effect
-     *   | if (isOpened())
-     *   |      equilibrateSquares();
      */
     @Raw
     public Door(Square square, boolean isOpened) {
         super(square);
         this.isOpened = isOpened;
-        if (isOpened)
-            equilibrateSquares();
     }
 
     /** 
@@ -39,16 +34,11 @@ public class Door extends Border{
      *   | isOpen() == isOpened
      * @effect
      *   | super(border)
-     * @effect
-     *   | if (isOpened())
-     *   |      equilibrateSquares();
      */
     @Raw
     public Door(Border border, boolean isOpened) {
         super(border);
         this.isOpened = isOpened;
-        if (isOpened)
-            equilibrateSquares();
     }
 
     @Override
@@ -87,12 +77,14 @@ public class Door extends Border{
      * @post
      *   | new.isOpened() == true
      * @effect
-     *   | equilibrateSquares()
+     *   | if (isSharedByTwoSquares())
+     *   |      then getASquare().equilibrateMyArea()
      */
     @Raw
     public void open() {
         isOpened = true;
-        equilibrateSquares();
+        if (isSharedByTwoSquares())
+            getASquare().equilibrateMyArea();
     }
 
     /**

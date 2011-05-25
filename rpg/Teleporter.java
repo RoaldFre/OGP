@@ -21,14 +21,13 @@ public class Teleporter {
      * 
      * @param destination 
      * The destination for this new teleporter.
+     * @pre
+     *   | isValidDestination(destination)
      * @post
      *   | new.getDestination().equals(destination)
-     * @throws IllegalArgumentException
-     *   | !isValidDestination(destination)
      */
     public Teleporter(Square destination) throws IllegalArgumentException {
-        if (!isValidDestination(destination))
-            throw new IllegalArgumentException();
+        assert !isValidDestination(destination);
         this.destination = destination;
     }
     

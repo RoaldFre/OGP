@@ -617,7 +617,7 @@ public abstract class Dungeon<S extends Square> {
      * @return
      *   | result != null
      */
-    abstract public Set<Dungeon<? extends S>> getContainingLeafDungeons();
+    abstract public Set<LeafDungeon<? extends S>> getContainingLeafDungeons();
 
 
     /** 

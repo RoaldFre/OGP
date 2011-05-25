@@ -532,8 +532,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
      * A set that results from adding the containing leaf dungeons from all 
      * subdungeons of this composite dungeon to an empty set.
      */
-    public Set<Dungeon<? extends S>> getContainingLeafDungeons() {
-        Set<Dungeon<? extends S>> result = new HashSet<Dungeon<? extends S>>();
+    public Set<LeafDungeon<? extends S>> getContainingLeafDungeons() {
+        Set<LeafDungeon<? extends S>> result =
+                                new HashSet<LeafDungeon<? extends S>>();
         for (Dungeon<? extends S> subDungeon : getSubDungeonsRaw())
             result.addAll(subDungeon.getContainingLeafDungeons());
         return result;

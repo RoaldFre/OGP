@@ -581,7 +581,7 @@ public class CompositeDungeonTest {
         dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
         dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
 
-        Set<Dungeon<?>> leaves = dungeon.getContainingLeafDungeons();
+        Set<LeafDungeon<?>> leaves = dungeon.getContainingLeafDungeons();
         assertEquals(3, leaves.size());
         assertTrue(leaves.contains(teleportLevel));
         assertTrue(leaves.contains(regularShaft));

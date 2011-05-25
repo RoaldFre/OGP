@@ -388,8 +388,9 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      * @return 
      * A singleton set with this leaf dungeon as only element.
      */
-    public Set<Dungeon<? extends S>> getContainingLeafDungeons() {
-        Set<Dungeon<? extends S>> result = new HashSet<Dungeon<? extends S>>();
+    public Set<LeafDungeon<? extends S>> getContainingLeafDungeons() {
+        Set<LeafDungeon<? extends S>> result = 
+                                    new HashSet<LeafDungeon<? extends S>>();
         result.add(this);
         return result;
     }

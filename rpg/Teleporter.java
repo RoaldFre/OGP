@@ -27,7 +27,7 @@ public class Teleporter {
      *   | new.getDestination().equals(destination)
      */
     public Teleporter(Square destination) throws IllegalArgumentException {
-        assert !isValidDestination(destination);
+        assert isValidDestination(destination);
         this.destination = destination;
     }
     

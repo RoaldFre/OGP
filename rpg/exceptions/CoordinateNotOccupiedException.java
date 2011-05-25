@@ -25,7 +25,7 @@ public class CoordinateNotOccupiedException extends RuntimeException {
      *   |      &amp;&amp; new.getDungeon() == dungeon
      */
     public CoordinateNotOccupiedException(Coordinate coordinate,
-                                                Dungeon dungeon) {
+                                                Dungeon<?> dungeon) {
         this.coordinate = coordinate;
         this.dungeon = dungeon;
     }
@@ -48,7 +48,7 @@ public class CoordinateNotOccupiedException extends RuntimeException {
      * Return the offending dungeon for this coordinate not occupied exception.
      */
     @Immutable @Raw
-    public Dungeon getDungeon() {
+    public Dungeon<?> getDungeon() {
         return dungeon;
     }
     
@@ -56,7 +56,7 @@ public class CoordinateNotOccupiedException extends RuntimeException {
      * Variable referencing the offending dungeon for this coordinate 
      * not occupied exception.
      */
-    private final Dungeon dungeon;
+    private final Dungeon<?> dungeon;
 
     static final long serialVersionUID = 1;
 }

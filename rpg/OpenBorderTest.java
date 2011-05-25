@@ -58,6 +58,26 @@ public class OpenBorderTest {
     }
 
     @Test
+    public void constructor_fromDoublySharedBorder() {
+        OpenBorder mergedOpenBorder = 
+                        (OpenBorder) border1north.mergeWith(border2south);
+        OpenBorder openBorder = new OpenBorder(mergedOpenBorder);
+        assertClassInvariants(mergedOpenBorder);
+        assertClassInvariants(openBorder);
+        assertTrue(openBorder.bordersOnSquare(square1));
+        assertTrue(openBorder.bordersOnSquare(square2));
+        BorderTest.testConstructor_fromBorder(mergedOpenBorder, openBorder);
+        assertFalse(openBorder.isWall());
+        assertFalse(openBorder.isDoor());
+        assertTrue(openBorder.isOpen());
+        assertFalse(openBorder.isSlippery());
+        assertFalse(openBorder.isTerminated());
+        assertTrue(border1north.isTerminated());
+        RegularSquareTest.assertClassInvariants((RegularSquare) square1);
+        RegularSquareTest.assertClassInvariants((RegularSquare) square2);
+    }
+
+    @Test
     public void constructor_fromSquare() {
         OpenBorder openBorder = new OpenBorder(square1);
         assertTrue(openBorder.bordersOnSquare(square1));

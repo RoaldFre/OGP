@@ -497,16 +497,6 @@ public abstract class Dungeon<S extends Square> {
     abstract public Iterator<S> getFilteredSquareIterator(
                                             SquareFilter squareFilter);
 
-    /**
-     * Return an iterator of the squares in this dungeon.
-     *
-     * @return
-     *   | result == getFilteredSquareIterator(acceptAllSquaresFilter)
-     */
-    public Iterator<S> getSquareIterator() {
-        return getFilteredSquareIterator(acceptAllSquaresFilter);
-    }
-
     public static interface SquareFilter {
         public boolean filter(LeafDungeon<? extends Square> dungeon, Square square);
     }

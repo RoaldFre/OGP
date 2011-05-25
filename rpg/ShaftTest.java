@@ -24,10 +24,10 @@ public class ShaftTest {
 
     @Test
     public void constructor_dimensions_legal() {
-        Shaft<Square> shaft = new Shaft<Square>(10, Direction.NORTH);
+        Shaft<Square> dommeSchacht = new Shaft<Square>(10, Direction.NORTH);
         assertEquals(new Coordinate(0, 0, 0).moveTo(Direction.NORTH, 9),
-                                shaft.getCoordSyst().getUpperBound());
-        assertClassInvariants(shaft);
+                                dommeSchacht.getCoordSyst().getUpperBound());
+        assertClassInvariants(dommeSchacht);
     }
     @Test (expected = IllegalArgumentException.class)
     public void constructor_directionNull() {

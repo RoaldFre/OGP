@@ -95,8 +95,7 @@ public class Coordinate {
      * @param steps
      * The number of steps in which to move this coordinate.
      * @return
-     * The coordiante resulting in moving this coordinate in the given 
-     * direction for the given number of steps.
+     *   | result.equals(direction.moveCoordinate(this, steps))
      * @throws IllegalArgumentException 
      *   | direction == null
      */

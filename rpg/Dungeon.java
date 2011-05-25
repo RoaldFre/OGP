@@ -69,12 +69,12 @@ public abstract class Dungeon<S extends Square> {
      * @param coordSyst
      * The coordinate system to check.
      * @return
-     *   | if !canHaveAsPossibleCoordSyst(coordSyst)
+     *   | if !canPossiblyHaveAsCoordSyst(coordSyst)
      *   |      then result == false
      */
     @Raw
     public boolean canHaveAsCoordSyst(CoordinateSystem coordSyst) {
-        return canHaveAsPossibleCoordSyst(coordSyst);
+        return canPossiblyHaveAsCoordSyst(coordSyst);
     }
 
     /**
@@ -92,7 +92,7 @@ public abstract class Dungeon<S extends Square> {
      *   |                                                   this, coordSyst)))
      */
     @Raw
-    public boolean canHaveAsPossibleCoordSyst(CoordinateSystem coordSyst) {
+    public boolean canPossiblyHaveAsCoordSyst(CoordinateSystem coordSyst) {
         if (coordSyst == null)
             return false;
         if (this.coordSyst != null  

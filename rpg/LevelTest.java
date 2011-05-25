@@ -18,12 +18,7 @@ public class LevelTest {
     }
 
     public static void assertClassInvariants(Level<?> level) {
-        assertTrue(level.canHaveSquaresAtTheirCoordinates());
-        assertTrue(level.squaresSatisfyConstraints());
-        assertTrue(level.hasProperBorderingSquares());
-        assertTrue(level.canHaveAsCoordSyst(level.getCoordSyst()));
-        assertTrue(level.getSquareMapping() != null);
-        assertTrue(level.canHaveAsParentDungeon(level.getParentDungeon()));
+        assertTrue(level.isNotRaw());
     }
 
     @Test

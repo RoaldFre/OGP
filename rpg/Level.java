@@ -46,17 +46,30 @@ public class Level<S extends Square> extends LeafDungeon<S> {
      * @param coordSyst
      * The coordinate system to check.
      * @return
-     *   | result == (canHaveAsPossibleCoordSyst(coordSyst)
+     *   | result == (canPossiblyHaveAsCoordSyst(coordSyst)
      *   |                  &amp;&amp; (coordSyst.getLowerBound().z ==
      *   |                              coordSyst.getUpperBound().z))
      */
     @Raw
     public boolean canHaveAsCoordSyst(CoordinateSystem coordSyst) {
-        if (!canHaveAsPossibleCoordSyst(coordSyst))
+        if (!canPossiblyHaveAsCoordSyst(coordSyst))
             return false;
         if (coordSyst.getLowerBound().z != coordSyst.getUpperBound().z)
             return false;
         return true;
+    }
+
+    /** 
+     * Checks whether this level can have the given square at the given 
+     * coordinate.
+     * 
+     * @return 
+     *   | result == canPossiblyHaveAsSquareAt(coordinate, square)
+     */
+    @Raw
+    @Override
+    public boolean canHaveAsSquareAt(Coordinate coordinate, S square) {
+        return canPossiblyHaveAsSquareAt(coordinate, square);
     }
 }
 

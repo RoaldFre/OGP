@@ -788,6 +788,9 @@ public interface Square {
 
     /**
      * Check whether this square satisfies all its class invariants.
+     *
+     * @return
+     * True iff this square satisfies all its class invariants.
      */
     public boolean isNotRaw();
 }

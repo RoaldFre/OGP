@@ -323,8 +323,23 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 
 
     /** 
-     * Checks whether this dungeon can have the given square at the given 
-     * coordinate.
+     * Checks whether this leaf dungeon can have the given square at the 
+     * given coordinate.
+     * 
+     * @param coordinate 
+     * The coordinate to check.
+     * @param square 
+     * The square to check.
+     * @return 
+     *   | if (!canPossiblyHaveAsSquareAt(coordinate, square))
+     *   |      then result == false
+     */
+    @Raw
+    abstract public boolean canHaveAsSquareAt(Coordinate coordinate, S square);
+
+    /**
+     * Checks whether this leaf dungeon can possibly have the given square 
+     * at the given coordinate.
      * 
      * @param coordinate 
      * The coordinate to check.
@@ -336,7 +351,7 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      *   |              &amp;&amp; isValidSquareCoordinate(coordinate)
      */
     @Raw
-    public boolean canHaveAsSquareAt(Coordinate coordinate, S square) {
+    public boolean canPossiblyHaveAsSquareAt(Coordinate coordinate, S square) {
         return square != null
             && !square.isTerminated()
             && isValidSquareCoordinate(coordinate);
@@ -384,10 +399,6 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     @Override
     public boolean isNotRaw() {
         return super.isNotRaw()
-                && squaresSatisfyConstraints()
-                && canHaveAsCoordSyst(getCoordSyst())
-                && getSquareMapping() != null
-                && canHaveAsParentDungeon(getParentDungeon())
                 && canHaveSquaresAtTheirCoordinates()
                 && hasProperBorderingSquares();
     }

@@ -138,7 +138,7 @@ public class RegularTeleportationSquare
      * Return a destination of this regular teleportation square.
 	 *
      * @return 
-	 *   | result == (getTeleporter().getDestination())
+	 *   | result == (getTeleporter().teleport())
      */
     public Square teleport() {
         return getTeleporter().teleport();
@@ -149,8 +149,9 @@ public class RegularTeleportationSquare
      * from this square in a single step in one way or another.
      * 
      * @return 
-	 * The result contains the teleportation destination
-	 *   | result.contains(getTeleporter().getDestination())
+	 * The result contains the teleportation destinations
+	 *   | for each destination in getTeleporter().getDestinations() :
+	 *   | 		result.contains(destination)
      */
 	@Override
     public Set<Square> getNavigatableSquares() {

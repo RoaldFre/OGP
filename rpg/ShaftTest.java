@@ -19,12 +19,7 @@ public class ShaftTest {
     }
 
     public static void assertClassInvariants(Shaft<?> shaft) {
-        assertTrue(shaft.canHaveSquaresAtTheirCoordinates());
-        assertTrue(shaft.squaresSatisfyConstraints());
-        assertTrue(shaft.hasProperBorderingSquares());
-        assertTrue(shaft.canHaveAsCoordSyst(shaft.getCoordSyst()));
-        assertTrue(shaft.getSquareMapping() != null);
-        assertTrue(shaft.canHaveAsParentDungeon(shaft.getParentDungeon()));
+        assertTrue(shaft.isNotRaw());
     }
 
     @Test
@@ -77,6 +72,26 @@ public class ShaftTest {
         assertFalse(shaft_10N.canHaveAsCoordSyst(coordSyst));
 
         assertFalse(shaft_10N.canHaveAsCoordSyst(null));
+    }
+
+
+    @Test
+    public void canHaveAsSquareAt_rock() {
+        Coordinate coordinate010 = new Coordinate(0, 1, 0);
+        Rock rock = new Rock();
+        assertFalse(shaft_10N.canHaveAsSquareAt(coordinate010, rock));
+    }
+    @Test
+    public void canHaveAsSquareAt_door() {
+        Coordinate coordinate010 = new Coordinate(0, 1, 0);
+        Coordinate coordinate020 = new Coordinate(0, 2, 0);
+        TransparentSquare transDoorN = new TransparentSquare(Direction.NORTH);
+        assertTrue(shaft_10N.canHaveAsSquareAt(coordinate010, transDoorN));
+        TransparentSquare transDoorS = new TransparentSquare(Direction.SOUTH);
+        assertTrue(shaft_10N.canHaveAsSquareAt(coordinate010, transDoorS));
+
+        shaft_10N.addSquareAt(coordinate010, transDoorN);
+        assertFalse(shaft_10N.canHaveAsSquareAt(coordinate020, transDoorS));
     }
 }
 

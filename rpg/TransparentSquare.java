@@ -56,6 +56,18 @@ public class TransparentSquare extends SquareImpl {
     }
 
     /** 
+     * Initialize this new transparent square to a default transparent 
+     * square with doors in the given directions. 
+     *
+     * @effect
+     *   | super(new TransparentBorderInitializer(doorDirections))
+     */
+    @Raw
+    public TransparentSquare(Direction... doorDirections) 
+                                    throws IllegalArgumentException {
+        super(new TransparentBorderInitializer(doorDirections));
+    }
+    /** 
      * Initialize this new transparent square to a default transparent square. 
      *
      * @effect

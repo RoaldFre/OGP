@@ -548,10 +548,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S>{
     @Override
     public boolean isNotRaw() {
         return super.isNotRaw()
-                && squaresSatisfyConstraints()
-                && canHaveAsCoordSyst(getCoordSyst())
-                && getSquareMapping() != null
-                && canHaveAsParentDungeon(getParentDungeon())
                 && hasProperSubDungeons();
     }
 }

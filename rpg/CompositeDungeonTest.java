@@ -576,6 +576,44 @@ public class CompositeDungeonTest {
     }
 
     @Test
+    public void deleteSubDungeon_leafDungeon() {
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+
+        dungeon.deleteSubDungeon(teleportLevel);
+
+        assertClassInvariantsDeep(dungeon);
+        LevelTest.assertClassInvariants(teleportLevel);
+        ShaftTest.assertClassInvariants(regularShaft);
+        LevelTest.assertClassInvariants(transparentLevel);
+
+        dungeon.deleteSubDungeon(regularShaft);
+
+        assertClassInvariantsDeep(dungeon);
+        LevelTest.assertClassInvariants(teleportLevel);
+        ShaftTest.assertClassInvariants(regularShaft);
+        LevelTest.assertClassInvariants(transparentLevel);
+    }
+    @Test
+    public void deleteSubDungeon_compositeDungeon() {
+        CompositeDungeon<Square> subDungeon
+            = new CompositeDungeon<Square>(transparentLevel.getCoordSyst());
+        subDungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(subDungeon, new Coordinate(0, 0, 4));
+
+        dungeon.deleteSubDungeon(subDungeon);
+
+        assertClassInvariantsDeep(dungeon);
+        assertClassInvariantsDeep(subDungeon);
+        LevelTest.assertClassInvariants(teleportLevel);
+        ShaftTest.assertClassInvariants(regularShaft);
+        LevelTest.assertClassInvariants(transparentLevel);
+    }
+
+    @Test
     public void getContainingLeafDungeons_test() {
         dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
         dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));

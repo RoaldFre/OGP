@@ -85,7 +85,13 @@ public class TransparentSquareTest {
                 3000,
                 Direction.NORTH, Direction.SOUTH, Direction.EAST);
     }
-
+    @Test(expected = BorderConstraintsException.class)
+    public void extendedConstructor_doorInFloor() {
+        new TransparentSquare(new Temperature(25),
+                new Temperature(-10), new Temperature(200),
+                3000,
+                Direction.DOWN);
+    }
 
     @Test
     public void changeBorderAt_BorderConstraints() {

@@ -30,8 +30,8 @@ public class TransparentSquare extends SquareImpl {
                 Temperature minTemp, Temperature maxTemp, int humidity,
                 Direction... doorDirections)
                                         throws IllegalArgumentException {
-        super(temperature, minTemp, maxTemp, humidity, new 
-                TransparentBorderInitializer(doorDirections));
+        super(temperature, minTemp, maxTemp, humidity,
+                new TransparentBorderInitializer(doorDirections));
     }
 
     /** Initialize this new transparent square to a transparent square with 
@@ -52,7 +52,7 @@ public class TransparentSquare extends SquareImpl {
                             Direction... doorDirections) 
                                     throws IllegalArgumentException {
         super(temperature, humidity, 
-                                new TransparentBorderInitializer(doorDirections));
+                    new TransparentBorderInitializer(doorDirections));
     }
 
     /** 

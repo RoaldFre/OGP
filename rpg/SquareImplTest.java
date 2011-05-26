@@ -33,7 +33,6 @@ public class SquareImplTest {
     private SquareImpl connectedSquare1; //max temperature 1000C
     private SquareImpl connectedSquare2; //max temperature 100C
 
-
     /**
      * Set up a mutable test fixture.
      */
@@ -470,42 +469,6 @@ public class SquareImplTest {
     }
 
 
-    @Test
-    public void getNeighbours_getAccessibleNeighbours_getNavigatableSquares() {
-        assertTrue(square_T100_H50.getNeighbours().isEmpty());
-        assertTrue(square_T100_H50.getAccessibleNeighbours().isEmpty());
-        assertTrue(square_T100_H50.getNavigatableSquares().isEmpty());
-
-        square_T100_H50.mergeWith(square_T40_H100, Direction.NORTH);
-        Door door = new Door(square_T100_H50.getBorderAt(Direction.NORTH), false);
-
-
-        assertEquals(1, square_T100_H50.getNeighbours().size());
-        assertEquals(square_T40_H100,
-                     square_T100_H50.getNeighbours().get(Direction.NORTH));
-        assertTrue(square_T100_H50.getAccessibleNeighbours().isEmpty());
-        assertTrue(square_T100_H50.getNavigatableSquares().isEmpty());
-
-        door.open();
-
-        assertEquals(1, square_T100_H50.getNeighbours().size());
-        assertEquals(square_T40_H100,
-                     square_T100_H50.getNeighbours().get(Direction.NORTH));
-
-        assertEquals(1, square_T100_H50.getAccessibleNeighbours().size());
-        assertEquals(square_T40_H100,
-                     square_T100_H50.getAccessibleNeighbours().get(
-                                                        Direction.NORTH));
-
-        assertEquals(1, square_T100_H50.getNavigatableSquares().size());
-        assertTrue(square_T100_H50.getNavigatableSquares().contains(
-                                                        square_T40_H100));
-
-        assertClassInvariants(square_T100_H50);
-        assertClassInvariants(square_T40_H100);
-    }
-
-
     public void setHeatDamageThreshold_LegalCase() {
         Temperature temperature = new Temperature(100);
         SquareImpl.setHeatDamageThreshold(temperature);
@@ -541,6 +504,128 @@ public class SquareImplTest {
     @Test(expected = IllegalArgumentException.class)
     public void setMergeTemperatureWeight_IllegalCase() {
         SquareImpl.setMergeTemperatureWeight(-1);
+    }
+
+    @Test
+    public void getNeighbours_getAccessibleNeighbours_getNavigatableSquares() {
+        assertTrue(square_T100_H50.getNeighbours().isEmpty());
+        assertTrue(square_T100_H50.getAccessibleNeighbours().isEmpty());
+        assertTrue(square_T100_H50.getNavigatableSquares().isEmpty());
+
+        square_T100_H50.mergeWith(square_T40_H100, Direction.NORTH);
+        Door door = new Door(square_T100_H50.getBorderAt(Direction.NORTH), false);
+
+
+        assertEquals(1, square_T100_H50.getNeighbours().size());
+        assertEquals(square_T40_H100,
+                     square_T100_H50.getNeighbours().get(Direction.NORTH));
+        assertTrue(square_T100_H50.getAccessibleNeighbours().isEmpty());
+        assertTrue(square_T100_H50.getNavigatableSquares().isEmpty());
+
+        door.open();
+
+        assertEquals(1, square_T100_H50.getNeighbours().size());
+        assertEquals(square_T40_H100,
+                     square_T100_H50.getNeighbours().get(Direction.NORTH));
+
+        assertEquals(1, square_T100_H50.getAccessibleNeighbours().size());
+        assertEquals(square_T40_H100,
+                     square_T100_H50.getAccessibleNeighbours().get(
+                                                        Direction.NORTH));
+
+        assertEquals(1, square_T100_H50.getNavigatableSquares().size());
+        assertTrue(square_T100_H50.getNavigatableSquares().contains(
+                                                        square_T40_H100));
+
+        assertClassInvariants(square_T100_H50);
+        assertClassInvariants(square_T40_H100);
+    }
+
+    @Test
+    public void canNavigateTo_test() {
+        Level<TransparentSquare> transparentLevel;
+        TransparentSquare transSq1;
+        TransparentSquare transSq2;
+        TransparentSquare transSq3;
+
+        Level<TeleportationSquare> teleportLevel;
+        RegularTeleportationSquare regTelSq1;
+        RegularTeleportationSquare regTelSq2;
+        RegularTeleportationSquare regTelSq3;
+        Coordinate telCoord1;
+        Coordinate telCoord2;
+        Coordinate telCoord3;
+
+        Shaft<RegularSquare> regularShaft;
+        RegularSquare regSq1;
+        RegularSquare regSq2;
+        RegularSquare regSq3;
+
+        CompositeDungeon<Square> dungeon;
+        
+        transparentLevel = new Level<TransparentSquare>(2, 2);
+        transSq1 = new TransparentSquare();
+        transSq2 = new TransparentSquare();
+        transSq3 = new TransparentSquare();
+        transparentLevel.addSquareAt(new Coordinate(0, 1, 0), transSq1);
+        transparentLevel.addSquareAt(new Coordinate(1, 0, 0), transSq2);
+        transparentLevel.addSquareAt(new Coordinate(1, 1, 0), transSq3);
+
+        teleportLevel = new Level<TeleportationSquare>(2, 2);
+        regTelSq1 = new RegularTeleportationSquare(new Teleporter(transSq1));
+        regTelSq2 = new RegularTeleportationSquare(new Teleporter(transSq2));
+        regTelSq3 = new RegularTeleportationSquare(new Teleporter(transSq3));
+        telCoord1 = new Coordinate (0, 1, 0);
+        telCoord2 = new Coordinate (1, 0, 0);
+        telCoord3 = new Coordinate (1, 1, 0);
+        teleportLevel.addSquareAt(telCoord1, regTelSq1);
+        teleportLevel.addSquareAt(telCoord2, regTelSq2);
+        teleportLevel.addSquareAt(telCoord3, regTelSq3);
+
+        regularShaft = new Shaft<RegularSquare>(new Coordinate(0, 1, 1),
+                                                3, Direction.UP);
+        regSq1 = new RegularSquare(); 
+        regSq2 = new RegularSquare(); 
+        regSq3 = new RegularSquare(); 
+        regularShaft.addSquareAt(new Coordinate(0, 1, 1), regSq1);
+        regularShaft.addSquareAt(new Coordinate(0, 1, 2), regSq2);
+        regularShaft.addSquareAt(new Coordinate(0, 1, 3), regSq3);
+
+        CoordinateSystem coordSyst = new CoordinateSystem(
+                new Coordinate(0, 0, 0),
+                new Coordinate(9, 9, 9));
+        dungeon = new CompositeDungeon<Square>(coordSyst);
+
+        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+
+        assertTrue(transSq3.getNavigatableSquares().contains(transSq1));
+        assertTrue(transSq3.getNavigatableSquares().contains(transSq2));
+
+        assertTrue(transSq3.canNavigateTo(transSq1));
+        assertTrue(transSq3.canNavigateTo(transSq2));
+        assertTrue(transSq1.canNavigateTo(transSq2));
+
+        assertTrue(regTelSq1.canNavigateTo(regTelSq2));
+        assertTrue(regTelSq1.canNavigateTo(regTelSq3));
+        assertTrue(regTelSq1.canNavigateTo(transSq1));
+
+        assertFalse(transSq1.canNavigateTo(regTelSq1));
+
+        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+
+        assertTrue(regTelSq3.canNavigateTo(regTelSq1));
+        assertTrue(regTelSq3.canNavigateTo(regTelSq2));
+        assertTrue(regTelSq1.canNavigateTo(regTelSq2));
+
+        assertTrue(regTelSq1.canNavigateTo(transSq1));
+
+        assertFalse(transSq1.canNavigateTo(regTelSq1));
+
+        Door door = new Door(regTelSq2.getBorderAt(Direction.NORTH), false);
+        assertFalse(regTelSq2.canNavigateTo(regTelSq1));
+        door.open();
+        assertTrue(regTelSq2.canNavigateTo(regTelSq1));
     }
 
     @Test

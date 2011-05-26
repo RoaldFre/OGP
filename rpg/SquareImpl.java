@@ -4,10 +4,8 @@ import be.kuleuven.cs.som.annotate.*;
 import rpg.exceptions.*;
 import rpg.util.Direction;
 import rpg.util.Temperature;
-//import rpg.Square.NeighbourFilter;
 
 import java.util.Map;
-//import java.util.HashMap;
 import java.util.EnumMap;
 import java.util.Set;
 import java.util.HashSet;
@@ -79,7 +77,8 @@ abstract public class SquareImpl implements Square {
     protected SquareImpl(Temperature temperature,
                     Temperature minTemp, Temperature maxTemp,
                     int humidity, BorderInitializer borderInitializer)
-                                            throws IllegalArgumentException {
+                            throws IllegalArgumentException,
+                                   BorderConstraintsException {
         if(!matchesMinTemperatureMax(minTemp, temperature, maxTemp))
             throw new IllegalArgumentException();
         minTemperature = minTemp;
@@ -110,7 +109,8 @@ abstract public class SquareImpl implements Square {
     @Raw @Model
     protected SquareImpl(Temperature temperature, int humidity,
                             BorderInitializer borderInitializer)
-                                            throws IllegalArgumentException {
+                                        throws IllegalArgumentException,
+                                               BorderConstraintsException {
         this(temperature, new Temperature(-200), new Temperature(5000),
                                                 humidity, borderInitializer);
     }
@@ -128,7 +128,8 @@ abstract public class SquareImpl implements Square {
      */
     @Raw @Model
     protected SquareImpl(BorderInitializer borderInitializer)
-                                            throws IllegalArgumentException {
+                                        throws IllegalArgumentException,
+                                               BorderConstraintsException {
         this(new Temperature(20), 5000, borderInitializer);
     }
 
@@ -726,7 +727,6 @@ abstract public class SquareImpl implements Square {
                 == (new HashSet<Border>(borders.values())).size();
     }
 
-
     /** 
      * Change the border of this square for the given direction to the given 
      * border.
@@ -786,7 +786,6 @@ abstract public class SquareImpl implements Square {
             return false;
         return borders.containsValue(border);
     }
-
     
     /** 
      * Returns the squares that neighbour this square. 
@@ -840,10 +839,17 @@ abstract public class SquareImpl implements Square {
      * The border initializer to use for the initialization of the borders.
      * @effect
      *   | borderInitializer.initializeBorders(this)
+     * @throws BorderConstraintsException
+     * Initializing the borders with the given borderInitializer leads to 
+     * inconsintencies with the border constraints as enforced by 
+     * bordersSatisfyConstraints().
      */
     @Raw @Model
-    private void initializeBorders(BorderInitializer borderInitializer) {
+    private void initializeBorders(BorderInitializer borderInitializer)
+                                        throws BorderConstraintsException {
         borderInitializer.initializeBorders(this);
+        if (!bordersSatisfyConstraints())
+            throw new BorderConstraintsException();
     }
 
     /** 
@@ -898,13 +904,11 @@ abstract public class SquareImpl implements Square {
         return result;
     }
 
-
     /** 
      * Variable referencing a map of borders of this square.
      */
     private Map<Direction, Border> borders = 
                             new EnumMap<Direction, Border>(Direction.class);
-
 
     /** 
      * Merge this square with the given square in the given direction. 
@@ -1389,6 +1393,69 @@ abstract public class SquareImpl implements Square {
         return;
     }
 
+    /** 
+     * Checks whether it is possible to navigate to the given destination 
+     * square, starting from this square.
+     *
+     * The implementation does a depth-first traversal of the neighbouring 
+     * squares of this square on a spanning tree of the graph of 
+     * navigatable squares.
+     *
+     * Its average time complexity is linear in the number of squares that 
+     * are openly connected to this square. Hence, in general, if this 
+     * square is part of a dungeon, the average time complexity is 
+     * linear in the number of squares in the root dungeon.
+     * 
+     * Note that the <i>worst</i> case time complexity is superlinear 
+     * (probably quadratic, depending on the implementation of java's 
+     * HashSet). This happens in the pathological case where all 
+     * squares hash to the same value.
+     *
+     * Also note that that if the containing dungeon of this square were to 
+     * enforce extra constraints (eg. open areas can be no larger than N 
+     * squares), the time complexity would effectively reduce to 
+     * constant-time. 
+     *
+     * Finally, note that smarter search strategies could be employed at 
+     * the level of dungeons, where, for instance, the distance between the 
+     * coordinates can be used as a cost function in heuristic algorithms 
+     * such as the A* search algorithm.
+     */
+    @Override
+    public boolean canNavigateTo(Square destination)
+                                            throws IllegalArgumentException {
+        if (destination == null)
+            throw new IllegalArgumentException();
+        
+        Set<Square> visited = new HashSet<Square>();
+        return canNavigateTo(destination, visited);
+    }
+
+    /** 
+     * Checks whether the given destination square can be reached, starting 
+     * from this square and only moving through open borders, without 
+     * visiting a square that is in the given set of already visited squares.
+     */
+    @Override
+    public boolean canNavigateTo(Square destination, Set<Square> visited) {
+        assert destination != null;
+        assert visited != null;
+        assert !visited.contains(destination);
+
+        if (this.equals(destination))
+            return true;
+
+        if (visited.contains(this))
+            return false;
+
+        visited.add(this);
+
+        for (Square square : getNavigatableSquares())
+            if (square.canNavigateTo(destination, visited))
+                return true;
+        return false;
+    }
+
     /**
      * Return the termination status for this square.
      */
@@ -1423,8 +1490,7 @@ abstract public class SquareImpl implements Square {
     private boolean isTerminated = false;
 
 
-    @Override
-    public String toString() {
+    public String summarizedStatusString() {
         if (isTerminated())
             return "Terminated!";
         return  "Temperature:    " + getTemperature()

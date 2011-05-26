@@ -8,7 +8,6 @@ import be.kuleuven.cs.som.annotate.*;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -724,121 +723,6 @@ public abstract class Dungeon<S extends Square> {
      * Variable registering the termination status for this dungeon.
      */
     private boolean isTerminated = false;
-
-    /** 
-     * Checks whether the given destination coordinate can be reached, 
-     * starting from the given source coordinate and only moving through 
-     * navigatable squares.
-     *
-     * The implementation does a depth-first traversal of the neighbouring 
-     * squares of the source coordinate on a spanning tree of the graph of 
-     * 'openly' (through open borders) connected squares (traversed in the 
-     * order as iterated by Direction.values()).
-     *
-     * Its average time complexity is linear in the number of squares that 
-     * are openly connected to the source square. Hence, in general this is 
-     * linear in the number of squares in the root dungeon.
-     * 
-     * Note that the <i>worst</i> case time complexity is superlinear 
-     * (probably quadratic, depending on the implementation of java's 
-     * HashSet). This happens in the pathological case where all 
-     * coordinates hash to the same value.
-     *
-     * Also note that that if this dungeon were to enforce extra 
-     * constraints (eg. open areas can be no larger than N squares), the 
-     * time complexity would effectively reduce to constant-time. 
-     *
-     * Finally, note that smarter search strategies can be employed here at 
-     * the level of dungeons, where, for instance, the distance between the 
-     * coordinates can be used as a cost function in heuristic algorithms 
-     * such as the A* search algorithm. 
-     * 
-     * @param source
-     * The source coordinate to check.
-     * @param destination
-     * The destination coordinate to check.
-     * @return
-     * Whether or not the given destination coordinate can be reached from 
-     * the given source coordinate, passing only through open borders.
-     * @throws IllegalArgumentException
-     *   | !isEffectiveCoordinate(source)
-     *   |          || !isEffectiveCoordinate(destination)
-     */
-    public boolean canReach(Coordinate source, Coordinate destination) 
-                                            throws IllegalArgumentException {
-        Dungeon<?> root = getRootDungeon();
-        if (!root.isOccupied(source) || !root.isOccupied(destination))
-            return false;
-        
-        Set<Coordinate> visited = new HashSet<Coordinate>();
-        return root.canReach(source, destination, visited);
-    }
-
-    /** 
-     * Checks whether the given destination coordinate can be reached, 
-     * starting from the given source coordinate and only moving through 
-     * open borders, when all the coordinates in 'visited' are already 
-     * looked at.
-     *
-     * @param source
-     * The source coordinate to check.
-     * @param destination
-     * The destination coordinate to check.
-     * @param visited
-     * The coordinates that have already been visited.
-     * @pre
-     *   | source != null  &amp;&amp;  destination != null
-     * @pre
-     *   | visited != null
-     * @pre
-     *   | isOccupied(source) &amp;&amp; isOccupied(destination)
-     * @pre
-     *   | !visited.contains(destination)
-     * @post
-     *   | visited.contains(source)
-     * @post
-     * If this returns false, the set of visited coordinates is extended 
-     * with all coordinates that can be reached from the source coordinate 
-     * by passing open borders and by not passing any coordinates already 
-     * in the set of visited coordinates.
-     * @return
-     * Whether or not the destination can be reached from the source, not 
-     * passing any coordinates that have already been visited.
-     */
-    private boolean canReach(Coordinate source, Coordinate destination,
-                                                Set<Coordinate> visited) {
-        assert source != null;
-        assert destination != null;
-        assert visited != null;
-
-        assert isOccupied(source);
-        assert isOccupied(destination);
-
-        assert !visited.contains(destination);
-
-        if (source.equals(destination))
-            return true;
-
-        if (visited.contains(source))
-            return false;
-
-        visited.add(source);
-        
-        S sourceSquare = getSquareAt(source);
-
-        for (Direction direction :
-                            getDirectionsAndNeighboursOf(source).keySet())
-            if (sourceSquare.getBorderAt(direction).isOpen()
-                                    && canReach(source.moveTo(direction),
-                                                        destination, visited))
-                    return true;
-
-        return false;
-    }
-
-
-
-
 
 
 

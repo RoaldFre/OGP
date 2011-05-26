@@ -474,7 +474,8 @@ public interface Square {
      *   | hasBorder(border)
      * @throws BorderConstraintsException
      * If the border of this square were to be changed to the given border, 
-     * some border constraints would be violated.
+     * some border constraints as enforced by bordersSatisfyConstraints()  
+     * would be violated.
      */
     // Note: I would have liked to restrict the visibility of this method 
     // to this package only, but that cannot be done in an interface.
@@ -562,6 +563,58 @@ public interface Square {
      *   |      result.contains(square)
      */
     public Set<Square> getNavigatableSquares();
+
+    /** 
+     * Checks whether it is possible to navigate to the given destination 
+     * square, starting from this square.
+     * 
+     * @param destination
+     * The destination square.
+     * @return
+     *   | if (this.equals(destination))
+     *   |      then result == true
+     *   | else result == (for some square in getNavigatableSquares() :
+     *   |                          square.canNavigateTo(destination))
+     * @throws IllegalArgumentException
+     *   | destination == null
+     */
+    public boolean canNavigateTo(Square destination)
+                                            throws IllegalArgumentException;
+
+    /** 
+     * Checks whether the given destination square can be reached, starting 
+     * from this square and only moving through open borders, without 
+     * visiting a square that is in the given set of already visited squares.
+     *
+     * @param destination
+     * The destination square.
+     * @param visited
+     * The squares that have already been visited.
+     * @pre
+     *   | destination != null
+     * @pre
+     *   | visited != null
+     * @pre
+     *   | !visited.contains(destination)
+     * @post
+     *   | if (result == false)
+     *   | then visited.contains(this)
+     * @post
+     *   | if (result == false)
+     *   | then for each square in getNavigatableSquares() :
+     *   |          new.visited.contains(square)
+     * @post
+     *   | for each square in old.visited :
+     *   |          new.visited.contains(square)
+     * @return
+     *   | if (this.equals(destination))
+     *   |      then result == true
+     *   | else (if visited.contains(this))
+     *   |      then result == false
+     *   | else result == (for some square in getNavigatableSquares() :
+     *   |                          square.canNavigateTo(destination))
+     */
+    public boolean canNavigateTo(Square destination, Set<Square> visited);
 
     /** 
      * An interface to filter neighbouring squares.

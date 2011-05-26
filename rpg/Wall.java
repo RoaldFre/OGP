@@ -1,5 +1,7 @@
 package rpg;
 
+import rpg.exceptions.*;
+
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -8,38 +10,6 @@ import be.kuleuven.cs.som.annotate.*;
  * @author Roald Frederickx
  */
 public class Wall extends Border{
-    /** 
-     * Create a new wall with the given intrinsic slipperyness that borders 
-     * the given square.
-     * 
-     * @param square 
-     * The square that this wall will border.
-     * @param isSlippery 
-     * The intrinsic slipperyness for this new wall.
-     * @post
-     *   | isSlippery() == isSlippery
-     * @effect
-     *   | super(square)
-     */
-    @Raw
-    public Wall(Square square, boolean isSlippery) {
-        super(square);
-        this.isSlippery = isSlippery;
-    }
-
-    /** 
-     * Create a new non-slippery wall that borders the given square.
-     * 
-     * @param square 
-     * The square that this wall will border.
-     * @effect
-     *   | this(square, false)
-     */
-    @Raw
-    public Wall(Square square) {
-        this(square, false);
-    }
-
     /** 
      * Create a new wall with the given intrinsic slipperyness that 
      * replaces the given border.
@@ -54,7 +24,8 @@ public class Wall extends Border{
      *   | super(border)
      */
     @Raw
-    public Wall(Border border, boolean isSlippery) {
+    public Wall(Border border, boolean isSlippery) 
+                                        throws IllegalArgumentException {
         super(border);
         this.isSlippery = isSlippery;
     }
@@ -68,8 +39,41 @@ public class Wall extends Border{
      *   | this(border, false)
      */
     @Raw
-    public Wall(Border border) {
+    public Wall(Border border) throws IllegalArgumentException,
+                                      BorderConstraintsException {
         this(border, false);
+    }
+
+    /** 
+     * Create a new wall with the given intrinsic slipperyness that borders 
+     * the given square.
+     * 
+     * @param square 
+     * The square that this wall will border.
+     * @param isSlippery 
+     * The intrinsic slipperyness for this new wall.
+     * @post
+     *   | isSlippery() == isSlippery
+     * @effect
+     *   | super(square)
+     */
+    @Raw
+    Wall(Square square, boolean isSlippery) throws IllegalArgumentException {
+        super(square);
+        this.isSlippery = isSlippery;
+    }
+
+    /** 
+     * Create a new non-slippery wall that borders the given square.
+     * 
+     * @param square 
+     * The square that this wall will border.
+     * @effect
+     *   | this(square, false)
+     */
+    @Raw
+    Wall(Square square) throws IllegalArgumentException {
+        this(square, false);
     }
 
     @Override

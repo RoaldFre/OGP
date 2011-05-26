@@ -40,6 +40,22 @@ public class BorderConstraintsException extends RuntimeException {
         this.direction = direction;
     }
 
+    /** 
+     * Create a new default border constraints exception.
+     *
+     * @post
+     *   | new.getBorder() == null
+     * @post
+     *   | new.getSquare() == null
+     * @post
+     *   | new.getDirection() == null
+     */
+    public BorderConstraintsException() {
+        this.square = null;
+        this.border = null;
+        this.direction = null;
+    }
+
     /**
      * Return the offending square for this border constraints exception.
      */

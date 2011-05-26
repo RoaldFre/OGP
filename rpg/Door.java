@@ -1,6 +1,9 @@
 package rpg;
 
+import rpg.exceptions.*;
+
 import be.kuleuven.cs.som.annotate.*;
+
 
 /**
  * A class of doors than can be opened or closed.
@@ -22,7 +25,8 @@ public class Door extends Border{
      *   | super(border)
      */
     @Raw
-    public Door(Border border, boolean isOpened) {
+    public Door(Border border, boolean isOpened)
+                throws IllegalArgumentException, BorderConstraintsException {
         super(border);
         this.isOpened = isOpened;
     }
@@ -41,7 +45,7 @@ public class Door extends Border{
      *   | super(square)
      */
     @Raw
-    Door(Square square, boolean isOpened) {
+    Door(Square square, boolean isOpened) throws IllegalArgumentException {
         super(square);
         this.isOpened = isOpened;
     }

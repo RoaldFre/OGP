@@ -33,12 +33,13 @@ public abstract class Border {
      *   | border != null  &amp;&amp;  !border.isTerminated()
      * @post
      *   | (new border).isTerminated()
-     * @post
-     * This new border borders every square that the old given border 
-     * bordered.
+     * @effect
+     *   | for each square in old.border.getSquares() :
+     *   |      square.updateBorder(border, this)
      */
     @Raw
-    public Border(Border border) {
+    public Border(Border border)
+                throws IllegalArgumentException, BorderConstraintsException {
         assert border != null  &&  !border.isTerminated();
         this.squares = new Couple<Square>(border.squares);
         for (Square square : getSquares())

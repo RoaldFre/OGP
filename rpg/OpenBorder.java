@@ -1,5 +1,7 @@
 package rpg;
 
+import rpg.exceptions.*;
+
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -8,19 +10,6 @@ import be.kuleuven.cs.som.annotate.*;
  * @author Roald Frederickx
  */
 public class OpenBorder extends Border{
-
-    /** 
-     * Create a new open border that borders the given square.
-     * 
-     * @param square 
-     * The square that this open border will border.
-     * @effect
-     *   | super(square)
-     */
-    @Raw
-    public OpenBorder(Square square) {
-        super(square);
-    }
 
     /** 
      * Create a new open border that replaces the given border.
@@ -34,10 +23,24 @@ public class OpenBorder extends Border{
      *   |      then getASquare().equilibrateMyArea()
      */
     @Raw
-    public OpenBorder(Border border) {
+    public OpenBorder(Border border)
+                throws IllegalArgumentException, BorderConstraintsException {
         super(border);
         if (isSharedByTwoSquares())
             getASquare().equilibrateMyArea();
+    }
+
+    /** 
+     * Create a new open border that borders the given square.
+     * 
+     * @param square 
+     * The square that this open border will border.
+     * @effect
+     *   | super(square)
+     */
+    @Raw
+    OpenBorder(Square square) throws IllegalArgumentException {
+        super(square);
     }
 
     @Override

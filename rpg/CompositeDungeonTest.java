@@ -14,25 +14,25 @@ import java.util.HashSet;
 
 public class CompositeDungeonTest {
 
-    Level<TransparentSquare> transparentLevel;
-    TransparentSquare transSq1;
-    TransparentSquare transSq2;
-    TransparentSquare transSq3;
+    private Level<TransparentSquare> transparentLevel;
+    private TransparentSquare transSq1;
+    private TransparentSquare transSq2;
+    private TransparentSquare transSq3;
 
-    Level<TeleportationSquare> teleportLevel;
-    RegularTeleportationSquare regTelSq1;
-    RegularTeleportationSquare regTelSq2;
-    RegularTeleportationSquare regTelSq3;
-    Coordinate telCoord1;
-    Coordinate telCoord2;
-    Coordinate telCoord3;
+    private Level<TeleportationSquare> teleportLevel;
+    private RegularTeleportationSquare regTelSq1;
+    private RegularTeleportationSquare regTelSq2;
+    private RegularTeleportationSquare regTelSq3;
+    private Coordinate telCoord1;
+    private Coordinate telCoord2;
+    private Coordinate telCoord3;
 
-    Shaft<RegularSquare> regularShaft;
-    RegularSquare regSq1;
-    RegularSquare regSq2;
-    RegularSquare regSq3;
+    private Shaft<RegularSquare> regularShaft;
+    private RegularSquare regSq1;
+    private RegularSquare regSq2;
+    private RegularSquare regSq3;
 
-    CompositeDungeon<Square> dungeon;
+    private CompositeDungeon<Square> dungeon;
 
     @Before
     public void setUpMutableFixture() {

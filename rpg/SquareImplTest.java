@@ -1,10 +1,10 @@
 package rpg;
 
-import static org.junit.Assert.*;
-import org.junit.*;
-
 import rpg.exceptions.*;
 import rpg.util.*;
+
+import static org.junit.Assert.*;
+import org.junit.*;
 
 /**
  * A class collecting tests for the abstract class of squares.

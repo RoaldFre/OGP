@@ -1,10 +1,11 @@
 package rpg;
 
-import be.kuleuven.cs.som.annotate.*;
-import java.util.Arrays;
-
 import rpg.util.Direction;
 import rpg.util.Temperature;
+
+import be.kuleuven.cs.som.annotate.*;
+
+import java.util.Arrays;
 
 /**
  * A class of transparant squares.

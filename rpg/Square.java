@@ -1,9 +1,10 @@
 package rpg;
 
-import be.kuleuven.cs.som.annotate.*;
 import rpg.exceptions.*;
 import rpg.util.Direction;
 import rpg.util.Temperature;
+
+import be.kuleuven.cs.som.annotate.*;
 
 import java.util.Map;
 import java.util.Set;

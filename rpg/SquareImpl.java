@@ -1,9 +1,10 @@
 package rpg;
 
-import be.kuleuven.cs.som.annotate.*;
 import rpg.exceptions.*;
 import rpg.util.Direction;
 import rpg.util.Temperature;
+
+import be.kuleuven.cs.som.annotate.*;
 
 import java.util.Map;
 import java.util.EnumMap;
@@ -188,8 +189,6 @@ abstract public class SquareImpl implements Square {
      */
     private Temperature temperature;
 
-
-
     /**
      * Returns the minimum temperature for this square.
      */
@@ -240,7 +239,6 @@ abstract public class SquareImpl implements Square {
      * Variable referencing the minimum temperature of this square. 
      */
     private Temperature minTemperature;
-
 
     /**
      * Returns the maximum temperature for this square.
@@ -299,7 +297,6 @@ abstract public class SquareImpl implements Square {
      */
     private Temperature maxTemperature;
 
-
     /**
      * Check whether the given temperature matches with the given 
      * temperature limits and all given values are effective.
@@ -313,7 +310,6 @@ abstract public class SquareImpl implements Square {
             && minTemperature.compareTo(temperature) <= 0
             && temperature.compareTo(maxTemperature) <= 0;
     }
-
 
     /** 
      * Returns the cold damage associated with this square.
@@ -345,7 +341,6 @@ abstract public class SquareImpl implements Square {
      */
     public static final double COLD_DAMAGE_STEP = 10;
 
-
     /** 
      * Returns the heat damage associated with this square.
      * 
@@ -368,8 +363,6 @@ abstract public class SquareImpl implements Square {
         double threshold = getHeatDamageThreshold().temperature();
         return 1 + (int)((temp - threshold) / getHeatDamageStep());
     }
-
-
 
     /**
      * Returns the heat damage threshold temperature that applies to all 
@@ -424,8 +417,6 @@ abstract public class SquareImpl implements Square {
      * applies to all squares.
      */
     private static Temperature heatDamageThreshold = new Temperature(35);
-
-
 
     /**
      * Returns the heat damage temperature step that applies to all squares.
@@ -550,7 +541,6 @@ abstract public class SquareImpl implements Square {
      */
     private int humidity;
 
-
     /** 
      * Returns the rust damage associated with this square.
      * 
@@ -578,7 +568,6 @@ abstract public class SquareImpl implements Square {
      */
     public static final int RUST_DAMAGE_STEP = 700;
 
-
     /**
      * Return the slipperiness of the floor for this square.
      */
@@ -587,7 +576,6 @@ abstract public class SquareImpl implements Square {
         assert !isTerminated();
         return getBorderAt(Direction.DOWN).isSlippery();
     }
-    
 
     /**
      * Returns whether or not this square is slippery at the moment.
@@ -617,7 +605,6 @@ abstract public class SquareImpl implements Square {
         return getTemperature().temperature() < 0 && getHumidity() > 1000;
     }
 
-
     /** 
      * Return the inhabitability associated with this square. 
      */
@@ -631,7 +618,6 @@ abstract public class SquareImpl implements Square {
         return -1 * Math.sqrt(heatDamCubed / (101 - humidityPercent))
                     - Math.sqrt(coldDam);
     }
-
 
     /** 
      * Return the border of this square in the given direction.
@@ -1046,7 +1032,6 @@ abstract public class SquareImpl implements Square {
      * The default value is 0.2.
      */
     private static double mergeTemperatureWeight = 0.2;
-
 
 	/** 
      * Checks whether the area of this square is properly equilibrated.
@@ -1523,7 +1508,6 @@ abstract public class SquareImpl implements Square {
             && myAreaIsEquilibrated();
     }
 }
-
 
 // vim: ts=4:sw=4:expandtab:smarttab
 

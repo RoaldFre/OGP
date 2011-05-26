@@ -104,7 +104,8 @@ public class TransparentSquare extends SquareImpl {
      * constraints of the game.
      *
      * @return
-     * True iff this transparent square is not terminated and has:
+     * True iff this transparent square is terminated or it is not 
+     * terminated and has:
      *   - no walls
      *   - no doors placed in ceilings or floors
      *   - at least one door, and no more than two doors

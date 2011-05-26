@@ -110,7 +110,8 @@ public class RegularSquare extends SquareImpl {
      * constraints for regular squares.
      *
      * @return
-     * True iff this regular square is not terminated and has:
+     * True iff this regular square is terminated, or if it is not 
+     * terminated and has:
      *   - no doors placed in ceilings or floors
      *   - at least one wall or door
      *   - no more than three doors

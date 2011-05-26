@@ -1,9 +1,7 @@
 package rpg;
 
 import rpg.exceptions.*;
-import rpg.util.Coordinate;
-import rpg.util.CoordinateSystem;
-import rpg.util.Direction;
+import rpg.util.*;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.Set;
 import java.util.HashSet;

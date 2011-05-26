@@ -2,13 +2,16 @@ package rpg;
 
 import static org.junit.Assert.*;
 import org.junit.*;
-//import rpg.exceptions.*;
 
 import rpg.util.Coordinate;
 import rpg.util.CoordinateSystem;
 import rpg.util.Direction;
 
-
+/**
+ * A class collecting tests for the class of shafts.
+ *
+ * @author Roald Frederickx
+ */
 public class ShaftTest {
 
     private Shaft<Square> shaft_10N;

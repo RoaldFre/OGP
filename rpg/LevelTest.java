@@ -7,7 +7,11 @@ import org.junit.*;
 import rpg.util.Coordinate;
 import rpg.util.CoordinateSystem;
 
-
+/**
+ * A class collecting tests for the class of level dungeons.
+ *
+ * @author Roald Frederickx
+ */
 public class LevelTest {
 
     private Level<Square> level_10;

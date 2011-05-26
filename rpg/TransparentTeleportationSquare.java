@@ -6,6 +6,8 @@ import java.util.Set;
 import rpg.util.Temperature;
 
 /**
+ * A class of transparant squares featuring a teleporter.
+ *
  * @invar
  * Each transparent teleportation square can have its teleporter as its teleporter.
  *   | isValidTeleporter(getTeleporter())

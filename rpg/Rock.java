@@ -9,7 +9,11 @@ import be.kuleuven.cs.som.annotate.*;
 
 import java.util.Collection;
 
-
+/**
+ * A class of rocks.
+ *
+ * @author Roald Frederickx
+ */
 public class Rock extends SquareImpl {
 
     /** 

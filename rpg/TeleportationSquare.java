@@ -5,8 +5,6 @@ package rpg;
  *
  * @author Roald Frederickx
  */
-
-
 public interface TeleportationSquare extends Square {
     /**
      * Return a destination of this teleportation square.

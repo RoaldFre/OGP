@@ -12,7 +12,6 @@ import java.util.NoSuchElementException;
 import rpg.exceptions.*;
 import rpg.util.*;
 
-
 /**
  * A class representing a composite dungeon, composed of other dungeons.
  *

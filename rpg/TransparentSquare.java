@@ -6,9 +6,14 @@ import java.util.Arrays;
 import rpg.util.Direction;
 import rpg.util.Temperature;
 
-
+/**
+ * A class of transparant squares.
+ *
+ * @author Roald Frederickx
+ */
 public class TransparentSquare extends SquareImpl {
-    /** Initialize this new transparent square to a transparent square with 
+    /**
+     * Initialize this new transparent square to a transparent square with 
      * the given temperature, temperature limits and humidity.
      * 
      * @param temperature
@@ -34,7 +39,8 @@ public class TransparentSquare extends SquareImpl {
                 new TransparentBorderInitializer(doorDirections));
     }
 
-    /** Initialize this new transparent square to a transparent square with 
+    /**
+     * Initialize this new transparent square to a transparent square with 
      * the given temperature and humidity and a non slippery floor. 
      *
      * @param temperature

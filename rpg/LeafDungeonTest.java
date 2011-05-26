@@ -5,9 +5,12 @@ import org.junit.*;
 import rpg.exceptions.*;
 import rpg.util.*;
 
+/**
+ * A class collecting tests for the class of leaf dungeons.
+ *
+ * @author Roald Frederickx
+ */
 public class LeafDungeonTest {
-
-
     private Level<Square> level_10;
     private Level<Square> level_10_withSquares;
     private Level<Square> dungeonDemo;

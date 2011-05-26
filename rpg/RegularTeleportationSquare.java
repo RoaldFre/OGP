@@ -6,6 +6,8 @@ import java.util.Set;
 import rpg.util.Temperature;
 
 /**
+ * A class of regular squares featuring a teleporter.
+ *
  * @invar
  * Each regular teleportation square can have its teleporter as its teleporter.
  *   | isValidTeleporter(getTeleporter())

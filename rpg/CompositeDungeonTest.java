@@ -12,6 +12,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
+/**
+ * A class collecting tests for the class of composite dungeons.
+ *
+ * @author Roald Frederickx
+ */
 public class CompositeDungeonTest {
 
     private Level<TransparentSquare> transparentLevel;

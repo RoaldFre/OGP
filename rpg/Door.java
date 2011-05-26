@@ -4,7 +4,6 @@ import rpg.exceptions.*;
 
 import be.kuleuven.cs.som.annotate.*;
 
-
 /**
  * A class of doors than can be opened or closed.
  *

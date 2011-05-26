@@ -5,6 +5,11 @@ import org.junit.*;
 import rpg.exceptions.*;
 import rpg.util.Coordinate;
 
+/**
+ * A class collecting tests for the class of dungeons.
+ *
+ * @author Roald Frederickx
+ */
 public class DungeonTest {
 
     private Dungeon<Square> level_10;

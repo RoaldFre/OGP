@@ -4,6 +4,11 @@ import rpg.util.Coordinate;
 import rpg.util.CoordinateSystem;
 import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * A class of two-dimensional, horizontal level dungeons.
+ *
+ * @author Roald Frederickx
+ */
 public class Level<S extends Square> extends LeafDungeon<S> {
 
 	/** 

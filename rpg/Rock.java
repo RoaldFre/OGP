@@ -57,8 +57,7 @@ public class Rock extends SquareImpl {
      *   | result == (canPossiblyHaveAsBorderAt(direction, border)
      *   |      &amp;&amp; (border == null || border.isWall())
      */
-    @Raw
-	@Override
+    @Raw @Override
     public boolean canHaveAsBorderAt(Direction direction, Border border) {
         return canPossiblyHaveAsBorderAt(direction, border)
                                 && (border == null || border.isWall());
@@ -73,8 +72,7 @@ public class Rock extends SquareImpl {
      *   |      || (for each direction in Direction.values() :
      *   |              getBorderAt(direction).isWall()))
      */
-    @Raw
-    @Override
+    @Raw @Override
     public boolean bordersSatisfyConstraints() {
         if (isTerminated())
             return true;
@@ -126,7 +124,7 @@ public class Rock extends SquareImpl {
      * @effect
      *   | setProperTemperature()
      */
-	@Override @Raw
+	@Raw @Override
     public void neighbourHasChangedTemperatureOrHumidity() {
         setProperTemperature();
     }
@@ -203,29 +201,9 @@ public class Rock extends SquareImpl {
      * @return
      *   | result == false
      */
-    @Override @Immutable
+    @Immutable @Override
     public boolean isPossibleTeleportationEndPoint() {
         return false;
-    }
-
-    /**
-     * Check whether this rock satisfies all its class 
-     * invariants.
-     */
-    @Raw
-    @Override
-    public boolean isNotRaw() {
-        return super.isNotRaw()
-            && isValidMergeTemperatureWeight(getMergeTemperatureWeight()) 
-            && isValidHeatDamageThreshold(getHeatDamageThreshold()) 
-            && isValidHeatDamageStep(getHeatDamageStep()) 
-            && matchesMinTemperatureMax(getMinTemperature(),
-                                    getTemperature(), getMaxTemperature())
-            && canHaveAsHumidity(getHumidity()) 
-            && hasProperBorders()
-            && bordersSatisfyConstraints()
-            && hasNoDuplicateBorders()
-            && myAreaIsEquilibrated();
     }
 }
 

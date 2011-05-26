@@ -254,7 +254,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
     private Set<Dungeon<? extends S>> subDungeons = 
                                         new HashSet<Dungeon<? extends S>>();
 
-
     /** 
      * Check whether the given coordinate lies within this composite dungeon.
      *

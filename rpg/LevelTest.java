@@ -47,8 +47,6 @@ public class LevelTest {
         assertClassInvariants(level);
     }
 
-
-
     @Test
     public void canHaveAsCoordSyst_test() {
         CoordinateSystem coordSyst = level_10.getCoordSyst();
@@ -74,7 +72,6 @@ public class LevelTest {
         assertFalse(level_10.canHaveAsCoordSyst(coordSyst));
 
         assertFalse(level_10.canHaveAsCoordSyst(null));
-
     }
 }
 

@@ -89,7 +89,6 @@ public class RegularTeleportationSquare
         setTeleporter(teleporter);
     }
 
-
     /**
      * Return the teleporter for this regular teleportation square.
      */

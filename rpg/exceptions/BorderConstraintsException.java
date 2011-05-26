@@ -99,7 +99,6 @@ public class BorderConstraintsException extends RuntimeException {
      */
     private final Direction direction;
 
-
     static final long serialVersionUID = 1;
 }
 

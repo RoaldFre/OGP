@@ -4,7 +4,6 @@ import rpg.*;
 import rpg.util.Couple;
 import be.kuleuven.cs.som.annotate.*;
 
-
 /**
  * A class for signalling an illegal border merge.
  * 

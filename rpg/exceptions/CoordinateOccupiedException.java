@@ -4,7 +4,6 @@ import rpg.*;
 import rpg.util.Coordinate;
 import be.kuleuven.cs.som.annotate.*;
 
-
 /**
  * A class for signalling a collision with an already occpied coordinate.
  * 

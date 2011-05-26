@@ -4,7 +4,6 @@ import rpg.*;
 import rpg.util.Coordinate;
 import be.kuleuven.cs.som.annotate.*;
 
-
 /**
  * A class for signalling an error when requesting a square on a 
  * non-occupied coordinate.

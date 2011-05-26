@@ -172,16 +172,6 @@ public class TransparentTeleportationSquare
     @Override
     public boolean isNotRaw() {
         return super.isNotRaw()
-            && isValidMergeTemperatureWeight(getMergeTemperatureWeight()) 
-            && isValidHeatDamageThreshold(getHeatDamageThreshold()) 
-            && isValidHeatDamageStep(getHeatDamageStep()) 
-            && matchesMinTemperatureMax(getMinTemperature(),
-                                    getTemperature(), getMaxTemperature())
-            && canHaveAsHumidity(getHumidity()) 
-            && hasProperBorders()
-            && bordersSatisfyConstraints()
-            && hasNoDuplicateBorders()
-            && myAreaIsEquilibrated()
  			&& isValidTeleporter(getTeleporter());
     }
 }

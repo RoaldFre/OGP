@@ -45,7 +45,6 @@ public class Rock extends SquareImpl {
         super(new Temperature(0), 0, new RockBorderInitializer());
     }
 
-
     /** 
      * Check whether this rock can have the given border as its border in 
      * the given direction.
@@ -55,40 +54,36 @@ public class Rock extends SquareImpl {
      * @param border
      * The border to check.
      * @return
-	 * True iff the given direction is valid and:
-	 *   - this rock is terminated and the given border is null;
-	 *   or
-	 *   - this rock is not terminated and the given border is a wall and 
-	 *   not null nor terminated.
-     *   | if (!isValidDirection(direction))
-     *   |      then result == false
-     *   | else if (isTerminated())
-     *   |      then result == (border == null)
-     *   | else
-     *   |      result == (border != null 
-     *   |                  &amp;&amp; !border.isTerminated()
-     *   |                  &amp;&amp; (border == null || border.isWall()))
+     *   | result == (canPossiblyHaveAsBorderAt(direction, border)
+     *   |      &amp;&amp; (border == null || border.isWall())
      */
     @Raw
 	@Override
     public boolean canHaveAsBorderAt(Direction direction, Border border) {
-        return super.canPossiblyHaveAsBorderAt(direction, border)
+        return canPossiblyHaveAsBorderAt(direction, border)
                                 && (border == null || border.isWall());
     }
-
 
     /** 
      * Checks whether the borders of this rock satisfy the constraints for 
      * rocks.
      * 
      * @return 
-     *   | result == true
+     *   | result == (isTerminated()
+     *   |      || (for each direction in Direction.values() :
+     *   |              getBorderAt(direction).isWall()))
      */
+    @Raw
     @Override
     public boolean bordersSatisfyConstraints() {
+        if (isTerminated())
+            return true;
+
+        for (Direction direction : Direction.values())
+            if (!getBorderAt(direction).isWall())
+                return false;
         return true;
     }
-
 
     /** 
      * Checks whether this rock can have the given humidity as its 
@@ -119,7 +114,6 @@ public class Rock extends SquareImpl {
     public boolean canHaveAsTemperature(Temperature temperature){
         return temperature.equals(getProperTemperature());
     }
-
 
     /** 
      * Function signalling that one of the neighbours of this rock has 
@@ -168,6 +162,10 @@ public class Rock extends SquareImpl {
         return newTemperature.coerce(getMinTemperature(), getMaxTemperature());
     }
         
+    /**
+     * Constant referencing a neighbour filter that accepts all non-rock 
+     * neighbours.
+     */
     static final protected NeighbourFilter acceptNonRockNeighbourFilter =
                 new NeighbourFilter() {
                     public boolean filter(Square s, Border b, Square neighb){

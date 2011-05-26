@@ -195,6 +195,17 @@ public class SquareImplTest {
         assertEquals(new Temperature(40), s11.getTemperature());
         assertEquals(new Temperature(20), s21.getTemperature());
 
+        assertEquals(new Temperature(30), r02.getTemperature());
+        assertEquals(new Temperature(35), r12.getTemperature());
+        assertEquals(new Temperature(25), r22.getTemperature());
+        assertEquals(new Temperature(30), r32.getTemperature());
+        assertEquals(new Temperature( 0), r00.getTemperature());
+        assertEquals(new Temperature(40), r10.getTemperature());
+        assertEquals(new Temperature(20), r20.getTemperature());
+        assertEquals(new Temperature( 0), r30.getTemperature());
+        assertEquals(new Temperature(40), r01.getTemperature());
+        assertEquals(new Temperature(20), r31.getTemperature());
+
 
         door.open();
 

@@ -132,7 +132,7 @@ public class Couple<E> implements Iterable<E> {
      * @param newPartner
      * The new 'partner' of thisElement.
      * @post
-     *   | getPartner(thisElement).equals(newOtherElement)
+     *   | new.getPartner(thisElement).equals(newPartner)
      * @throws IllegalArgumentException
      *   | thisElement == null
      * @throws IllegalArgumentException
@@ -160,9 +160,9 @@ public class Couple<E> implements Iterable<E> {
      * @throws IllegalArgumentException 
      *   | !contains(element)
      * @post
-     *   | !contains(element)
+     *   | !new.contains(element)
      * @post
-     *   | getNbElements() == 1
+     *   | new.getNbElements() == 1
      */
     public void delete(E element) throws IllegalArgumentException {
         assert element != null;

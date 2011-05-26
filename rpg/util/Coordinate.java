@@ -9,6 +9,7 @@ import be.kuleuven.cs.som.annotate.*;
  */
 @Value
 public class Coordinate {
+
     /** 
      * Create a new coordinate with the given components.
      * 
@@ -45,8 +46,8 @@ public class Coordinate {
      *   |                  &amp;&amp; formsValidBoundingBox(this. upperBound))
      */
     public boolean isBoundedBy(Coordinate lowerBound, Coordinate upperBound) {
-        return formsValidBoundingBox(lowerBound, this) &&
-            formsValidBoundingBox(this, upperBound);
+        return formsValidBoundingBox(lowerBound, this)
+            && formsValidBoundingBox(this, upperBound);
     }
 
     /** 
@@ -80,7 +81,7 @@ public class Coordinate {
      * @param direction 
      * The direction in which to move this coordinate.
      * @effect
-     *   result == moveTo(direction, 1)
+     *   | result == moveTo(direction, 1)
      */
     public Coordinate moveTo(Direction direction) throws IllegalArgumentException {
         return moveTo(direction, 1);
@@ -164,9 +165,9 @@ public class Coordinate {
      *   |      then result == false
      *   | else if (this.getClass() != other.getClass())
      *   |      then result == false
-     *   | else result == (x == otherCoord.x
-     *   |                  &amp;&amp; y == otherCoord.y
-     *   |                  &amp;&amp; z == otherCoord.z)
+     *   | else result == (x == ((Coordinate) other).x
+     *   |      &amp;&amp; y == ((Coordinate) other).y
+     *   |      &amp;&amp; z == ((Coordinate) other).z)
      */
     @Override
     public boolean equals(Object other) {
@@ -182,9 +183,6 @@ public class Coordinate {
     
     /** 
      * Returns a hashcode for this coordinate object.
-     * 
-     * @return
-     *   | result == (int) (x + y + z)
      */
     @Override
     public int hashCode() {
@@ -192,7 +190,7 @@ public class Coordinate {
         // Hopefully the compiler can calculate this in advance and 
         // hard-code the result to make it faster and avoid floating point 
         // calculations.
-        int base = (int) java.lang.Math.floor(java.lang.Math.pow(Integer.MAX_VALUE,1/3.));
+        int base = (int) java.lang.Math.floor(java.lang.Math.pow(Integer.MAX_VALUE,1f/3f));
         return (int) (x  +  base * y  +  base * base * z);
         // Note: this does collide when the 'span' of the coordinates 
         // exceed the cube root of Integer.MAX_VALUE.

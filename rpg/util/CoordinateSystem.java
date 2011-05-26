@@ -42,8 +42,8 @@ public class CoordinateSystem implements Cloneable, Iterable<Coordinate> {
      */
     public CoordinateSystem(Coordinate lowerBound, Coordinate upperBound) 
                                             throws IllegalArgumentException {
-        setLowerBoundRaw(lowerBound);
-        setUpperBound(upperBound);
+        setUpperBoundRaw(upperBound);
+        setLowerBound(lowerBound);
     }
 
     /**
@@ -101,17 +101,13 @@ public class CoordinateSystem implements Cloneable, Iterable<Coordinate> {
      * @param lowerBound
      * The lower coordinate bound to check.
      * @return
-     *
-     * True if and only if the given lower coordinate bound is a possible 
-     * lower coordinate bound for any coordinate system, and if the given 
-     * lower coordinate bound matches with the upper coordinate bound of 
-     * this coordinate system. If the old lower coordinate bound is not 
-     * null, then the given lower coordinate bound must be less strict.
      *   | result ==
      *   |      (isPossibleLowerBound(lowerBound)
      *   |          &amp;&amp; (getLowerBound() == null
      *   |              || Coordinate.formsValidBoundingBox(lowerBound
      *   |                                                  getLowerBound())
+     *   |          &amp;&amp; Coordinate.formsValidBoundingBox(Coordinate.ORIGIN,
+     *   |                                                      lowerBound)
      *   |          &amp;&amp; matchesLowerUpperBound(lowerBound, 
      *   |                                          getUpperBound()))
      */
@@ -121,6 +117,8 @@ public class CoordinateSystem implements Cloneable, Iterable<Coordinate> {
                 && (getLowerBound() == null 
                         || Coordinate.formsValidBoundingBox(lowerBound, 
                                                             getLowerBound()))
+                && Coordinate.formsValidBoundingBox(Coordinate.ORIGIN,
+                                                    lowerBound)
                 && matchesLowerUpperBound(lowerBound, getUpperBound());
     }
     
@@ -276,14 +274,18 @@ public class CoordinateSystem implements Cloneable, Iterable<Coordinate> {
     }
 
     /** 
-     * Returns an iterable of the neighbours of the given coordinate in 
-     * this coordinate system.
+     * Returns a map of the directions to the neighbouring coordinates of 
+     * the given coordinate in this coordinate system.
      * 
      * @param coordinate 
      * The coordinate whose neighbours to generate.
      * @return
-     * An iterable of the neighbours of the given coordinate in this 
-     * coordinate system.
+     * A map of the directions to the neighbouring coordinates of 
+     * the given coordinate in this coordinate system.
+     * @return
+     *   | for each entry in result.entrySet() :
+     *   |      coordinate.moveTo(entry.getKey()).equals(entry.getValue())
+     *   |      &amp;&amp; this.contains(entry.getValue())
      * @throws IllegalArgumentException
      *   | coordinate == null
      */

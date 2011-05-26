@@ -15,10 +15,13 @@ import rpg.util.Direction;
 public class ShaftTest {
 
     private Shaft<Square> shaft_10N;
+    private Shaft<Square> shaft_10N_offset10;
 
     @Before
     public void setUpMutableFixture() {
         shaft_10N = new Shaft<Square>(10, Direction.NORTH);
+        shaft_10N_offset10 = new Shaft<Square>(new Coordinate(10, 10, 10),
+                                               10, Direction.NORTH);
     }
 
     public static void assertClassInvariants(Shaft<?> shaft) {
@@ -50,29 +53,29 @@ public class ShaftTest {
 
     @Test
     public void canHaveAsCoordSyst_test() {
-        CoordinateSystem coordSyst = shaft_10N.getCoordSyst();
+        CoordinateSystem coordSyst = shaft_10N_offset10.getCoordSyst();
         Coordinate lo = coordSyst.getLowerBound();
         Coordinate hi = coordSyst.getUpperBound();
 
-        coordSyst = new CoordinateSystem(new Coordinate(0, -1, 0), hi);
-        assertTrue(shaft_10N.canHaveAsCoordSyst(coordSyst));
+        coordSyst = new CoordinateSystem(new Coordinate(10, 9, 10), hi);
+        assertTrue(shaft_10N_offset10.canHaveAsCoordSyst(coordSyst));
 
-        coordSyst = new CoordinateSystem(new Coordinate(0, 1, 0), hi);
-        assertFalse(shaft_10N.canHaveAsCoordSyst(coordSyst));
+        coordSyst = new CoordinateSystem(new Coordinate(10, 11, 10), hi);
+        assertFalse(shaft_10N_offset10.canHaveAsCoordSyst(coordSyst));
 
-        coordSyst = new CoordinateSystem(new Coordinate(-1, -1, -1), hi);
-        assertFalse(shaft_10N.canHaveAsCoordSyst(coordSyst));
+        coordSyst = new CoordinateSystem(new Coordinate(9, 9, 9), hi);
+        assertFalse(shaft_10N_offset10.canHaveAsCoordSyst(coordSyst));
 
-        coordSyst = new CoordinateSystem(lo, new Coordinate(0, 20, 0));
-        assertTrue(shaft_10N.canHaveAsCoordSyst(coordSyst));
+        coordSyst = new CoordinateSystem(lo, new Coordinate(10, 20, 10));
+        assertTrue(shaft_10N_offset10.canHaveAsCoordSyst(coordSyst));
 
-        coordSyst = new CoordinateSystem(lo, new Coordinate(1, 20, 0));
-        assertFalse(shaft_10N.canHaveAsCoordSyst(coordSyst));
+        coordSyst = new CoordinateSystem(lo, new Coordinate(11, 20, 10));
+        assertFalse(shaft_10N_offset10.canHaveAsCoordSyst(coordSyst));
 
-        coordSyst = new CoordinateSystem(lo, new Coordinate(0, 20, 1));
-        assertFalse(shaft_10N.canHaveAsCoordSyst(coordSyst));
+        coordSyst = new CoordinateSystem(lo, new Coordinate(10, 20, 11));
+        assertFalse(shaft_10N_offset10.canHaveAsCoordSyst(coordSyst));
 
-        assertFalse(shaft_10N.canHaveAsCoordSyst(null));
+        assertFalse(shaft_10N_offset10.canHaveAsCoordSyst(null));
     }
 
     @Test

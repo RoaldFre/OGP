@@ -169,8 +169,6 @@ public class LeafDungeonTest {
         level_10.addSquareAt(coordinate2, square2);
     }
 
-
-
     @Test
     public void translate_legal() {
         LeafDungeon<?> l10ws = level_10_withSquares; //shorten name for 80 col
@@ -214,7 +212,6 @@ public class LeafDungeonTest {
 		assertEquals(oldLower, l10ws.getCoordSyst().getLowerBound());
         assertEquals(oldUpper, l10ws.getCoordSyst().getUpperBound());
     }
-
 
     @Test (expected = IllegalArgumentException.class)
     public void getDirectionsAndNeighboursOf_null() {

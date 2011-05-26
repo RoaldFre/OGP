@@ -39,33 +39,29 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     }
 
     /** 
-     * Translate this leaf dungeon over the given offset.
+     * Returns wheter or not this dungeon contains the given square.
      */
-    @Override
-    protected void translate(Coordinate offset)
-                                    throws IllegalArgumentException,
-                                            CoordinateConstraintsException {
-        translateCoordSyst(offset);
-        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares())
-            if (!canHaveAsSquareAt(e.getKey().add(offset), e.getValue())){
-                translateCoordSyst(offset.mirror());
-                throw new CoordinateConstraintsException(e.getValue(), this);
-            }
-        Map<Coordinate, S> translatedSquares = new HashMap<Coordinate, S>();
-        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares()) {
-            translatedSquares.put(e.getKey().add(offset), e.getValue());
-        }
-        squares = translatedSquares;
+    @Basic @Raw @Override
+    public boolean hasSquare(Square square) {
+        return squares.containsValue(square);
     }
 
     /** 
-     * Check whether the given coordinate lies within this leaf dungeon.
+     * Returns the square at the given coordinate in this dungeon.
      */
-    @Override
-    public boolean containsCoordinate(Coordinate coordinate) {
-        return getCoordSyst().contains(coordinate);
-    }
+    @Basic @Raw @Override
+    public S getSquareAt(Coordinate coordinate) 
+                                    throws IllegalArgumentException,
+                                            CoordinateNotOccupiedException {
+        if (!isEffectiveCoordinate(coordinate))
+            throw new IllegalArgumentException();
 
+        S result = squares.get(coordinate);
+        if (result == null)
+            throw new CoordinateNotOccupiedException(coordinate, this);
+
+        return result;
+    }
 
     /** 
      * Add the given square to this leaf dungeon at the given coordinate.
@@ -81,7 +77,7 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      *   |                                          coordinate).entrySet() :
      *   |      square.mergeWith(e.getValue(), e.getKey())
      * @post
-     *   | new.getSquareAt(coordinate) == square
+     *   | new.getSquareAt(coordinate).equals(square)
      * @throws IllegalArgumentException
      *   | !canHaveAsSquareAt(coordinate, square)
      * @throws CoordinateOccupiedException
@@ -106,7 +102,6 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
             throw new DungeonConstraintsException(square, this);
         }
 
-
         for (Map.Entry<Direction, ? super S> neighbourEntry :
                         getRootDungeon().getDirectionsAndNeighboursOf(
                                                     coordinate).entrySet()) {
@@ -116,60 +111,89 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
         }
     }
 
-
     /** 
-     * Return a mapping of directions to squares that represent all 
-     * neighbouring squares of the given coordinate in this dungeon. 
+     * Checks whether this leaf dungeon can have the given square at the 
+     * given coordinate.
+     * 
+     * @param coordinate 
+     * The coordinate to check.
+     * @param square 
+     * The square to check.
+     * @return 
+     *   | if (!canPossiblyHaveAsSquareAt(coordinate, square))
+     *   |      then result == false
      */
     @Raw
-    @Override
-    public Map<Direction, S> getDirectionsAndNeighboursOf(
-                                                        Coordinate coordinate)
-                                            throws IllegalArgumentException {
-        if (!isEffectiveCoordinate(coordinate))
-            throw new IllegalArgumentException();
-
-        EnumMap<Direction, S> result =
-                    new EnumMap<Direction, S>(Direction.class);
-
-        for (Map.Entry<Direction, Coordinate> neighbourEntry :
-                        getCoordSyst().neighboursOf(coordinate).entrySet()) {
-            Coordinate neighbourCoordinate = neighbourEntry.getValue();
-            Direction neighbourDirection = neighbourEntry.getKey();
-            S neighbour = squares.get(neighbourCoordinate);
-            if (neighbour != null)
-                result.put(neighbourDirection, neighbour);
-        }
-
-        return result;
-    }
-
+    abstract public boolean canHaveAsSquareAt(Coordinate coordinate, S square);
 
     /** 
-     * Returns the square at the given coordinate in this dungeon.
+     * Checks whether all squares of this dungeon have valid coordinates.
+     * 
+     * @return 
+     * True iff all squares of this dungeon have valid coordinates.
+     *   | result == (for each e in getPositionsAndSquares() :
+     *   |                  canHaveAsSquareAt(e.getKey(), e.getValue()))
      */
-    @Basic @Raw
-    @Override
-    public S getSquareAt(Coordinate coordinate) 
-                                    throws IllegalArgumentException,
-                                            CoordinateNotOccupiedException {
-        if (!isEffectiveCoordinate(coordinate))
-            throw new IllegalArgumentException();
+    public boolean canHaveSquaresAtTheirCoordinates() {
+        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares())
+            if (!canHaveAsSquareAt(e.getKey(), e.getValue()))
+                return false;
+        return true;
+    }
 
-        S result = squares.get(coordinate);
-        if (result == null)
-            throw new CoordinateNotOccupiedException(coordinate, this);
-
-        return result;
+    /**
+     * Checks whether this leaf dungeon can possibly have the given square 
+     * at the given coordinate.
+     * 
+     * @param coordinate 
+     * The coordinate to check.
+     * @param square 
+     * The square to check.
+     * @return 
+     *   | result == (square != null
+     *   |              &amp;&amp; !square.isTerminated()
+     *   |              &amp;&amp; isValidSquareCoordinate(coordinate)
+     */
+    @Raw
+    public boolean canPossiblyHaveAsSquareAt(Coordinate coordinate, S square) {
+        return square != null
+            && !square.isTerminated()
+            && isValidSquareCoordinate(coordinate);
     }
 
     /** 
-     * Returns wheter or not this dungeon contains the given square.
+     * Checks whether the given coordinate is a valid coordinate in this 
+     * dungeon.
+     *
+     * @param coordinate 
+     * The coordinate to check.
+     * @return 
+     * True iff the coordinate is a possible square coordinate for all 
+     * dungeons, is contained within the coordinate system of this dungeon, 
+     * and the coordinate values in all directions are not equal to each 
+     * other.
+     *   | result == (isEffectiveCoordinate(coordinate)
+     *   |      &amp;&amp; containsCoordinate(coordinate)
+     *   |      &amp;&amp; (coordinate.x != coordinate.y
+     *   |                  || coordinate.y != coordinate.z
+     *   |                  || coordinate.z != coordinate.x))
      */
-    @Basic @Raw
+    public boolean isValidSquareCoordinate(Coordinate coordinate) {
+        if (!isEffectiveCoordinate(coordinate))
+            return false;
+        if (!containsCoordinate(coordinate))
+            return false;
+        return coordinate.x != coordinate.y
+            || coordinate.y != coordinate.z
+            || coordinate.z != coordinate.x;
+    }
+
+    /** 
+     * Check whether the given coordinate lies within this leaf dungeon.
+     */
     @Override
-    public boolean hasSquare(Square square) {
-        return squares.containsValue(square);
+    public boolean containsCoordinate(Coordinate coordinate) {
+        return getCoordSyst().contains(coordinate);
     }
 
     /** 
@@ -185,24 +209,9 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     }
 
     /** 
-     * Returns whether or not the given coordinate is occupied in this 
-     * dungeon.
-     */
-    @Basic
-    @Override
-    public boolean isOccupied(Coordinate coordinate)
-                                        throws IllegalArgumentException {
-        if (!isEffectiveCoordinate(coordinate))
-            throw new IllegalArgumentException();
-        return squares.containsKey(coordinate);
-    }
-
-
-    /** 
      * Return the number of squares in this dungeon.
      */
-    @Raw
-    @Override
+    @Basic @Raw @Override
     public int getNbSquares() {
         if (squares == null)
             return 0;
@@ -213,14 +222,30 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
      * Add the mapping of coordinates to squares of this leaf dungeon to 
      * the given map.
      */
-    @Basic @Raw
-    @Override
+    @Basic @Raw @Override
     public void addSquareMappingTo(Map<Coordinate, ? super S> map) 
                                             throws IllegalStateException {
         if (squares == null)
             throw new IllegalStateException();
         map.putAll(squares);
     }
+
+    /** 
+     * Returns whether or not the given coordinate is occupied in this 
+     * dungeon.
+     */
+    @Basic @Override
+    public boolean isOccupied(Coordinate coordinate)
+                                        throws IllegalArgumentException {
+        if (!isEffectiveCoordinate(coordinate))
+            throw new IllegalArgumentException();
+        return squares.containsKey(coordinate);
+    }
+
+    /**
+     * Variable referencing a map of the squares of this dungeon
+     */
+    private Map<Coordinate, S> squares = new HashMap<Coordinate, S>();
 
     /**
      * Return an iterator of the squares in this leaf dungeon that satisfy 
@@ -261,102 +286,30 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 		};
     }
 
-
-    /**
-     * Variable referencing a map of the squares of this dungeon
-     */
-    private Map<Coordinate, S> squares = new HashMap<Coordinate, S>();
-
-
-
-
-
-
-
-
-
-
     /** 
-     * Checks whether the given coordinate is a valid coordinate in this 
-     * dungeon.
-     *
-     * @param coordinate 
-     * The coordinate to check.
-     * @return 
-     * True iff the coordinate is a possible square coordinate for all 
-     * dungeons, is contained within the coordinate system of this dungeon, 
-     * and the coordinate values in all directions are not equal to each 
-     * other.
-     *   | result == (isEffectiveCoordinate(coordinate)
-     *   |      &amp;&amp; containsCoordinate(coordinate)
-     *   |      &amp;&amp; (coordinate.x != coordinate.y
-     *   |                  || coordinate.y != coordinate.z
-     *   |                  || coordinate.z != coordinate.x))
+     * Return a mapping of directions to squares that represent all 
+     * neighbouring squares of the given coordinate in this dungeon. 
      */
-    public boolean isValidSquareCoordinate(Coordinate coordinate) {
+    @Raw @Override
+    public Map<Direction,S> getDirectionsAndNeighboursOf(Coordinate coordinate)
+                                            throws IllegalArgumentException {
         if (!isEffectiveCoordinate(coordinate))
-            return false;
-        if (!containsCoordinate(coordinate))
-            return false;
-        return coordinate.x != coordinate.y
-            || coordinate.y != coordinate.z
-            || coordinate.z != coordinate.x;
+            throw new IllegalArgumentException();
+
+        EnumMap<Direction, S> result =
+                    new EnumMap<Direction, S>(Direction.class);
+
+        for (Map.Entry<Direction, Coordinate> neighbourEntry :
+                        getCoordSyst().neighboursOf(coordinate).entrySet()) {
+            Coordinate neighbourCoordinate = neighbourEntry.getValue();
+            Direction neighbourDirection = neighbourEntry.getKey();
+            S neighbour = getSquareAt(neighbourCoordinate);
+            if (neighbour != null)
+                result.put(neighbourDirection, neighbour);
+        }
+
+        return result;
     }
-
-
-
-    /** 
-     * Checks whether all squares of this dungeon have valid coordinates.
-     * 
-     * @return 
-     * True iff all squares of this dungeon have valid coordinates.
-     *   | result == (for each e in getPositionsAndSquares() :
-     *   |                  canHaveAsSquareAt(e.getKey(), e.getValue()))
-     */
-    public boolean canHaveSquaresAtTheirCoordinates() {
-        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares())
-            if (!canHaveAsSquareAt(e.getKey(), e.getValue()))
-                return false;
-        return true;
-    }
-
-
-
-    /** 
-     * Checks whether this leaf dungeon can have the given square at the 
-     * given coordinate.
-     * 
-     * @param coordinate 
-     * The coordinate to check.
-     * @param square 
-     * The square to check.
-     * @return 
-     *   | if (!canPossiblyHaveAsSquareAt(coordinate, square))
-     *   |      then result == false
-     */
-    @Raw
-    abstract public boolean canHaveAsSquareAt(Coordinate coordinate, S square);
-
-    /**
-     * Checks whether this leaf dungeon can possibly have the given square 
-     * at the given coordinate.
-     * 
-     * @param coordinate 
-     * The coordinate to check.
-     * @param square 
-     * The square to check.
-     * @return 
-     *   | result == (square != null
-     *   |              &amp;&amp; !square.isTerminated()
-     *   |              &amp;&amp; isValidSquareCoordinate(coordinate)
-     */
-    @Raw
-    public boolean canPossiblyHaveAsSquareAt(Coordinate coordinate, S square) {
-        return square != null
-            && !square.isTerminated()
-            && isValidSquareCoordinate(coordinate);
-    }
-
 
     /** 
      * Return a set of all containing leaf dungeons.
@@ -369,6 +322,26 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
                                     new HashSet<LeafDungeon<? extends S>>();
         result.add(this);
         return result;
+    }
+
+    /** 
+     * Translate this leaf dungeon over the given offset.
+     */
+    @Override
+    protected void translate(Coordinate offset)
+                                    throws IllegalArgumentException,
+                                            CoordinateConstraintsException {
+        translateCoordSyst(offset);
+        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares())
+            if (!canHaveAsSquareAt(e.getKey().add(offset), e.getValue())){
+                translateCoordSyst(offset.mirror());
+                throw new CoordinateConstraintsException(e.getValue(), this);
+            }
+        Map<Coordinate, S> translatedSquares = new HashMap<Coordinate, S>();
+        for (Map.Entry<Coordinate, S> e : getPositionsAndSquares()) {
+            translatedSquares.put(e.getKey().add(offset), e.getValue());
+        }
+        squares = translatedSquares;
     }
 
     /** 

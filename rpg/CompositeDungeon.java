@@ -101,8 +101,8 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
      * given offset, or it overlaps other subdungeons of this composite 
      * dungeon.
      */
-    public void addSubDungeonAt(Dungeon<? extends S> subDungeon,
-                                Coordinate offset)
+    public void addSubDungeonAt(Coordinate offset,
+                                Dungeon<? extends S> subDungeon)
                     throws IllegalArgumentException,
                            IllegalStateException,
                            DungeonAlreadyAssociatedException,

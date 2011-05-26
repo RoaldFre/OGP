@@ -607,8 +607,8 @@ public class SquareImplTest {
                 new Coordinate(9, 9, 9));
         dungeon = new CompositeDungeon<Square>(coordSyst);
 
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
 
         assertTrue(transSq3.getNavigatableSquares().contains(transSq1));
         assertTrue(transSq3.getNavigatableSquares().contains(transSq2));
@@ -623,7 +623,7 @@ public class SquareImplTest {
 
         assertFalse(transSq1.canNavigateTo(regTelSq1));
 
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
 
         assertTrue(regTelSq3.canNavigateTo(regTelSq1));
         assertTrue(regTelSq3.canNavigateTo(regTelSq2));

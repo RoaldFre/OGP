@@ -106,12 +106,12 @@ public class CompositeDungeonTest {
         map = dungeon.getDirectionsAndNeighboursOf(new Coordinate(0, 0, 0));
         assertTrue(map.isEmpty());
 
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
         map = dungeon.getDirectionsAndNeighboursOf(new Coordinate(0, 1, 0));
         assertEquals(regTelSq3, map.get(Direction.EAST));
         assertEquals(1, map.size());
 
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
         map = dungeon.getDirectionsAndNeighboursOf(new Coordinate(0, 1, 0));
         assertEquals(regTelSq3, map.get(Direction.EAST));
         assertEquals(regSq1, map.get(Direction.UP));
@@ -125,14 +125,14 @@ public class CompositeDungeonTest {
         assertEquals(null, dungeon.getSubDungeonContaining(
                                                 new Coordinate(0, 1, 0)));
 
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
         assertEquals(teleportLevel, dungeon.getSubDungeonContaining(
                                                 new Coordinate(0, 1, 0)));
         assertEquals(null, dungeon.getSubDungeonContaining(
                                                 new Coordinate(0, 1, 2)));
 
 
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
         assertEquals(teleportLevel, dungeon.getSubDungeonContaining(
                                                 new Coordinate(0, 1, 0)));
         assertEquals(regularShaft, dungeon.getSubDungeonContaining(
@@ -140,7 +140,7 @@ public class CompositeDungeonTest {
         assertEquals(null, dungeon.getSubDungeonContaining(
                                                 new Coordinate(0, 1, 4)));
 
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
         assertEquals(teleportLevel, dungeon.getSubDungeonContaining(
                                                 new Coordinate(0, 1, 0)));
         assertEquals(regularShaft, dungeon.getSubDungeonContaining(
@@ -155,9 +155,9 @@ public class CompositeDungeonTest {
         CoordinateSystem teleport, regular, transparent;
         transparent = transparentLevel.getCoordSyst();
 
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
 
         transparent.translate(new Coordinate(0, 0, 4));
         assertEquals(transparent, transparentLevel.getCoordSyst());
@@ -185,9 +185,9 @@ public class CompositeDungeonTest {
 
     @Test
     public void translate_exceptions() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
         
         CoordinateSystem teleport, regular, transparent;
         teleport = teleportLevel.getCoordSyst();
@@ -231,9 +231,9 @@ public class CompositeDungeonTest {
 
     @Test
     public void getSquareAt_legal() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
 
         assertEquals(regTelSq1, dungeon.getSquareAt(new Coordinate(0, 1, 0)));
         assertEquals(regTelSq2, dungeon.getSquareAt(new Coordinate(1, 0, 0)));
@@ -254,16 +254,16 @@ public class CompositeDungeonTest {
     }
     @Test (expected = CoordinateNotOccupiedException.class)
     public void getSquareAt_notOccupied_inDungeon() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
         dungeon.getSquareAt(new Coordinate (5, 0, 0));
     }
     @Test (expected = CoordinateNotOccupiedException.class)
     public void getSquareAt_notOccupied_notInDungeon() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
         dungeon.getSquareAt(new Coordinate (-1, 0, 0));
     }
 
@@ -274,17 +274,17 @@ public class CompositeDungeonTest {
         assertFalse(dungeon.hasSquare(regSq1));
         assertFalse(dungeon.hasSquare(transSq1));
 
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
         assertTrue(dungeon.hasSquare(regTelSq1));
         assertFalse(dungeon.hasSquare(regSq1));
         assertFalse(dungeon.hasSquare(transSq1));
 
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
         assertTrue(dungeon.hasSquare(regTelSq1));
         assertTrue(dungeon.hasSquare(regSq1));
         assertFalse(dungeon.hasSquare(transSq1));
 
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
         assertTrue(dungeon.hasSquare(regTelSq1));
         assertTrue(dungeon.hasSquare(regSq1));
         assertTrue(dungeon.hasSquare(transSq1));
@@ -293,11 +293,11 @@ public class CompositeDungeonTest {
     @Test
     public void getNbSquares_test() {
         assertEquals(0, dungeon.getNbSquares());
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
         assertEquals(3, dungeon.getNbSquares());
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
         assertEquals(6, dungeon.getNbSquares());
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
         assertEquals(9, dungeon.getNbSquares());
     }
 
@@ -307,7 +307,7 @@ public class CompositeDungeonTest {
         dungeon.addSquareMappingTo(map);
         assertTrue(map.isEmpty());
 
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
         dungeon.addSquareMappingTo(map);
         assertEquals(regTelSq1, map.get(telCoord1));
         assertEquals(regTelSq2, map.get(telCoord2));
@@ -316,9 +316,9 @@ public class CompositeDungeonTest {
 
     @Test
     public void getFilteredSquareIterator_test() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
 
         Set<Square> squareSet;
 
@@ -389,9 +389,9 @@ public class CompositeDungeonTest {
     @Test
     public void getSubDungeons_test() {
         assertTrue(dungeon.getSubDungeons().isEmpty());
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
         assertEquals(3, dungeon.getSubDungeons().size());
         assertTrue(dungeon.getSubDungeons().contains(teleportLevel));
         assertTrue(dungeon.getSubDungeons().contains(regularShaft));
@@ -402,16 +402,16 @@ public class CompositeDungeonTest {
     @Test
     public void hasAsSubDungeon_test() {
         assertFalse(dungeon.hasAsSubDungeon(teleportLevel));
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
         assertTrue(dungeon.hasAsSubDungeon(teleportLevel));
         assertClassInvariantsDeep(dungeon);
     }
 
     @Test
     public void addSubDungeonAt_leaves() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
 
         assertTrue(dungeon.hasAsSubDungeon(teleportLevel));
         assertTrue(dungeon.hasAsSubDungeon(regularShaft));
@@ -430,10 +430,10 @@ public class CompositeDungeonTest {
     public void addSubDungeonAt_compositeDungeon() {
         CompositeDungeon<Square> subDungeon
             = new CompositeDungeon<Square>(transparentLevel.getCoordSyst());
-        subDungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(subDungeon, new Coordinate(0, 0, 4));
+        subDungeon.addSubDungeonAt(Coordinate.ORIGIN, transparentLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), subDungeon);
 
         assertTrue(dungeon.hasAsSubDungeon(teleportLevel));
         assertTrue(dungeon.hasAsSubDungeon(regularShaft));
@@ -454,48 +454,47 @@ public class CompositeDungeonTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void addSubDungeonAt_illegalDungeon() {
-        dungeon.addSubDungeonAt(null, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, null);
     }
     @Test (expected = IllegalArgumentException.class)
     public void addSubDungeonAt_illegalCoordinate() {
-        dungeon.addSubDungeonAt(teleportLevel, null);
+        dungeon.addSubDungeonAt(null, teleportLevel);
     }
 
     @Test (expected = IllegalStateException.class)
     public void addSubDungeonAt_terminated() {
         dungeon.terminate();
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
     }
     @Test (expected = IllegalStateException.class)
     public void addSubDungeonAt_subDungeonTerminated() {
         teleportLevel.terminate();
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
     }
 
     @Test (expected = DungeonAlreadyAssociatedException.class)
     public void addSubDungeonAt_alreadyAssociatedWithOther() {
         CompositeDungeon<Square> otherDungeon =
                         new CompositeDungeon<Square>(dungeon.getCoordSyst());
-        otherDungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
+        otherDungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
     }
     @Test (expected = DungeonAlreadyAssociatedException.class)
     public void addSubDungeonAt_alreadyAssociatedWithSelf() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 1));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 1), teleportLevel);
     }
 
     @Test (expected = SubDungeonDoesNotFitException.class)
     public void addSubDungeonAt_subDungeonTooBig() {
         Level<Square> massiveLevel = new Level<Square>(1000, 1000);
-        dungeon.addSubDungeonAt(massiveLevel, new Coordinate(0, 0, 1));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, massiveLevel);
     }
     @Test (expected = SubDungeonDoesNotFitException.class)
     public void addSubDungeonAt_subDungeonOverlaps() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, transparentLevel);
     }
-
 
     @Test
     public void terminate_empty() {
@@ -505,9 +504,9 @@ public class CompositeDungeonTest {
     }
     @Test
     public void terminate_withLeaves() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
 
         dungeon.terminate();
 
@@ -524,10 +523,10 @@ public class CompositeDungeonTest {
     public void terminate_withCompositeSubdungeons() {
         CompositeDungeon<Square> subDungeon
             = new CompositeDungeon<Square>(transparentLevel.getCoordSyst());
-        subDungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(subDungeon, new Coordinate(0, 0, 4));
+        subDungeon.addSubDungeonAt(Coordinate.ORIGIN, transparentLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), subDungeon);
 
         dungeon.terminate();
 
@@ -547,10 +546,10 @@ public class CompositeDungeonTest {
     public void terminate_withParent() {
         CompositeDungeon<Square> subDungeon
             = new CompositeDungeon<Square>(transparentLevel.getCoordSyst());
-        subDungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(subDungeon, new Coordinate(0, 0, 4));
+        subDungeon.addSubDungeonAt(Coordinate.ORIGIN, transparentLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), subDungeon);
 
         subDungeon.terminate();
 
@@ -571,9 +570,9 @@ public class CompositeDungeonTest {
 
     @Test
     public void deleteSquareAt_legal() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
         dungeon.deleteSquareAt(telCoord1);
         assertFalse(dungeon.hasSquare(regTelSq1));
         assertFalse(dungeon.isOccupied(telCoord1));
@@ -582,9 +581,9 @@ public class CompositeDungeonTest {
 
     @Test
     public void deleteSubDungeon_leafDungeon() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
 
         dungeon.deleteSubDungeon(teleportLevel);
 
@@ -604,10 +603,10 @@ public class CompositeDungeonTest {
     public void deleteSubDungeon_compositeDungeon() {
         CompositeDungeon<Square> subDungeon
             = new CompositeDungeon<Square>(transparentLevel.getCoordSyst());
-        subDungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(subDungeon, new Coordinate(0, 0, 4));
+        subDungeon.addSubDungeonAt(Coordinate.ORIGIN, transparentLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), subDungeon);
 
         dungeon.deleteSubDungeon(subDungeon);
 
@@ -620,9 +619,9 @@ public class CompositeDungeonTest {
 
     @Test
     public void getContainingLeafDungeons_test() {
-        dungeon.addSubDungeonAt(teleportLevel, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(regularShaft, new Coordinate(0, 0, 0));
-        dungeon.addSubDungeonAt(transparentLevel, new Coordinate(0, 0, 4));
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, teleportLevel);
+        dungeon.addSubDungeonAt(Coordinate.ORIGIN, regularShaft);
+        dungeon.addSubDungeonAt(new Coordinate(0, 0, 4), transparentLevel);
 
         Set<LeafDungeon<?>> leaves = dungeon.getContainingLeafDungeons();
         assertEquals(3, leaves.size());

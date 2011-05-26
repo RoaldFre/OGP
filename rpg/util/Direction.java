@@ -2,7 +2,13 @@ package rpg.util;
 
 import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * An enumeration of spatial directions in three dimensions.
+ *
+ * @author Roald Frederickx
+ */
 public enum Direction {
+
     NORTH {
         @Basic public String symbol() {return "N";}
         @Basic public Direction complement() {return SOUTH;}

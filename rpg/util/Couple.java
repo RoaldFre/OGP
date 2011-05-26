@@ -3,9 +3,9 @@ package rpg.util;
 import be.kuleuven.cs.som.annotate.*;
 
 /**
- * A class representing a 'couple' or unordered 2-tuple. Null is allowed, 
- * but only once (so it's basically a bag with a minimum capacity of 1 and 
- * a maximum capacity of 2).
+ * A class representing a 'couple' or unordered 2-tuple.
+ * Null is allowed, but only once (so it's basically a bag with a minimum 
+ * capacity of 1 and a maximum capacity of 2).
  *
  * @invar
  * At least one of the elements of each couple is not null.
@@ -13,8 +13,8 @@ import be.kuleuven.cs.som.annotate.*;
  *
  * @author Roald Frederickx
  */
-@SuppressWarnings("unchecked")
 public class Couple<E> implements Iterable<E> {
+
     /** 
      * Create a new couple with the given element.
      * 
@@ -69,6 +69,7 @@ public class Couple<E> implements Iterable<E> {
      * getPartner().
      */
     @Basic
+    @SuppressWarnings("unchecked")
     public E getAnElement() {
         if (elements[0] != null)
             return (E) elements[0];
@@ -115,6 +116,7 @@ public class Couple<E> implements Iterable<E> {
      * couple, or if the given element is the only element of this couple.
      */
 	@Basic
+    @SuppressWarnings("unchecked")
     public E getPartner(E thisElement) {
         assert thisElement != null;
         if (thisElement.equals(elements[0]))
@@ -174,11 +176,10 @@ public class Couple<E> implements Iterable<E> {
         else throw new IllegalArgumentException();
     }
 
-
     /** 
      * Returns the number of elements in this couple.
      */
-    @Basic
+    @Basic @Raw
     public int getNbElements() {
         int num = 0;
         if (elements[0] != null)

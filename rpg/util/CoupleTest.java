@@ -3,7 +3,6 @@ package rpg.util;
 import static org.junit.Assert.*;
 import org.junit.*;
 
-
 /**
  * A class collecting tests for the class of couples.
  *

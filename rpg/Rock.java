@@ -1,6 +1,5 @@
 package rpg;
 
-
 import rpg.util.Direction;
 import rpg.util.Temperature;
 import rpg.exceptions.*;

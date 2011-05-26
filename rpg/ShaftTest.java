@@ -48,8 +48,6 @@ public class ShaftTest {
         assertClassInvariants(shaft);
     }
 
-
-
     @Test
     public void canHaveAsCoordSyst_test() {
         CoordinateSystem coordSyst = shaft_10N.getCoordSyst();
@@ -76,7 +74,6 @@ public class ShaftTest {
 
         assertFalse(shaft_10N.canHaveAsCoordSyst(null));
     }
-
 
     @Test
     public void canHaveAsSquareAt_rock() {

@@ -3,6 +3,7 @@ package rpg;
 import rpg.util.Coordinate;
 import rpg.util.CoordinateSystem;
 import rpg.util.Direction;
+
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -33,7 +34,7 @@ public class Shaft<S extends Square> extends LeafDungeon<S> {
     }
 
     /** 
-     * Create a new level with the given direction and length and with a 
+     * Create a new shaft with the given direction and length and with a 
      * default origin.
      * 
      * @param length 
@@ -57,7 +58,8 @@ public class Shaft<S extends Square> extends LeafDungeon<S> {
      * @return
      * True iff this shaft can have the given coordinate system as a 
      * possible coordinate system, and the coordinate system has a 
-     * size of 1 coordinate in at least two dimensions.
+     * size of 1 in at least two dimensions (it only has one degree of 
+     * freedom or less).
      */
     @Raw
     public boolean canHaveAsCoordSyst(CoordinateSystem coordSyst) {

@@ -6,6 +6,11 @@ import org.junit.*;
 import rpg.util.Direction;
 import rpg.util.Temperature;
 
+/**
+ * A class collecting tests for the class of rocks.
+ *
+ * @author Roald Frederickx
+ */
 public class RockTest {
 
     private Rock rockDefault;

@@ -56,11 +56,25 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
         if (!isEffectiveCoordinate(coordinate))
             throw new IllegalArgumentException();
 
-        S result = squares.get(coordinate);
+        S result = getSquareAtRaw(coordinate);
         if (result == null)
             throw new CoordinateNotOccupiedException(coordinate, this);
 
         return result;
+    }
+
+    /** 
+     * Returns the square at the given coordinate in this dungeon, or null 
+     * if there is no such square.
+     *
+     * @pre
+     *   | isEffectiveCoordinate(coordinate)
+     */
+    @Basic @Raw
+    private S getSquareAtRaw(Coordinate coordinate) {
+        assert isEffectiveCoordinate(coordinate);
+
+        return squares.get(coordinate);
     }
 
     /** 
@@ -303,7 +317,7 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
                         getCoordSyst().neighboursOf(coordinate).entrySet()) {
             Coordinate neighbourCoordinate = neighbourEntry.getValue();
             Direction neighbourDirection = neighbourEntry.getKey();
-            S neighbour = getSquareAt(neighbourCoordinate);
+            S neighbour = getSquareAtRaw(neighbourCoordinate);
             if (neighbour != null)
                 result.put(neighbourDirection, neighbour);
         }

@@ -70,7 +70,6 @@ public class RegularSquare extends SquareImpl {
         super(new RegularBorderInitializer(false));
     }
 
-
     /** 
      * A default border initializer for regular squares.
      *
@@ -94,23 +93,17 @@ public class RegularSquare extends SquareImpl {
         private boolean hasSlipperyFloor;
     }
 
-
     /** 
      * Check whether this regular square can have the given border as its 
      * border in the given direction.
      * 
-     * @param direction 
-     * The direction of the border.
-     * @param border
-     * The border to check.
      * @return
-     *   | result == super.canPossiblyHaveAsBorderAt(direction, border)
+     *   | result == canPossiblyHaveAsBorderAt(direction, border)
      */
     @Override
     public boolean canHaveAsBorderAt(Direction direction, Border border) {
-        return super.canPossiblyHaveAsBorderAt(direction, border);
+        return canPossiblyHaveAsBorderAt(direction, border);
     }
-
 
     /**
      * Checks whether the borders of this regular square satisfy the 
@@ -155,29 +148,7 @@ public class RegularSquare extends SquareImpl {
     public boolean isPossibleTeleportationEndPoint() {
         return !isTerminated();
     }
-
-    /**
-     * Check whether this regular square satisfies all its class 
-     * invariants.
-     */
-    @Raw
-    @Override
-    public boolean isNotRaw() {
-        return super.isNotRaw()
-            && isValidMergeTemperatureWeight(getMergeTemperatureWeight()) 
-            && isValidHeatDamageThreshold(getHeatDamageThreshold()) 
-            && isValidHeatDamageStep(getHeatDamageStep()) 
-            && matchesMinTemperatureMax(getMinTemperature(),
-                                    getTemperature(), getMaxTemperature())
-            && canHaveAsHumidity(getHumidity()) 
-            && hasProperBorders()
-            && bordersSatisfyConstraints()
-            && hasNoDuplicateBorders()
-            && myAreaIsEquilibrated();
-    }
-
 }
-
 
 // vim: ts=4:sw=4:expandtab:smarttab
 

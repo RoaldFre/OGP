@@ -1,6 +1,6 @@
-import rpg.*;
+import rpg.dungeon.*;
+import rpg.square.*;
 import rpg.util.*;
-
 
 /**
  * A class demonstrating the Dungeon class.

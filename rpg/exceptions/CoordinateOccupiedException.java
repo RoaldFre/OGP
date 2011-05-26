@@ -1,6 +1,6 @@
 package rpg.exceptions;
 
-import rpg.*;
+import rpg.dungeon.Dungeon;
 import rpg.util.Coordinate;
 import be.kuleuven.cs.som.annotate.*;
 

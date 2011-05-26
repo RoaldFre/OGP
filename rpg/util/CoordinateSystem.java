@@ -1,6 +1,7 @@
 package rpg.util;
 
 import be.kuleuven.cs.som.annotate.*;
+
 import java.util.Map;
 import java.util.EnumMap;
 import java.util.Iterator;

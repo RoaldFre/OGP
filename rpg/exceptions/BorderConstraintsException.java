@@ -1,6 +1,7 @@
 package rpg.exceptions;
 
-import rpg.*;
+import rpg.square.Border;
+import rpg.square.Square;
 import rpg.util.Direction;
 import be.kuleuven.cs.som.annotate.*;
 

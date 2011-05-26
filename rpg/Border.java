@@ -25,24 +25,6 @@ import be.kuleuven.cs.som.annotate.*;
 public abstract class Border {
     
     /** 
-     * Create a new border that is attached to the given square.
-     * 
-     * @param square 
-     * The square to attach this border to.
-     * @post
-     *   | new.bordersOnSquare(square)
-     * @note
-     * Note that this will <b>not</b> initialize the bidirectional 
-     * association from the square to this border! It is your duty to make 
-     * that link with this newly created border.
-     * Hence, the newly created border will still be raw!
-     */
-    @Raw
-    Border(Square square) {
-        squares = new Couple<Square>(square);
-    }
-
-    /** 
      * Create a new border that replaces the given border.
      * 
      * @param border 
@@ -61,6 +43,24 @@ public abstract class Border {
         this.squares = new Couple<Square>(border.squares);
         for (Square square : getSquares())
             square.updateBorder(border, this);
+    }
+
+    /** 
+     * Create a new border that is attached to the given square.
+     * 
+     * @param square 
+     * The square to attach this border to.
+     * @post
+     *   | new.bordersOnSquare(square)
+     * @note
+     * Note that this will <b>not</b> initialize the bidirectional 
+     * association from the square to this border! It is your duty to make 
+     * that link with this newly created border.
+     * Hence, the newly created border will still be raw!
+     */
+    @Raw
+    Border(Square square) {
+        squares = new Couple<Square>(square);
     }
 
     /** 
@@ -394,13 +394,18 @@ public abstract class Border {
     public abstract String symbol();
 
     /** 
-     * Returns the level of 'openness' of a border. Only relative values 
-     * will be used to determine which type of border will result from 
-     * merging two borders. The values shall impose a total ordering on the 
-     * different types of borders.
+     * Returns the level of 'openness' of a border.
      *
      * @return
      * The openness of a border.
+     * @return
+     * This value imposes a total ordering on the different types of 
+     * borders.
+     * @note
+     * The actual value may change in subsequent versions. Don't rely on 
+     * the actual value, but merely on relative differences between 
+     * different borders to impose an ordering.
+     * Never let this leak out to the public.
      */
     protected abstract int openness();
 }

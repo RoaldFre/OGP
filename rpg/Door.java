@@ -9,25 +9,6 @@ import be.kuleuven.cs.som.annotate.*;
  */
 public class Door extends Border{
     /** 
-     * Create a new door with the given intrinsic slipperyness that borders 
-     * the given square.
-     * 
-     * @param square 
-     * The square that this door will border.
-     * @param isSlippery 
-     * The 'openness' of this new door.
-     * @post
-     *   | isOpen() == isOpened
-     * @effect
-     *   | super(square)
-     */
-    @Raw
-    public Door(Square square, boolean isOpened) {
-        super(square);
-        this.isOpened = isOpened;
-    }
-
-    /** 
      * Create a new door with the given 'openness' that replaces the given 
      * border.
      * 
@@ -36,7 +17,7 @@ public class Door extends Border{
      * @param isOpened
      * The 'openness' of this new door.
      * @post
-     *   | isOpen() == isOpened
+     *   | new.isOpen() == isOpened
      * @effect
      *   | super(border)
      */
@@ -46,12 +27,37 @@ public class Door extends Border{
         this.isOpened = isOpened;
     }
 
+    /** 
+     * Create a new door with the given 'openness' that borders the given 
+     * square.
+     * 
+     * @param square 
+     * The square that this door will border.
+     * @param isSlippery 
+     * The 'openness' of this new door.
+     * @post
+     *   | new.isOpen() == isOpened
+     * @effect
+     *   | super(square)
+     */
+    @Raw
+    Door(Square square, boolean isOpened) {
+        super(square);
+        this.isOpened = isOpened;
+    }
+
+    /**
+     * Returns whether or not this door is open.
+     */
     @Override
     @Basic
     public boolean isOpen() {
         return isOpened;
     }
 
+    /**
+     * Returns whether or not this door is a door.
+     */
     @Override
     @Immutable
     @Basic
@@ -70,6 +76,9 @@ public class Door extends Border{
         return "D" + (isOpen() ? "o" : "c");
     }
 
+    /**
+     * Returns the level of 'openness' of this door.
+     */
     @Override
     @Immutable
     protected int openness() {

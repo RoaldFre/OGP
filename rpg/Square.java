@@ -464,7 +464,7 @@ public interface Square {
      * @post
      * If this square is not terminated, the area of this square gets 
      * equilibrated after having changed the border.
-     *   | isTerminated() || new.myAreaIsEquilibrated()
+     *   | old.isTerminated() || new.myAreaIsEquilibrated()
      * @throws IllegalArgumentException
      * This square can not have the given border as a proper border in the 
      * given direction.
@@ -599,14 +599,14 @@ public interface Square {
      *   | !visited.contains(destination)
      * @post
      *   | if (result == false)
-     *   | then visited.contains(this)
+     *   | then (new visited).contains(this)
      * @post
      *   | if (result == false)
      *   | then for each square in getNavigatableSquares() :
-     *   |          new.visited.contains(square)
+     *   |          (new visited).contains(square)
      * @post
-     *   | for each square in old.visited :
-     *   |          new.visited.contains(square)
+     *   | for each square in (old visited) :
+     *   |          (new visited).contains(square)
      * @return
      *   | if (this.equals(destination))
      *   |      then result == true
@@ -764,7 +764,7 @@ public interface Square {
      * @pre
      *   | !isTerminated
      * @post
-     *   | myAreaIsEquilibrated()
+     *   | new.myAreaIsEquilibrated()
      */
     public void equilibrateMyArea() 
                         throws EquilibratingSquaresViolatesLimitsException;

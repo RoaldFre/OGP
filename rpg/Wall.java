@@ -19,7 +19,7 @@ public class Wall extends Border{
      * @param isSlippery
      * The intrinsic slipperyness for this new wall.
      * @post
-     *   | isSlippery() == isSlippery
+     *   | new.isSlippery() == isSlippery
      * @effect
      *   | super(border)
      */
@@ -53,7 +53,7 @@ public class Wall extends Border{
      * @param isSlippery 
      * The intrinsic slipperyness for this new wall.
      * @post
-     *   | isSlippery() == isSlippery
+     *   | new.isSlippery() == isSlippery
      * @effect
      *   | super(square)
      */

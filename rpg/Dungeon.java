@@ -333,7 +333,7 @@ public abstract class Dungeon<S extends Square> {
      *   |                                         coordinate).entrySet() :
      *   |     square.mergeWith(dn.getValue(), dn.getKey())
      * @post
-     *   | squareBordersProperlyOnItsNeighbours(square, coordinate)
+     *   | new.squareBordersProperlyOnItsNeighbours(square, coordinate)
      */
     @Raw @Model
     protected void mergeSquareWithNeighbours(Square square,
@@ -712,7 +712,7 @@ public abstract class Dungeon<S extends Square> {
      * Set the termination status of this dungeon to true.
      * 
      * @post
-     *   | isTerminated()
+     *   | new.isTerminated()
      */
     @Raw
     protected void setIsTerminated() {

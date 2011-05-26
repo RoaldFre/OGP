@@ -849,7 +849,7 @@ abstract public class SquareImpl implements Square {
          *
          * @post
          *   | for each direction in Direction.values():
-         *   |      canHaveAsBorderAt(direction, getBorderAt(direction))
+         *   |     new.canHaveAsBorderAt(direction, new.getBorderAt(direction))
          */
         public void initializeBorders(@Raw SquareImpl square);
     }
@@ -1184,7 +1184,7 @@ abstract public class SquareImpl implements Square {
          *   | equilibrateAreaInternally()
          *   | equilibrateBoundary()
 		 * @post
-		 *   | isEquilibrated()
+		 *   | new.isEquilibrated()
 		 * @throws EquilibratingSquaresViolatesLimitsException
 		 * Equilibrating this area violates some temperature or humidities 
 		 * constraints of a square.

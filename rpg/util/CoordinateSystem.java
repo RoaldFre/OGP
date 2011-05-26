@@ -106,8 +106,6 @@ public class CoordinateSystem implements Cloneable, Iterable<Coordinate> {
      *   |          &amp;&amp; (getLowerBound() == null
      *   |              || Coordinate.formsValidBoundingBox(lowerBound
      *   |                                                  getLowerBound())
-     *   |          &amp;&amp; Coordinate.formsValidBoundingBox(Coordinate.ORIGIN,
-     *   |                                                      lowerBound)
      *   |          &amp;&amp; matchesLowerUpperBound(lowerBound, 
      *   |                                          getUpperBound()))
      */
@@ -117,8 +115,6 @@ public class CoordinateSystem implements Cloneable, Iterable<Coordinate> {
                 && (getLowerBound() == null 
                         || Coordinate.formsValidBoundingBox(lowerBound, 
                                                             getLowerBound()))
-                && Coordinate.formsValidBoundingBox(Coordinate.ORIGIN,
-                                                    lowerBound)
                 && matchesLowerUpperBound(lowerBound, getUpperBound());
     }
     
@@ -129,11 +125,12 @@ public class CoordinateSystem implements Cloneable, Iterable<Coordinate> {
      * @param lowerBound
      * The lower coordinate bound to check.
      * @return
-     * True if and only if the given lower coordinate bound is not null
-     *   | result == (lowerBound != null)
+     *   | result == Coordinate.formsValidBoundingBox(Coordinate.ORIGIN,
+     *   |                                            lowerBound))
      */
     public static boolean isPossibleLowerBound(Coordinate lowerBound) {
-        return lowerBound != null;
+        return Coordinate.formsValidBoundingBox(Coordinate.ORIGIN,
+                                                lowerBound);
     }
     
     /**
@@ -226,11 +223,12 @@ public class CoordinateSystem implements Cloneable, Iterable<Coordinate> {
      * @param upperBound
      * The upper coordinate bound to check.
      * @return
-     * True if and only if the given upper coordinate bound is not null.
-     *   | result == (upperBound != null)
+     *   | result == Coordinate.formsValidBoundingBox(Coordinate.ORIGIN,
+     *   |                                            upperBound))
      */
     public static boolean isPossibleUpperBound(Coordinate upperBound) {
-        return upperBound != null;
+        return Coordinate.formsValidBoundingBox(Coordinate.ORIGIN,
+                                                upperBound);
     }
     
     /**

@@ -724,11 +724,6 @@ public abstract class Dungeon<S extends Square> {
      */
     private boolean isTerminated = false;
 
-
-
-
-
-
     /**
      * Check whether this dungeon is not raw.
      *

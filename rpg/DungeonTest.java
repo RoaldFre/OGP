@@ -109,7 +109,6 @@ public class DungeonTest {
         assertTrue(level_10.overlaps(level_10_withSquares));
         assertTrue(level_10.overlaps(level_10_withSquares.getCoordSyst()));
     }
-
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

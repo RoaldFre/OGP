@@ -90,12 +90,7 @@ public class LeafDungeonTest {
     }
 
     public static void assertClassInvariants(LeafDungeon<? extends Square> ld) {
-        assertTrue(ld.canHaveSquaresAtTheirCoordinates());
-        assertTrue(ld.squaresSatisfyConstraints());
-        assertTrue(ld.hasProperBorderingSquares());
-        assertTrue(ld.canHaveAsCoordSyst(ld.getCoordSyst()));
-        assertTrue(ld.getSquareMapping() != null);
-        assertTrue(ld.canHaveAsParentDungeon(ld.getParentDungeon()));
+        assertTrue(ld.isNotRaw());
     }
 
     @Test

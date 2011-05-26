@@ -37,7 +37,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         super(coordSyst);
     }
 
-
     /**
      * Return the set of direct subdungeons for this composite dungeon.
      */
@@ -49,7 +48,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         result.addAll(getSubDungeonsRaw());
         return result;
     }
-    
 
     /**
      * Return the set of direct subdungeons for this composite dungeon, do 
@@ -59,7 +57,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
     private Set<Dungeon<? extends S>> getSubDungeonsRaw() {
         return subDungeons;
     }
-
 
     /** 
      * Check whether this composite dungeon has the given dungeon as its 
@@ -80,7 +77,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         return getSubDungeonsRaw().contains(dungeon);
     }
 
-
     /** 
      * Add the given dungeon as a subdungeon in this composite dungeon at 
      * the given offset. 
@@ -100,7 +96,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
      * @throws IllegalStateException
      *   | isTerminated() || subDungeon.isTerminated()
      * @throws DungeonAlreadyAssociatedException
-     *   | subDungeon.getParentDungeon() != null
+     *   | subDungeon.hasParentDungeon()
      * @throws SubDungeonDoesNotFitException
      * The given subdungeon does not fit in this composite dungeon at the 
      * given offset, or it overlaps other subdungeons of this composite 
@@ -118,7 +114,7 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
             throw new IllegalArgumentException("Non-effective subDungeon");
         if (isTerminated() || subDungeon.isTerminated())
             throw new IllegalStateException();
-        if (subDungeon.getParentDungeon() != null)
+        if (subDungeon.hasParentDungeon())
             throw new DungeonAlreadyAssociatedException(subDungeon, this);
         CoordinateSystem translatedCoordSyst = subDungeon.getCoordSyst();
         translatedCoordSyst.translate(offset);
@@ -130,7 +126,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         subDungeons.add(subDungeon);
         subDungeon.setParentDungeon(this);
     }
-
 
     /** 
      * Merge the squares of the given dungeon with all its neighbouring 
@@ -150,7 +145,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
                                         subDungeon.getPositionsAndSquares())
             mergeSquareWithNeighbours(ps.getValue(), ps.getKey());
     }
-
 
     /** 
      * Delete the given subdungeon of this composite dungeon.
@@ -183,7 +177,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         subDungeons.remove(subDungeon);
         subDungeon.setParentDungeon(null);
     }
-    
 
     /**
      * Checks whether this composite dungeon has proper subdungeons.
@@ -203,7 +196,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
                 return false;
         return true;
     }
-
 
     /** 
      * Check whether a given (possible) subdungeon of this composite 
@@ -239,7 +231,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         return true;
     }
 
-
     /** 
      * Checks if the given subdungeon is, or would be, a proper subdungeon 
      * for this composite dungeon.
@@ -256,7 +247,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
             return false;
         return subDungeon.getParentDungeon() == this;
     }
-
     
     /**
      * Variable registering the set of subdungeons for this composite dungeon.
@@ -275,7 +265,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
     public boolean containsCoordinate(Coordinate coordinate) {
         return getSubDungeonContaining(coordinate) != null;
     }
-
 
     /** 
      * Return the subdungeon of this composite dungeon that contains the 
@@ -300,7 +289,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
                 return subDungeon;
         return null;
     }
-
     
     /** 
      * Returns whether or not the given coordinate is occupied in this 
@@ -322,7 +310,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         return getSubDungeonContaining(coordinate).isOccupied(coordinate);
 	}
 
-
     /** 
      * Returns the square at the given coordinate in this composite dungeon.
      * 
@@ -339,7 +326,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
             throw new CoordinateNotOccupiedException(coordinate, this);
         return getSubDungeonContaining(coordinate).getSquareAt(coordinate);
 	}
-
 
     /** 
      * Returns whether or not this composite dungeon contains the given 
@@ -359,7 +345,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
 		return false;
 	}
 
-
     /** 
      * Deletes the square at the given coordinate and terminates it.
      *
@@ -376,7 +361,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         getSubDungeonContaining(coordinate).deleteSquareAt(coordinate);
 	}
 
-
 	/** 
      * Return the number of squares in this composite dungeon.
      *
@@ -392,7 +376,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
             result += subDungeon.getNbSquares();
         return result;
 	}
-
 
     /**
      * Add the mapping of coordinates to squares of this composite dungeon 
@@ -411,7 +394,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         for (Dungeon<? extends S> subDungeon : getSubDungeonsRaw())
             subDungeon.addSquareMappingTo(map);
 	}
-
 
     /**
      * Return an iterator of the squares in this composite dungeon that 
@@ -471,7 +453,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
 		};
 	}
 
-
     /** 
      * Return a set of all containing leaf dungeons.
      * 
@@ -488,7 +469,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         return result;
     }
 
-
     /** 
      * Return a mapping of directions to squares that represent all 
      * neighbouring squares of the given coordinate in this composite 
@@ -504,7 +484,6 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         }
         return result;
     }
-
 
     /** 
      * Translate this composite dungeon over the given offset.
@@ -541,6 +520,17 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         }
     }
 
+    /**
+     * Checks whether the given coordinate system is a valid coordinate 
+     * system for this composite dungeon.
+     *
+     * @return
+     *   | result == canPossiblyHaveAsCoordSyst(coordSyst)
+     */
+    @Raw @Override
+    public boolean canHaveAsCoordSyst(CoordinateSystem coordSyst) {
+        return canPossiblyHaveAsCoordSyst(coordSyst);
+    }
 
     /** 
      * Terminate this composite dungeon.
@@ -554,10 +544,9 @@ public class CompositeDungeon<S extends Square> extends Dungeon<S> {
         for (Dungeon<? extends S> subDungeon : getSubDungeons())
             subDungeon.terminate();
         setIsTerminated();
-        if (getParentDungeon() != null)
+        if (hasParentDungeon())
             getParentDungeon().deleteSubDungeon(this); 
     }
-
 
     /**
      * Check whether this composite dungeon is not raw.

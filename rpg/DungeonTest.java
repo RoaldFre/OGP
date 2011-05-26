@@ -96,10 +96,7 @@ public class DungeonTest {
     }
 
     public static void assertClassInvariants(Dungeon<?> dungeon) {
-        assertTrue(dungeon.squaresSatisfyConstraints());
-        assertTrue(dungeon.canHaveAsCoordSyst(dungeon.getCoordSyst()));
-        assertTrue(dungeon.getSquareMapping() != null);
-        assertTrue(dungeon.canHaveAsParentDungeon(dungeon.getParentDungeon()));
+        assertTrue(dungeon.isNotRaw());
     }
 
     @Test

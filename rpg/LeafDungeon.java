@@ -18,8 +18,6 @@ import java.util.NoSuchElementException;
  *
  * @invar
  *   | canHaveSquaresAtTheirCoordinates()
- * @invar
- *   | hasProperBorderingSquares()
  *
  * @author Roald Frederickx
  */
@@ -361,28 +359,6 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
 
 
     /** 
-     * Checks whether this dungeon has squares that properly border on 
-     * neighbouring squares. 
-     * 
-     * @return
-     * True iff every square of this dungeon borders properly on all its 
-     * neighbours (as given by the root dungeon).
-     *   | result == 
-     *   |  (for each ps in getPositionsAndSquares() :
-     *   |          squareBordersProperlyOnItsNeighbours(ps.getValue(),
-     *   |                                               ps.getKey()))
-     */
-    @Raw
-    public boolean hasProperBorderingSquares() throws IllegalStateException {
-        for (Map.Entry<Coordinate, S> ps : getPositionsAndSquares())
-            if (!squareBordersProperlyOnItsNeighbours(ps.getValue(),
-                                                      ps.getKey()))
-                return false;
-        return true;
-    }
-
-
-    /** 
      * Return a set of all containing leaf dungeons.
      * 
      * @return 
@@ -402,7 +378,7 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
         for (Coordinate coordinate : getSquareMapping().keySet())
             deleteSquareAt(coordinate);
         setIsTerminated();
-        if (getParentDungeon() != null)
+        if (hasParentDungeon())
             getParentDungeon().deleteSubDungeon(this); 
     }
 
@@ -413,8 +389,7 @@ public abstract class LeafDungeon<S extends Square> extends Dungeon<S> {
     @Override
     public boolean isNotRaw() {
         return super.isNotRaw()
-                && canHaveSquaresAtTheirCoordinates()
-                && hasProperBorderingSquares();
+                && canHaveSquaresAtTheirCoordinates();
     }
 }
 

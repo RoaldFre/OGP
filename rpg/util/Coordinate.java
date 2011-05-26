@@ -218,6 +218,11 @@ public class Coordinate {
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
+    
+    /** 
+     * Constant referencing the origin coordinate, (0, 0, 0).
+     */
+    public static final Coordinate ORIGIN = new Coordinate(0, 0, 0);
 }
 
 // vim: ts=4:sw=4:expandtab:smarttab

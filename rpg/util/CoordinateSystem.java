@@ -3,6 +3,8 @@ package rpg.util;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.Map;
 import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A class representing a coordinate system with a lower and an upper 
@@ -19,7 +21,7 @@ import java.util.EnumMap;
  *
  * @author Roald Frederickx
  */
-public class CoordinateSystem implements Cloneable {
+public class CoordinateSystem implements Cloneable, Iterable<Coordinate> {
 
     /** 
      * Create a new coordinate system with the given lower and upper 
@@ -355,6 +357,50 @@ public class CoordinateSystem implements Cloneable {
         assert other != null;
         return contains(other.getLowerBound()) || contains(other.getUpperBound())
             || other.contains(getLowerBound()) || other.contains(getUpperBound());
+    }
+
+    /** 
+     * Return an iterator over all coordinates that are contained within 
+     * this coordinate system.
+     */
+    public Iterator<Coordinate> iterator() {
+        return new Iterator<Coordinate>() {
+
+			public boolean hasNext() {
+                return z <= getUpperBound().z
+                    && y <= getUpperBound().y
+                    && x <= getUpperBound().x;
+			}
+
+            public Coordinate next() throws NoSuchElementException {
+                if (!hasNext())
+                    throw new NoSuchElementException();
+
+                Coordinate next = new Coordinate(x, y, z);
+
+                if (x != getUpperBound().x)
+                    x++;
+                else {
+                    x = getLowerBound().x;
+                    if (y != getUpperBound().y)
+                        y++;
+                    else {
+                        y = getLowerBound().y;
+                        z++;
+                    }
+                }
+
+                return next;
+            }
+
+			public void remove() throws UnsupportedOperationException {
+				throw new UnsupportedOperationException();
+			}
+
+			private long x = getLowerBound().x;
+			private long y = getLowerBound().y;
+			private long z = getLowerBound().z;
+		};
     }
 
     /** 

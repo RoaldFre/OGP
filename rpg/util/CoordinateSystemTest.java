@@ -2,6 +2,8 @@ package rpg.util;
 
 import static org.junit.Assert.*;
 import org.junit.*;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * A class collecting tests for the class of coordinate systems.
@@ -126,7 +128,21 @@ public class CoordinateSystemTest {
         assertTrue(coordSyst_n10_to_10.contains(coordSyst_0_to_10));
         assertFalse(coordSyst_0_to_10.contains(coordSyst_n10_to_10));
     }
-}
+
+    @Test
+    public void iterator_test() {
+        CoordinateSystem coordSyst2x2x0 = new CoordinateSystem(Coordinate.ORIGIN,
+                                                        new Coordinate(1,1,0));
+        Set<Coordinate> set = new HashSet<Coordinate>();
+        for (Coordinate coord : coordSyst2x2x0)
+            set.add(coord);
+        assertEquals(4, set.size());
+        assertTrue(set.contains(new Coordinate(0, 0, 0)));
+        assertTrue(set.contains(new Coordinate(0, 1, 0)));
+        assertTrue(set.contains(new Coordinate(1, 0, 0)));
+        assertTrue(set.contains(new Coordinate(1, 1, 0)));
+    }
+}        
 
 // vim: ts=4:sw=4:expandtab:smarttab
 
